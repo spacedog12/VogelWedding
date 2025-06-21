@@ -49,3 +49,7 @@ TestResults/
 
 # Publish
 publish/
+
+# Appsettings
+   appsettings.json
+   appsettings.*.jsons
