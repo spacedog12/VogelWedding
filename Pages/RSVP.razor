@@ -1,0 +1,91 @@
+@page "/rsvp"
+
+@inject AccessService AccessService
+@inject SupabaseService Supabase
+@inject IToastService ToastService
+
+@if (AccessService.CurrentLevel < AccessLevel.GuestInvited)
+{
+    <div class="alert alert-danger" role="alert">
+        This page is only accessible to invited guests.
+    </div>
+    return;
+}
+
+@if (AccessService.CurrentLevel < AccessLevel.GuestInvited)
+{
+    <div class="alert alert-danger" role="alert">
+        This page is only accessible to invited guests.
+    </div>
+    return;
+}
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">RSVP Form</h2>
+        
+        <EditForm Model="@model" OnValidSubmit="HandleSubmit" class="mt-4">
+            <DataAnnotationsValidator />
+            
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <InputText @bind-Value="model.FirstName" class="form-control" required />
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <InputText @bind-Value="model.FamilyName" class="form-control" required />
+            </div>
+            
+            <div class="mb-3 form-check">
+                <InputCheckbox @bind-Value="model.Attending" class="form-check-input" id="attending" />
+                <label class="form-check-label" for="attending">I will attend</label>
+            </div>
+            
+            <div class="mb-3 form-check">
+                <InputCheckbox @bind-Value="model.Menu" class="form-check-input" id="menu" />
+                <label class="form-check-label" for="menu">I am eating meat</label>
+            </div>
+            
+            @* @if (model.Attending) *@
+            @* { *@
+            @*     <div class="mb-3"> *@
+            @*         <label class="form-label">Special Requirements</label> *@
+            @*         <InputTextArea @bind-Value="model.comment" class="form-control" rows="3" /> *@
+            @*     </div> *@
+            @* } *@
+            
+            <button type="submit" class="btn btn-primary">Submit RSVP</button>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private RsvpEntry model = new();
+
+    protected override void OnInitialized()
+    {
+        model = new RsvpEntry
+        {
+            Id = Guid.NewGuid()
+        };
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await Supabase.SubmitRsvpAsync(model);
+            ToastService.ShowSuccess("Thank you! Your RSVP has been submitted successfully.");
+            model = new RsvpEntry
+            {
+                Id = Guid.NewGuid()
+            };
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error: {ex.Message}");
+        }
+    }
+}

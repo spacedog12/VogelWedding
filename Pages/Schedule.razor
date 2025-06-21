@@ -1,0 +1,144 @@
+@page "/schedule"
+@inject AccessService AccessService
+
+<div class="card schedule-wrapper">
+    <div class="background">
+        <img src="images/Luzern_1_rmb.png"
+             class="background-graphic"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="leftBranch"
+             class="background-graphic-branch"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="rightBranch"
+             class="background-graphic-branch"
+             alt=""/>
+    </div>
+    
+    <div class="card schedule-container">
+        <div class="card-body schedule-card">
+            <h2 class="card-title">Ablauf</h2>
+
+            <div class="timeline mt-4">
+                <div class="timeline-item">
+                    <h5>Apéro</h5>
+                    <p><strong>13:30 Uhr</strong> - Peterskapelle<br>
+                        Ein entspanntes Ankommen, ein erstes Anstoßen, ein Wiedersehen und Kennenlernen
+                        – mit kleinen Häppchen und großen Vorfreuden.</p>
+                </div>
+            </div>
+
+            <div class="timeline mt-4">
+                <div class="timeline-item">
+                    <h5>Zeremonie</h5>
+                    <div><strong>15:00 Uhr</strong> - Peterskapelle<br>
+                        Wir feiern gemeinsam den Moment, in dem wir "Ja" sagen vor Gott. Persönlich, feierlich und mit viel
+                        Herz.
+                    </div>
+                </div>
+            </div>
+
+            @if (AccessService.CurrentLevel == AccessLevel.GuestAll)
+            {
+                <div class="timeline mt-4">
+                    <div class="timeline-item">
+                        <h5>Ende</h5>
+                        <div><strong>16:30 Uhr</strong> - Peterskapelle<br>
+                            Für Apérogäste endet der Tag hier
+                            – wir danken euch herzlich, dass ihr diesen besonderen Teil mit uns geteilt habt.
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+            {
+                <div class="timeline mt-4">
+                    <div class="timeline-item">
+                        <h5>Love-Trail/Liebespfad </h5>
+                        <p><strong>16:30 Uhr</strong> - Spaziergang durch Luzern<br>
+                            Für alle, die weiter mit uns feiern: Ihr spaziert gemeinsam zur Fest-Location
+                            – begleitet von kleinen Überraschungen entlang des Wegs.</p>
+                    </div>
+                </div>
+
+                <div class="timeline mt-4">
+                    <div class="timeline-item">
+                        <h5>Empfang Fest </h5>
+                        <p><strong>17:30 Uhr</strong> - Factory<br>
+                            Ankommen des Brautpaars, umarmen, fröhlich sein. Wir heißen euch willkommen an unserem Festort
+                            – es wird gegessen, gelacht, getanzt, gespielt und gefeiert!</p>
+                    </div>
+                </div>
+
+                <div class="timeline mt-4">
+                    <div class="timeline-item">
+                        <h5>Ende</h5>
+                        <p><strong>00:00 Uhr</strong> - Factory<br>
+                            Irgendwann wird auch der schönste Tag müde. Dann sagen wir leise „Gute Nacht“
+                            – und laut „Danke, dass ihr da wart!“</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* <div class="schedule-container"> *@
+@*     <!-- Card layout for smaller screens --> *@
+@*     <div class="card schedule-card d-block d-md-none"> *@
+@*         <div class="card-body"> *@
+@*             <h2 class="card-title">Wedding Schedule</h2> *@
+@* *@
+@*             <div class="timeline mt-4"> *@
+@*                 <div class="timeline-item"> *@
+@*                     <h5>Wedding Ceremony</h5> *@
+@*                     <p>14:00 - Main Church</p> *@
+@*                 </div> *@
+@*             </div> *@
+@* *@
+@*             @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited) *@
+@*             { *@
+@*                 <div class="timeline mt-4"> *@
+@*                     <div class="timeline-item"> *@
+@*                         <h5>Reception</h5> *@
+@*                         <p>16:00 - Grand Hall</p> *@
+@*                         <p>Dinner and celebrations</p> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             } *@
+@*         </div> *@
+@*     </div> *@
+@* *@
+@*     <!-- Timeline for larger screens --> *@
+@*     <div class="timeline d-none d-md-flex"> *@
+@*         <div class="timeline-item"> *@
+@*             <div class="timeline-left"> *@
+@*                 <h5>11:00 - Ankommen</h5> *@
+@*                 <p>Location: Bauernhaus Ändl</p> *@
+@*                 <p>Gemütlicher Start in den Tag: Bei Espresso, Limo und ersten Umarmungen stimmen wir uns auf das ein, was kommt.</p> *@
+@*             </div> *@
+@*             <div class="timeline-line"></div> *@
+@*             <div class="timeline-right"> *@
+@*                 <h5>12:00 - Freie Trauung</h5> *@
+@*                 <p>Location: Wiese hinter'm Bauernhaus Ändl</p> *@
+@*                 <p>Umgeben von Frühlingsgrün geben wir uns das Ja-Wort – ganz persönlich, unter freiem Himmel und mit euch an unserer Seite.</p> *@
+@*             </div> *@
+@*         </div> *@
+@* *@
+@*         <div class="timeline-item"> *@
+@*             <div class="timeline-left"> *@
+@*                 <h5>13:00 - Sektempfang & Häppchen</h5> *@
+@*                 <p>Location: Bauernhaus Ändl</p> *@
+@*                 <p>Auf den Trauungsstress gibt's erst einmal ein Gläschen Sekt inklusive kleiner Köstlichkeiten.</p> *@
+@*             </div> *@
+@*             <div class="timeline-line"></div> *@
+@*             <div class="timeline-right"> *@
+@*                 <h5>15:30 - Pause</h5> *@
+@*                 <p>Oh kleiner Spaziergang, Pause und Erholung.</p> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+

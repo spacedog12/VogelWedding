@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/BlazorTopMenu.props" />
+</Project>

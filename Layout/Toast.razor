@@ -1,0 +1,58 @@
+@implements IDisposable
+@inject IToastService ToastService
+
+@if (_show)
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast show" role="alert">
+            <div class="toast-header bg-@_type text-white">
+                <strong class="me-auto">@(_type == "success" ? "Success" : "Error")</strong>
+                <button type="button" class="btn-close" @onclick="HideToast"></button>
+            </div>
+            <div class="toast-body">
+                @_message
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _show;
+    private string _message = "";
+    private string _type = "success";
+    private Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        ((ToastService)ToastService)
+            .OnToast += ShowToast;
+    }
+
+    private void ShowToast(string message, string type)
+    {
+        _message = message;
+        _type = type;
+        _show = true;
+        StateHasChanged();
+
+        _timer?.Dispose();
+        _timer = new Timer(_ =>
+        {
+            _show = false;
+            InvokeAsync(StateHasChanged);
+        }, null, 5000, Timeout.Infinite);
+    }
+
+    private void HideToast()
+    {
+        _show = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        ((ToastService)ToastService)
+            .OnToast -= ShowToast;
+        _timer?.Dispose();
+    }
+}

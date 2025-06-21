@@ -1,0 +1,104 @@
+@page "/admin-login"
+@inject SupabaseService Supabase
+@inject AccessService AccessService
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-center">Admin Login</h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <div class="form-group mb-3">
+                        <label for="email">Email:</label>
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               @bind="email"
+                               @bind:event="oninput"/>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password">Password:</label>
+                        <input type="password"
+                               class="form-control"
+                               id="password"
+                               @bind="password"
+                               @bind:event="oninput"/>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-primary w-25"
+                                @onclick="LoginAsync"
+                                disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status"
+                                      aria-hidden="true"></span>
+                                <span> Loading...</span>
+                            }
+                            else
+                            {
+                                <span>Login</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private string? email;
+    private string? password;
+    private string? errorMessage;
+    private bool isLoading;
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                errorMessage = "Please enter both email and password.";
+                return;
+            }
+
+            var success = await Supabase.LoginAdminAsync(email, password);
+
+            if (success)
+            {
+                AccessService.SetAdminAccess();
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred during login.";
+            Console.WriteLine($"Login error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

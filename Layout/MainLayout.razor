@@ -1,0 +1,123 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AccessService AccessService
+@inject SettingsService SettingsService
+
+@if (AccessService.CurrentLevel != AccessLevel.None)
+{
+    <NavMenu/>
+}
+
+<main class="container @GetPageClass()">
+    <Toast/>
+
+    @if (AccessService.CurrentLevel == AccessLevel.None)
+    {
+        <div class="login-wrapper">
+            <div class="background">
+                <img src="images/Luzern_1_rmb.png"
+                     class="background-graphic"
+                     @* style="width: 100vw; height: 100vh; object-fit: cover;" *@
+                     alt=""/>
+                <img src="images/Zweig_weiss.png"
+                     id="leftBranch"
+                     class="background-graphic-branch"
+                     alt=""/>
+                <img src="images/Zweig_weiss.png"
+                     id="rightBranch"
+                     class="background-graphic-branch"
+                     alt=""/>
+            </div>
+
+            <div class="login-container">
+                <div class="position-absolute top-0 end-0 p-3">
+                    <div class="login-changer-btn">
+                        @if (NavigationManager.Uri.EndsWith("/admin-login"))
+                        {
+                            <NavLink href="/" class="btn btn-secondary btn-m">
+                                <i class="bi bi-shield-lock"></i> Login
+                            </NavLink>
+                        }
+                        else
+                        {
+                            <NavLink href="admin-login" class="btn btn-secondary btn-m">
+                                <i class="bi bi-shield-lock"></i> Admin
+                            </NavLink>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="vh-100 d-flex align-items-center justify-content-center">
+                <div class="container-sm mb-lg-5">
+                    @if (NavigationManager.Uri.EndsWith("/admin-login"))
+                    {
+                        @Body
+                    }
+                    else
+                    {
+                        <Login/>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="layout-container">
+            <div class="content-container">
+                <main class="main-content">
+                    @Body
+                </main>
+            </div>
+        </div>
+    }
+</main>
+
+@code {
+    // [Inject] public AccessService AccessService { get; set; } = default!;
+    // [Inject] public SettingsService SettingsService { get; set; } = default!;
+
+    private string title = "";
+    private bool isNavMenuVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AccessService.OnChange += HandleStateChange;
+        SettingsService.OnSettingsChanged += HandleSettingsChanged;
+        await UpdateTitle();
+    }
+
+    private async Task UpdateTitle()
+    {
+        title = SettingsService.CurrentSettings.SiteTitle;
+    }
+
+    private async void HandleStateChange()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandleSettingsChanged()
+    {
+        await UpdateTitle();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AccessService.OnChange -= HandleStateChange;
+        SettingsService.OnSettingsChanged -= HandleSettingsChanged;
+    }
+
+    private string GetPageClass()
+    {
+        if (AccessService.CurrentLevel == AccessLevel.None)
+        {
+            return "login-page";
+        }
+
+        return "";
+    }
+}

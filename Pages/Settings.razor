@@ -1,0 +1,176 @@
+@page "/settings"
+@inject AccessService AccessService
+@inject NavigationManager NavigationManager
+@inject SettingsService SettingsService
+
+@* TODO: Remove when finished Debugin *@
+<h1>Debug: Access Level = @AccessService.CurrentLevel</h1>
+
+@if (AccessService.CurrentLevel != AccessLevel.Admin)
+{
+    <div class="alert alert-danger" role="alert">
+        You don't have permission to view this page.
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h3 class="mb-0">Settings</h3>
+        </div>
+        <div class="card-body">
+            <form @onsubmit="SaveSettings">
+                <div class="mb-3">
+                    <h5>General Settings</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Site Title</label>
+                        <input type="text" class="form-control" @bind="settings.SiteTitle"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Enable RSVP</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" @bind="settings.RsvpEnabled"
+                                   id="enableRsvp"/>
+                            <label class="form-check-label" for="enableRsvp">Allow guests to submit RSVP
+                                responses</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h5>Email Settings (NOT IMPLEMENTET)</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Notification Email</label>
+                        <input type="email" class="form-control" @bind="settings.NotificationEmail" disabled="disabled"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h5>Page Visibility Settings</h5>
+                    <p class="text-muted">Control which pages are visible to guests</p>
+
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-house-heart-fill"></i>
+                                    <span class="ms-2">Home Page</span>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="settings.HomePageVisible"
+                                           id="homePageToggle">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-calendar-event-fill"></i>
+                                    <span class="ms-2">Schedule Page</span>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="settings.SchedulePageVisible"
+                                           id="schedulePageToggle">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span class="ms-2">Addresses Page</span>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                           @bind="settings.AddressesPageVisible" id="addressesPageToggle">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-camera-fill"></i>
+                                    <span class="ms-2">Photos Page</span>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="settings.PhotosPageVisible"
+                                           id="photosPageToggle">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-chat-heart-fill"></i>
+                                    <span class="ms-2">Contact Page</span>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="settings.ContactPageVisible"
+                                           id="contactPageToggle">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save Settings
+                </button>
+
+                @if (saveMessage != null)
+                {
+                    <div class="alert @(saveSuccess ? "alert-success" : "alert-danger") mt-3" role="alert">
+                        @saveMessage
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+}
+
+@code {
+    private AppSettings settings = new();
+    private string? saveMessage;
+    private bool saveSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Settings OnInitializedAsync - Access Level: {AccessService.CurrentLevel}");
+
+        if (AccessService.CurrentLevel != AccessLevel.Admin)
+        {
+            Console.WriteLine("Redirecting to home - not admin");
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        Console.WriteLine("Loading settings");
+        await LoadSettings();
+    }
+
+    private async Task LoadSettings()
+    {
+        await SettingsService.LoadSettings();
+        settings = SettingsService.CurrentSettings;
+    }
+
+    private async Task SaveSettings()
+    {
+        try
+        {
+            await SettingsService.SaveSettings(settings);
+            saveSuccess = true;
+            saveMessage = "Settings saved successfully";
+        }
+        catch (Exception ex)
+        {
+            saveSuccess = false;
+            saveMessage = "Failed to save settings";
+        }
+    }
+}

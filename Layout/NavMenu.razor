@@ -1,0 +1,123 @@
+﻿@inject AccessService AccessService
+@inject SettingsService SettingsService
+
+<nav class="navbar navbar-expand-md navbar-dark mb-4">
+    <div class="container-fluid">
+        @* <a class="navbar-brand" href="">@title</a> *@
+        <img class="navbar-brand" src = "images/Logo.png" />
+        <button class="navbar-toggler @NavButtonCssClass" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-label="Toggle navigation" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse" @onclick="ToggleNavMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        @* <i class="bi bi-house-heart-fill"></i> *@
+                        <span class="bi bi-house-heart-fill" aria-hidden="true"></span>
+                        <span class="nav-text ms-1">Home</span>
+                    </NavLink>
+                </li>
+                @if (AccessService.CanAccessPage(settings.SchedulePageVisible))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="schedule">
+                            <span class="bi bi-calendar-event-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1">Ablauf</span>
+                        </NavLink>
+                    </li>
+                }
+                
+                @if (AccessService.CanAccessPage(settings.AddressesPageVisible))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="addresses">
+                            <span class="bi bi-geo-alt-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1">Addressen</span>
+                        </NavLink>
+                    </li>
+                }
+                
+                @if (AccessService.CanAccessRsvp(settings.RsvpEnabled))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="rsvp">
+                            <span class="bi bi-envelope-heart-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-2">Anmeldung</span>
+                        </NavLink>
+                    </li>
+                }
+
+                @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="photos" >
+                            <span class="bi bi-camera-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1">Fotos</span>
+                        </NavLink>
+                    </li>
+                }
+
+                @if (AccessService.CanAccessPage(settings.ContactPageVisible))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="contact" >
+                            <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-2">Kontakte</span>
+                        </NavLink>
+                    </li>
+                }
+
+                @if (AccessService.CurrentLevel == AccessLevel.Admin)
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="settings" >
+                            <span class="bi bi-gear-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-2">Einstellungen</span>
+                        </NavLink>
+                    </li>
+                }
+            </ul>
+            <button class="btn btn-outline-light" @onclick="@(() => AccessService.Logout())">
+                <i class="bi bi-box-arrow-right">Abmelden</i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavBarCssClass => collapseNavMenu ? null : "show";
+    private string? NavButtonCssClass => collapseNavMenu ? "collapsed" : null;
+    private string title = "";
+    
+    private AppSettings settings => SettingsService.CurrentSettings;
+    [Parameter] public bool IsVisible { get; set; }
+
+    private string NavMenuCssClass => "nav-container" + (IsVisible ? " show" : "");
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+    
+    private async Task UpdateTitle()
+    {
+        title = SettingsService.CurrentSettings.SiteTitle;
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await SettingsService.LoadSettings();
+        await UpdateTitle();
+        AccessService.OnChange += StateHasChanged;
+        SettingsService.OnSettingsChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AccessService.OnChange -= StateHasChanged;
+        SettingsService.OnSettingsChanged -= StateHasChanged;
+    }
+}
