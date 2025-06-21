@@ -1,0 +1,51 @@
+# Build results
+bin/
+obj/
+out/
+wwwroot/_framework/
+wwwroot/_vs/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider/JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Mac system files
+.DS_Store
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Others
+*.swp
+*.bak
+*.tmp
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Test results
+TestResults/
+*.trx
+
+# Publish
+publish/
