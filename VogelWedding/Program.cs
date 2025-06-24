@@ -13,6 +13,7 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddScoped<AccessService>();
+builder.Services.AddScoped<AppSettings>();
 builder.Services.AddScoped<IToastService, ToastService>();
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped(_ =>

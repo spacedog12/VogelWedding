@@ -1,0 +1,49 @@
+@page "/über"
+@inject AccessService AccessService
+
+@*
+    Inhalt:
+    ✅ Über uns
+    ✅ Über die Kapelle 
+    ✅ Über die Factory (invited)
+*@
+
+<div class="about-wrapper">
+    <div class="background">
+        <img src="images/Luzern_1_rmb.png"
+             class="background-graphic"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="leftBranch"
+             class="background-graphic-branch"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="rightBranch"
+             class="background-graphic-branch"
+             alt=""/>
+    </div>
+
+    <!-- About us section -->
+    <div class="card about-container">
+        <div class="card-body about-card">
+            <AboutUs />
+        </div>
+    </div>
+    
+    <!-- About the chapel section -->
+    <div class="card about-container mt-2">
+        <div class="card-body about-card">
+            <AboutTheChapel />
+        </div>
+    </div>
+    
+    <!-- About the factory section -->
+    @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+    {
+        <div class="card about-container mt-2">
+            <div class="card-body about-card">
+                <AboutTheFactory />
+            </div>
+        </div>
+    }
+</div>

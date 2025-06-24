@@ -1,0 +1,124 @@
+@page "/"
+@inject AccessService AccessService
+@inject SettingsService SettingsService
+
+@*
+    Inhalte:
+    ✅ Wilkommen
+    ✅ Anmeldung (all / invited)
+    ✅ Addressen (all / invited)
+    ✅ Tagesablauf (all / invited)
+*@
+
+<div class="welcome-wrapper">
+    <div class="background">
+        <img src="images/Luzern_1_rmb.png"
+             class="background-graphic"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="leftBranch"
+             class="background-graphic-branch"
+             alt=""/>
+        <img src="images/Zweig_grün.png"
+             id="rightBranch"
+             class="background-graphic-branch"
+             alt=""/>
+    </div>
+
+    <!-- Welcome section -->
+    <div class="card welcome-container">
+        <div class="card-body welcome-card">
+            <h2 class="card-title">Wilkommen</h2>
+            <p class="mt-4">Wir freuen uns riesig, diesen besonderen Moment mit euch teilen zu dürfen.<br/>
+                Hier findet ihr alle wichtigen Informationen rund um unsere Hochzeit – von Ablaufplänen bis zu
+                Anreisemöglichkeiten</p>
+            <p>Liebe Grüße,
+                <strong>Romina und Simon</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- RSVP section -->
+    @if (AccessService.CanAccessRsvp(settings.RsvpEnabled))
+    {
+        <div class="card welcome-container mt-2">
+            <div class="card-body welcome-card">
+                @if (AccessService.CurrentLevel == AccessLevel.Admin)
+                {
+                    <RSVP/>
+                    <RSVPInvited/>
+                }
+                else if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+                {
+                    <RSVPInvited/>
+                }
+                else
+                {
+                    <RSVP/>
+
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Addresses section -->
+    <div class="card welcome-container mt-2">
+        <div class="card-body welcome-card">
+            <Addresses />
+        </div>
+    </div>
+    
+    <!-- Schedule section -->
+    <div class="card welcome-container mt-2">
+        <div class="card-body welcome-card">
+            <Schedule />
+        </div>
+    </div>
+    
+
+    @* <div class="foreground"> *@
+    @*     <div class="text-center mb-4"> *@
+    @*         <h3>Willkommen auf unserer Hochzeitswebsite!</h3> *@
+    @*          *@
+    @*     </div> *@
+    @*      *@
+    @*     <div class="text-center mb-4"> *@
+    @*         <p class="mt-5">Wir freuen uns riesig, diesen besonderen Moment mit euch teilen zu dürfen.<br/> *@
+    @*             Hier findet ihr alle wichtigen Informationen rund um unsere Hochzeit – von Ablaufplänen bis zu *@
+    @*             Anreisemöglichkeiten</p> *@
+    @*         <p>Liebe Grüße, *@
+    @*             <strong>Romina und Simon</strong> *@
+    @*         </p> *@
+    @*     </div> *@
+    @* *@
+    @*     <div class="card mt-4"> *@
+    @*         <div class="card-body p-4"> *@
+    @*             <h5 class="card-title mb-3"> *@
+    @* *@
+    @*             </h5> *@
+    @* *@
+    @*             <p class="card-text mt-4"> *@
+    @*                 We're delighted to share our special day with you. Please explore the site to find all the *@
+    @*                 information you need. *@
+    @*             </p> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
+</div>
+
+@code {
+    private AppSettings settings => SettingsService.CurrentSettings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SettingsService.LoadSettings();
+        AccessService.OnChange += StateHasChanged;
+        SettingsService.OnSettingsChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AccessService.OnChange -= StateHasChanged;
+        SettingsService.OnSettingsChanged -= StateHasChanged;
+    }
+}

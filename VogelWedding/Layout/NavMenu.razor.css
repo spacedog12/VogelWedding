@@ -42,9 +42,10 @@
     /*font-weight: 700;*/
     /*font-size: 1.5rem;*/
     /*letter-spacing: 1px;*/
-    width: 6.5%;
-    height: auto;
+    width: auto;
+    height: 4rem;
     margin-left: 2rem;
+    margin-right: 2rem;
 }
 
 .nav-item ::deep a {

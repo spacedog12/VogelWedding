@@ -1,0 +1,29 @@
+.welcome-wrapper {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    border: none;
+    padding: 2rem 1rem;
+}
+
+.welcome-container {
+    position: relative;
+    z-index: 10;
+    margin: 5rem auto 0rem auto;
+    max-width: 850px;
+    background: transparent;
+    border: none;
+}
+
+.card-body.welcome-card {
+    z-index: 10;
+    background-color: var(--text-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+    padding: 2rem;
+    position: relative;
+
+    /*color: var(--primary-color);*/
+}

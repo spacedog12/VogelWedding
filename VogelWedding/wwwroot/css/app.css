@@ -230,35 +230,6 @@ code {
     text-align: start;
 }
 
-.schedule-wrapper {
-    position: relative;
-    min-height: 100vh;
-    width: 100%;
-    overflow-x: hidden;
-    border: none;
-}
-
-.schedule-container {
-    position: relative;
-    z-index: 10;
-    margin: 6rem auto;
-    max-width: 850px;
-    background: transparent;
-    border: none;
-}
-
-.card-body.schedule-card {
-    z-index: 10;
-    background-color: var(--text-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 1rem;
-    padding: 2rem;
-    position: relative;
-    
-    /*color: var(--primary-color);*/
-}
-
 .foreground {
     z-index: 10;
 }

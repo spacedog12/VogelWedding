@@ -1,0 +1,107 @@
+@* @page "/addresses" *@
+@inject AccessService AccessService
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Adressen</h2>
+        <hr class="my-4 d-none d-md-block"/>
+
+        <div class="mt-4 d-md-none">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Peterskapelle</h5>
+
+                    <div class="mb-3">
+                        <h6 class="form-label">Adresse:</h6>
+                        <p class="mb-0">Hofstrasse 3<br/>6004 Luzern</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="form-label">Info:</h6>
+                        <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen
+                            Verkehrsmitteln erreichbar.
+                            Die nächste Bushaltestelle ist Schwanenplatz, Parkmöglichkeiten gibt es in den umliegenden
+                            Parkhäusern
+                            (Bahnhof, Altstadt, Löwencenter usw.).</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Factory</h5>
+
+                        <div class="mb-3">
+                            <h6 class="form-label">Adresse:</h6>
+                            <p class="mb-0">Bruchstrasse 59<br/>6003 Luzern</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="form-label">Info:</h6>
+                            <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
+                                erreichbar.
+                                Parkplätze sind vor Ort sehr begrenzt (das Altstadtparkhaus ist besonders nah), es
+                                empfiehlt sich,
+                                frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
+                                Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-none d-md-block">
+            <h5 class="card-title mt-4">Peterskapelle</h5>
+            <div class="row mt-3">
+                <div class="col-2">
+                    <h6 class="form-label">Adresse:</h6>
+                </div>
+                <div class="col">
+                    <p class="mb-0">Hofstrasse 3<br/>6004 Luzern</p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-2">
+                    <h6 class="form-label">Info:</h6>
+                </div>
+                <div class="col">
+                    <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen Verkehrsmitteln
+                        erreichbar.
+                        Die nächste Bushaltestelle ist Schwanenplatz, Parkmöglichkeiten gibt es in den umliegenden
+                        Parkhäusern
+                        (Bahnhof, Altstadt, Löwencenter usw.).</p>
+                </div>
+            </div>
+            
+            @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+            {
+                <hr class="my-4"/>
+
+                <h5 class="card-title mt-4">Factory</h5>
+                <div class="row mt-3">
+                    <div class="col-2">
+                        <h6 class="form-label">Adresse:</h6>
+                    </div>
+                    <div class="col">
+                        <p class="mb-0">Bruchstrasse 59<br/>6003 Luzern</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-2">
+                        <h6 class="form-label">Info:</h6>
+                    </div>
+                    <div class="col">
+                        <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
+                            erreichbar.
+                            Parkplätze sind vor Ort sehr begrenzt (das Altstadtparkhaus ist besonders nah), es
+                            empfiehlt sich,
+                            frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
+                            Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

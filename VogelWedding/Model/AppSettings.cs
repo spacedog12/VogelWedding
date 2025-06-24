@@ -18,12 +18,12 @@ public class AppSettings : BaseModel
     [Column("page_home_visible")]
     public bool HomePageVisible { get; set; }
 
-    [Column("page_schedule_visible")]
+    [Column("page_about_visible")]
 
-    public bool SchedulePageVisible { get; set; }
+    public bool AboutPageVisible { get; set; }
 
-    [Column("page_addresses_visible")]
-    public bool AddressesPageVisible { get; set; }
+    [Column("page_wishlist_visible")]
+    public bool WishlistPageVisible { get; set; }
 
     [Column("page_photos_visible")]
     public bool PhotosPageVisible { get; set; }

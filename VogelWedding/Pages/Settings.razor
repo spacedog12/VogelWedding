@@ -21,18 +21,17 @@ else
         <div class="card-body">
             <form @onsubmit="SaveSettings">
                 <div class="mb-3">
-                    <h5>General Settings</h5>
+                    <h5>Einstellungen</h5>
                     <div class="mb-3">
-                        <label class="form-label">Site Title</label>
+                        <label class="form-label">Webseiten Überschrift</label>
                         <input type="text" class="form-control" @bind="settings.SiteTitle"/>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Enable RSVP</label>
+                        <label class="form-label">Anmeldeformular aktivieren</label>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" @bind="settings.RsvpEnabled"
                                    id="enableRsvp"/>
-                            <label class="form-check-label" for="enableRsvp">Allow guests to submit RSVP
-                                responses</label>
+                            <label class="form-check-label" for="enableRsvp">Alle gäste können sich anmelden</label>
                         </div>
                     </div>
                 </div>
@@ -46,15 +45,15 @@ else
                 </div>
 
                 <div class="mb-3">
-                    <h5>Page Visibility Settings</h5>
-                    <p class="text-muted">Control which pages are visible to guests</p>
+                    <h5>Seiten aktivierung</h5>
+                    <p class="text-muted">Welche Tabs sind für die Gäste ersichtlich</p>
 
                     <div class="list-group">
                         <div class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="bi bi-house-heart-fill"></i>
-                                    <span class="ms-2">Home Page</span>
+                                    <span class="ms-2">Wilkommens</span>
                                 </div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" @bind="settings.HomePageVisible"
@@ -67,11 +66,11 @@ else
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="bi bi-calendar-event-fill"></i>
-                                    <span class="ms-2">Schedule Page</span>
+                                    <span class="ms-2">Über</span>
                                 </div>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" @bind="settings.SchedulePageVisible"
-                                           id="schedulePageToggle">
+                                    <input class="form-check-input" type="checkbox" @bind="settings.AboutPageVisible"
+                                           id="aboutPageToggle">
                                 </div>
                             </div>
                         </div>
@@ -80,11 +79,11 @@ else
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="bi bi-geo-alt-fill"></i>
-                                    <span class="ms-2">Addresses Page</span>
+                                    <span class="ms-2">Wunschliste</span>
                                 </div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox"
-                                           @bind="settings.AddressesPageVisible" id="addressesPageToggle">
+                                           @bind="settings.WishlistPageVisible" id="wishlistPageToggle">
                                 </div>
                             </div>
                         </div>
@@ -93,7 +92,7 @@ else
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="bi bi-camera-fill"></i>
-                                    <span class="ms-2">Photos Page</span>
+                                    <span class="ms-2">Fotos</span>
                                 </div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" @bind="settings.PhotosPageVisible"
@@ -106,7 +105,7 @@ else
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="bi bi-chat-heart-fill"></i>
-                                    <span class="ms-2">Contact Page</span>
+                                    <span class="ms-2">Kontakte</span>
                                 </div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" @bind="settings.ContactPageVisible"
@@ -119,7 +118,7 @@ else
 
 
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Save Settings
+                    <i class="bi bi-save"></i> Einstellungen speichern
                 </button>
 
                 @if (saveMessage != null)
