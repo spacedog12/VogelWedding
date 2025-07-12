@@ -10,7 +10,7 @@ public static class AccessServiceExtensions
     public static bool CanAccessRsvp(this AccessService accessService, bool isRsvpEnabled)
     {
         return accessService.CurrentLevel == AccessLevel.Admin || 
-               (accessService.CurrentLevel >= AccessLevel.GuestInvited && isRsvpEnabled);
+               (accessService.CurrentLevel >= AccessLevel.GuestAll && isRsvpEnabled);
     }
     
     public static bool CanAccessPhotos(this AccessService accessService, bool isPhotosEnabled)

@@ -1,0 +1,167 @@
+@page "/wunschliste"
+
+<div class="wishlist-wrapper">
+    <div class="background">
+        <img src="images/Luzern_1_rmb.png"
+             class="background-graphic"
+             alt=""/>
+        <img src="images/Zweig_gruen.png"
+             id="leftBranch"
+             class="background-graphic-branch"
+             alt=""/>
+        <img src="images/Zweig_gruen.png"
+             id="rightBranch"
+             class="background-graphic-branch"
+             alt=""/>
+    </div>
+    
+    <h3>Wunschliste</h3>
+
+    @if (wishlistItems == null)
+    {
+        <p>Lade Wunschliste...</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in wishlistItems)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>@item.Title</h5>
+                            <p>@item.Description</p>
+                            @if (item.Price.HasValue)
+                            {
+                                <p>Preis: @item.Price.Value.ToString("C")</p>
+                            }
+                            @if (item.Quantity.HasValue)
+                            {
+                                <p>Verfügbar: @item.Quantity</p>
+                            }
+                            <button class="btn btn-primary" @onclick="() => OpenBuyModal(item)">Kaufen</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Modal -->
+    @if (showModal && selectedItem != null)
+    {
+        <div class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Kauf: @selectedItem.Title</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <EditForm Model="@purchaseModel" OnValidSubmit="SubmitPurchase">
+                            <DataAnnotationsValidator/>
+                            <div class="mb-3">
+                                <label>Vorname</label>
+                                <InputText class="form-control" @bind-Value="purchaseModel.FirstName" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label>Nachname</label>
+                                <InputText class="form-control" @bind-Value="purchaseModel.FamilyName" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label>Email</label>
+                                <InputText class="form-control" @bind-Value="purchaseModel.Email" required/>
+                            </div>
+                            @if (selectedItem.Quantity.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label>Anzahl</label>
+                                    <InputNumber class="form-control" @bind-Value="purchaseModel.Quantity" min="1"
+                                                 max="@selectedItem.Quantity"/>
+                                </div>
+                            }
+                            @if (selectedItem.Price.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label>Betrag (max. @selectedItem.Price.Value.ToString("C"))</label>
+                                    <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount" min="1"
+                                                 max="@selectedItem.Price"/>
+                                </div>
+                            }
+                            <button type="submit" class="btn btn-success">Kauf abschließen</button>
+                            <button type="button" class="btn btn-secondary ms-2" @onclick="CloseModal">Abbrechen
+                            </button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    }
+</div>
+
+
+@code {
+    private List<WishlistItem> wishlistItems;
+    private WishlistItem selectedItem;
+    private WishlistPurchase purchaseModel = new();
+    private bool showModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Load wishlistItems from your database/service
+        wishlistItems = await LoadWishlistAsync();
+    }
+
+    private void OpenBuyModal(WishlistItem item)
+    {
+        selectedItem = item;
+        purchaseModel = new WishlistPurchase
+        {
+            WishlistItemId = item.ID, Quantity = 1, PaidAmount = item.Price ?? 0
+        };
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        selectedItem = null;
+    }
+
+    private async Task SubmitPurchase()
+    {
+        // TODO: Save purchaseModel to your database
+        // await SavePurchaseAsync(purchaseModel);
+        showModal = false;
+        selectedItem = null;
+    }
+
+    // Dummy loader for demo
+    private Task<List<WishlistItem>> LoadWishlistAsync()
+    {
+        return Task.FromResult(new List<WishlistItem>
+        {
+            new WishlistItem
+            {
+                ID = Guid.NewGuid(),
+                Title = "Mixer",
+                Description = "Küchenmixer",
+                Price = 50,
+                Quantity = 2
+            },
+            new WishlistItem
+            {
+                ID = Guid.NewGuid(),
+                Title = "Bettwäsche",
+                Description = "Schöne Bettwäsche",
+                Price = 80,
+                Quantity = 1
+            },
+            new WishlistItem
+            {
+                ID = Guid.NewGuid(), Title = "Gutschein", Description = "Gutschein für ein Restaurant", Price = 100
+            }
+        });
+    }
+}

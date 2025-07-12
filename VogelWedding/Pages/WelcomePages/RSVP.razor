@@ -1,3 +1,6 @@
+@using Microsoft.IdentityModel.Tokens
+@using System.Linq.Expressions
+@using System.ComponentModel.DataAnnotations
 @* @page "/rsvp" *@
 
 @inject AccessService AccessService
@@ -15,58 +18,211 @@
 <div class="card">
     <div class="card-body">
         <h2 class="card-title">Anmeldung</h2>
+        <hr class="my-4 d-none d-md-block"/>
 
-        <EditForm Model="@model" OnValidSubmit="HandleSubmit" class="mt-4">
+        <EditForm EditContext="@editContext"
+                  OnValidSubmit="HandleSubmit"
+                  OnInvalidSubmit="HandleInvalidSubmit"
+                  class="mt-4">
             <DataAnnotationsValidator/>
 
-            <div class="mb-3">
-                <label class="form-label">Vorname</label>
-                <InputText @bind-Value="model.FirstName" class="form-control" required/>
+            <!-- First Name -->
+            <div class="mb-3 form-floating">
+                <InputText id="floatingInput"
+                           @bind-Value="model.FirstName"
+                           class="@GetValidationClass(() => model.FirstName)"
+                           @attributes="@(new Dictionary<string, object>
+                                        {
+                                            ["placeholder"] = " ", ["type"] = "text"
+                                        })"/>
+                <label for="floatingInput">@GetDisplayName(() => model.FirstName)</label>
+                <ValidationMessage For="@(() => model.FirstName)"/>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Nachname</label>
-                <InputText @bind-Value="model.FamilyName" class="form-control" required/>
+            <!-- Family Name -->
+            <div class="mb-3 form-floating">
+                <InputText id="floatingInput"
+                           @bind-Value="model.FamilyName"
+                           class="@GetValidationClass(() => model.FamilyName)"
+                           @attributes="@(new Dictionary<string, object>
+                                        {
+                                            ["placeholder"] = " ", ["type"] = "text"
+                                        })"/>
+                <label for="floatingInput">@GetDisplayName(() => model.FamilyName)</label>
+                <ValidationMessage For="@(() => model.FamilyName)"/>
             </div>
 
-            <!-- Checkbox input -->
-            @* <div class="mb-3 form-check"> *@
-            @*     <InputCheckbox @bind-Value="model.Attending" class="form-check-input" id="attending"/> *@
-            @*     <label class="form-check-label" for="attending">Ich werde teilnehmen</label> *@
-            @* </div> *@
-            
+            <!-- Email -->
+            <div class="mb-3 form-floating">
+                <InputText id="floatingInput"
+                           @bind-Value="model.EmailAddress"
+                           class="@GetValidationClass(() => model.EmailAddress)"
+                           @attributes="@(new Dictionary<string, object>
+                                        {
+                                            ["placeholder"] = "", ["type"] = "text"
+                                        })"/>
+                <label for="floatingInput">@GetDisplayName(() => model.EmailAddress)</label>
+                <ValidationMessage For="@(() => model.EmailAddress)"/>
+            </div>
+            <hr class="my-4 d-none d-md-block"/>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label class="from-label">Addresse</label>
+
+                <!-- Street -->
+                <div class="mb-2 form-floating">
+                    <InputText id="floatingInput"
+                               @bind-Value="model.Street"
+                               class="@GetValidationClass(() => model.Street)"
+                               @attributes="@(new Dictionary<string, object>
+                                            {
+                                                ["placeholder"] = " ", ["type"] = "text"
+                                            })"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.Street)</label>
+                    <ValidationMessage For="@(() => model.Street)"/>
+                </div>
+
+                <!-- ZipCode -->
+                <div class="mb-2 form-floating">
+                    <InputText id="floatingInput"
+                               @bind-Value="model.ZipCode"
+                               class="@GetValidationClass(() => model.ZipCode)"
+                               @attributes="@(new Dictionary<string, object>
+                                            {
+                                                ["placeholder"] = " ", ["type"] = "text"
+                                            })"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.ZipCode)</label>
+                    <ValidationMessage For="@(() => model.ZipCode)"/>
+                </div>
+
+                <!-- Place -->
+                <div class="mb-2 form-floating">
+                    <InputText id="floatingInput"
+                               @bind-Value="model.Place"
+                               class="@GetValidationClass(() => model.Place)"
+                               @attributes="@(new Dictionary<string, object>
+                                            {
+                                                ["placeholder"] = " ", ["type"] = "text"
+                                            })"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.Place)</label>
+                    <ValidationMessage For="@(() => model.Place)"/>
+                </div>
+            </div>
+
+            <!-- Attending information, from when on will I attend -->
             <div class="mb-3">
                 <InputRadioGroup @bind-Value="model.Attending">
+                    @if (AccessService.CurrentLevel == AccessLevel.GuestAll)
+                    {
+                        <div class="form-check">
+                            <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
+                                        id="attending-receptionAndCeremony"/>
+                            <label class="form-check-label" for="attending-yes">Ich nehme am Empfang, inklusive
+                                Zeremonie teil</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-check">
+                            <InputRadio Value="@("ReceptionCeremonyAndParty")" class="form-check-input"
+                                        id="attending-receptionAndCeremony"/>
+                            <label class="form-check-label" for="attending-yes">Ich nehme an allem teil (Empfang,
+                                Zeremonie und Fest)</label>
+                        </div>
+                    }
                     <div class="form-check">
-                        <InputRadio Value="@true" class="form-check-input" id="attending-yes" />
-                        <label class="form-check-label" for="attending-yes">Ich nehme teil</label>
+                        <InputRadio Value="@("CeremonyOnly")" class="form-check-input" id="attending-no"/>
+                        <label class="form-check-label" for="attending-no">Ich nehme nur an der Zeremonie teil</label>
                     </div>
+
+                    @* @if (AccessService.CurrentLevel == AccessLevel.GuestInvited) *@
+                    @* { *@
+                    @*     <div class="form-check"> *@
+                    @*         <InputRadio Value="@("PartyOnly")" class="form-check-input" *@
+                    @*                     id="attending-receptionAndCeremony"/> *@
+                    @*         <label class="form-check-label" for="attending-yes">Ich nehme nur am Fest teil</label> *@
+                    @*     </div> *@
+                    @* } *@
                     <div class="form-check">
-                        <InputRadio Value="@false" class="form-check-input" id="attending-no" />
+                        <InputRadio Value="@("CanNotAttend")" class="form-check-input" id="attending-no"/>
                         <label class="form-check-label" for="attending-no">Ich kann nicht teil nehmen</label>
                     </div>
                 </InputRadioGroup>
-                @* @if (!model.Attending.HasValue) *@
-                @* { *@
-                @*     <div class="text-danger">Bitte gib an ob du teilnehmen wirst.</div> *@
-                @* } *@
-
+                <ValidationMessage For="@(() => model.Attending)"/>
             </div>
 
-            @* <div class="mb-3 form-check"> *@
-            @*     <InputCheckbox @bind-Value="model.Menu" class="form-check-input" id="menu" /> *@
-            @*     <label class="form-check-label" for="menu">I am eating meat</label> *@
-            @* </div> *@
+            @if (model.Attending != null)
+            {
+                @if (model.Attending != "CanNotAttend")
+                {
+                    <!-- Number of Atendees -->
+                    <div class="mb-3">
+                        <label class="from-label">@GetDisplayName(() => model.NumberOfAttendees)</label>
+                        <div style="width: 20%">
+                            <InputNumber @bind-Value="model.NumberOfAttendees"
+                                         DisplayName="Anzahl Teilnehmer"
+                                         min="0"
+                                         max="10"
+                                         class="@GetValidationClassForNumber(() => model.NumberOfAttendees)"
+                            />
+                        </div>
+                        <ValidationMessage For="@(() => model.NumberOfAttendees)"/>
+                    </div>
 
-            @* @if (model.Attending) *@
-            @* { *@
-            @*     <div class="mb-3"> *@
-            @*         <label class="form-label">Special Requirements</label> *@
-            @*         <InputTextArea @bind-Value="model.comment" class="form-control" rows="3" /> *@
-            @*     </div> *@
-            @* } *@
+
+                    <!-- Buffet contribution -->
+                    <div class="mb-5 mt-5">
+                        <InputCheckbox @bind-Value="model.BuffetContribution" class="form-check-input mr-3"/>
+                        <label class="form-check-label">Ich bringe gerne etwas fürs Kuchenbuﬀet am Nachmittag beim
+                            Empfang mit!</label>
+                        
+                       @if (model.BuffetContribution)
+                       {
+                           <h2 class="mt-3"><strong style="color: red">Wichtige Information:</strong></h2>
+                           <label>
+                               <strong>
+                                   Es wird eine Person mit lebensbedrohlicher Nussallergie anwesend sein.
+                                   Bitte verichte daher - wenn möglich- auf Nüsse oder kennzeichne klar,
+                                   wenn dein Beitrag Nüsse enthält. Achtung: Alles mit Erdnuss ist ganz verboten -
+                                   darf auch keine Spuren im Raum/Luft enthalten!<br/>
+                                   Vielen Dank für dein Verständnis und deine Rücksichtnahme!
+                               </strong>
+                           </label>
+                           @if (!infoAccepted)
+                           {
+                               <div class="text-center mt-5">
+                                   <button type="button"
+                                           class="btn btn-primary"
+                                           style=""
+                                           @onclick="AcceptInfo">
+                                       Ich werde nichts mit Nüssen backen
+                                   </button>
+                               </div>
+                           }
+                       }
+                    </div>
+
+
+                    <!-- Message -->
+                    <div class="mb-3">
+                        <label class="from-label">Möchtest du dem Brautpaar noch etwas wichtiges mitteilen?</label>
+                        <InputTextArea @bind-Value="model.Message" class="form-control"/>
+                    </div>
+                }
+            }
+            else
+            {
+                model.NumberOfAttendees = 0;
+            }
+
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Anmelden</button>
+                <button type="submit"
+                        class="btn btn-primary"
+                        disabled="@(model.BuffetContribution && !infoAccepted)"
+                >
+                    Anmelden
+                </button>
             </div>
         </EditForm>
     </div>
@@ -75,6 +231,9 @@
 
 @code {
     private RsvpEntry model = new();
+    private bool hasInvalidSubmit = false;
+    private EditContext editContext;
+    private bool infoAccepted = false;
 
     protected override void OnInitialized()
     {
@@ -82,14 +241,25 @@
         {
             Id = Guid.NewGuid()
         };
+        editContext = new EditContext(model);
     }
 
     private async Task HandleSubmit()
     {
+        if (!infoAccepted && model.BuffetContribution)
+        {
+            ToastService.ShowError("Bitte lies und akzeptiere die Informationen bezüglich Kuchenbuffet");
+        }
+
         try
         {
+            if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+            {
+                model.Invited = true;
+            }
+
             await Supabase.SubmitRsvpAsync(model);
-            ToastService.ShowSuccess("Thank you! Your RSVP has been submitted successfully.");
+            ToastService.ShowSuccess("Besten Dank! Deine Anmeldung wurde übermittelt.");
             model = new RsvpEntry
             {
                 Id = Guid.NewGuid()
@@ -99,5 +269,50 @@
         {
             ToastService.ShowError($"Error: {ex.Message}");
         }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        hasInvalidSubmit = true;
+        StateHasChanged();
+    }
+
+    private string GetValidationClass(Expression<Func<object>> accessor)
+    {
+        if (!hasInvalidSubmit)
+            return "form-control";
+
+        var field = FieldIdentifier.Create(accessor);
+        var message = editContext.GetValidationMessages(field);
+
+        return message.Any() ? "form-control is-invalid" : "form-control is-valid";
+    }
+
+    private string GetValidationClassForNumber(Expression<Func<object>> accessor)
+    {
+        if (!hasInvalidSubmit && (model.Attending is null || model.Attending == "CanNotAttend"))
+            return "form-control";
+
+        if (model.NumberOfAttendees <= 0 || model.NumberOfAttendees > 10)
+            return "form-control is-invalid";
+
+        return "form-control is-valid";
+    }
+
+    private string GetDisplayName<T>(Expression<Func<T>> accessor)
+    {
+        var member = (accessor.Body as MemberExpression)?.Member;
+        if (member == null) return null;
+
+        var displayAttr = member.GetCustomAttributes(typeof(DisplayAttribute), true)
+            .OfType<DisplayAttribute>()
+            .FirstOrDefault();
+
+        return displayAttr?.Name ?? member.Name;
+    }
+
+    private void AcceptInfo()
+    {
+        infoAccepted = true;
     }
 }

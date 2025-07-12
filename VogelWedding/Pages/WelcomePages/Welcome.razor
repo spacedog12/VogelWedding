@@ -15,11 +15,11 @@
         <img src="images/Luzern_1_rmb.png"
              class="background-graphic"
              alt=""/>
-        <img src="images/Zweig_grün.png"
+        <img src="images/Zweig_gruen.png"
              id="leftBranch"
              class="background-graphic-branch"
              alt=""/>
-        <img src="images/Zweig_grün.png"
+        <img src="images/Zweig_gruen.png"
              id="rightBranch"
              class="background-graphic-branch"
              alt=""/>
@@ -43,35 +43,37 @@
     {
         <div class="card welcome-container mt-2">
             <div class="card-body welcome-card">
-                @if (AccessService.CurrentLevel == AccessLevel.Admin)
-                {
-                    <RSVP/>
-                    <RSVPInvited/>
-                }
-                else if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
-                {
-                    <RSVPInvited/>
-                }
-                else
-                {
-                    <RSVP/>
-
-                }
+                <RSVP />
+                
+                @* @if (AccessService.CurrentLevel == AccessLevel.Admin) *@
+                @* { *@
+                @*     <RSVP/> *@
+                @*     <RSVPInvited/> *@
+                @* } *@
+                @* else if (AccessService.CurrentLevel >= AccessLevel.GuestInvited) *@
+                @* { *@
+                @*     <RSVPInvited/> *@
+                @* } *@
+                @* else *@
+                @* { *@
+                @*     <RSVP/> *@
+                @* *@
+                @* } *@
             </div>
         </div>
     }
 
-    <!-- Addresses section -->
-    <div class="card welcome-container mt-2">
-        <div class="card-body welcome-card">
-            <Addresses />
-        </div>
-    </div>
-    
     <!-- Schedule section -->
     <div class="card welcome-container mt-2">
         <div class="card-body welcome-card">
             <Schedule />
+        </div>
+    </div>
+    
+    <!-- Addresses section -->
+    <div class="card welcome-container mt-2">
+        <div class="card-body welcome-card">
+            <Addresses />
         </div>
     </div>
     

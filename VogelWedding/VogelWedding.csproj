@@ -9,17 +9,20 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.3" PrivateAssets="all"/>
+        <PackageReference Include="MudBlazor" Version="8.8.0" />
+        <PackageReference Include="Radzen.Blazor" Version="7.1.2" />
         <PackageReference Include="Supabase" Version="1.1.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="wwwroot\images\Luzern_1_removedBackground.png" />
       <None Include="wwwroot\images\Luzern_2_removedBackground.png" />
       <None Include="wwwroot\images\Zweig_darkish_RB.png" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Folder Include="vogelhochzeit-publish\" />
+        <Content Include="wwwroot\images\*\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

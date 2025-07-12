@@ -6,14 +6,14 @@
     ✅ Home
     ✅ Über
     - Wunschliste
-    - Fotos
+    - Fotos 
     - Kontakte
 *@
 
 <nav class="navbar navbar-expand-md navbar-dark mb-4">
     <div class="container-fluid">
         @* <a class="navbar-brand" href="">@title</a> *@
-        <img class="navbar-brand object-fit-contain " src = "images/Logo.png" />
+        <img class="navbar-brand object-fit-contain " src = "images/logo_2.png" />
         <button class="navbar-toggler @NavButtonCssClass" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarCollapse"
                 aria-controls="navbarCollapse" aria-label="Toggle navigation" @onclick="ToggleNavMenu">
@@ -48,6 +48,16 @@
                         </NavLink>
                     </li>
                 }
+                
+                @if (AccessService.CanAccessPage(settings.ContactPageVisible))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="wishlist" >
+                            <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-2 ps-2">Wunschliste</span>
+                        </NavLink>
+                    </li>
+                }
 
                 @if (AccessService.CanAccessPage(settings.ContactPageVisible))
                 {
@@ -61,6 +71,12 @@
 
                 @if (AccessService.CurrentLevel == AccessLevel.Admin)
                 {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="enteredRSVPs">
+                            <span class="bi bi-person-check-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-2 ps-2">Anmeldungen</span>
+                        </NavLink>
+                    </li>
                     <li class="nav-item">
                         <NavLink class="nav-link" href="settings" >
                             <span class="bi bi-gear-fill" aria-hidden="true"></span>

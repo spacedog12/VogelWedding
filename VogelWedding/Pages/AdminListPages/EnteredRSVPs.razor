@@ -1,0 +1,155 @@
+@page "/enteredRSVPs"
+@inject AccessService AccessService
+@inject SupabaseService Supabase
+@using Radzen
+@using Radzen.Blazor
+@using MudBlazor
+
+
+@* Required *@
+<MudThemeProvider/>
+<MudPopoverProvider/>
+
+<div class="enteredRsvps-wrapper">
+    <div class="background">
+        <img src="images/Luzern_1_rmb.png"
+             class="background-graphic"
+             alt=""/>
+        <img src="images/Zweig_gruen.png"
+             id="leftBranch"
+             class="background-graphic-branch"
+             alt=""/>
+        <img src="images/Zweig_gruen.png"
+             id="rightBranch"
+             class="background-graphic-branch"
+             alt=""/>
+    </div>
+
+    <div class="enteredRsvps-container">
+        <div class="card enteredRsvps-card">
+            <MudTable Items="@rsvpEntries"
+                      Dense="true"
+                      Hover="true"
+                      Bordered="false"
+                      Filter="new Func<RsvpEntry, bool>(FilterFunc)"
+                      SortLabel="Sort By"
+                      FixedHeader="true"
+                      HorizontalScrollbar="true"
+                      Height="650px"
+                      Loading="@_loading"   
+                      LoadingProgressColor="Color.Info"
+                     >
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Anmeldungen</MudText>
+                    <MudSpacer/>
+                    <MudTextField @bind-Value="_searchString"
+                                  Placeholder="Suchen"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Class="mt-0"/>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="width: 4%">
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.FirstName)">Vorname
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.FamilyName)">Nachname
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Attending)">Anmeldung
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Style="width: 8%">
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.NumberOfAttendees)">
+                            Teilnehmer
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.EmailAddress)">Email
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Style="width: 30%">Addresse</MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.BuffetContribution)">Buffet
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Style="width: 40%;">
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Message)">Mitteilung
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Invited)">Registrierung von
+                        </MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Vorname">@context.FirstName</MudTd>
+                    <MudTd DataLabel="Nachname">@context.FamilyName</MudTd>
+                    <MudTd DataLabel="Nimmt teil">@GetAttendingText(context.Attending)</MudTd>
+                    <MudTd DataLabel="Menü">@context.NumberOfAttendees</MudTd>
+                    <MudTd DataLabel="Menü">@context.EmailAddress</MudTd>
+                    <MudTd DataLabel="Menü">@context.Street, @context.ZipCode @context.Place</MudTd>
+                    <MudTd DataLabel="Menü">@(context.BuffetContribution ? "Ja" : "Nein")</MudTd>
+                    <MudTd DataLabel="Menü">@context.Message</MudTd>
+                    <MudTd DataLabel="Registrierung von">@(context.Invited ? "Fest" : "Zeremonie")</MudTd>
+                </RowTemplate>
+                @* <PagerContent> *@
+                @*     <MudTablePager /> *@
+                @* </PagerContent> *@
+            </MudTable>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<RsvpEntry> rsvpEntries = new List<RsvpEntry>();
+    private string _searchString = "";
+    private bool _loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            rsvpEntries = await GetRsvpEntries();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading RSVP entries: {ex.Message}");
+        }
+    }
+
+    private async Task<List<RsvpEntry>> GetRsvpEntries()
+    {
+        return await Supabase.GetRsvpEntriesAsync();
+    }
+
+    private bool FilterFunc(RsvpEntry element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString)) return true;
+
+        return element.FirstName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true
+               || element.FamilyName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private string GetAttendingText(string attending)
+    {
+        switch (attending)
+        {
+            case "ReceptionAndCeremony":
+                return "Empfang und Zeremonie";
+            case "ReceptionCeremonyAndParty":
+                return "Empfang, Zeremonie und Party";
+            case "CeremonyOnly":
+                return "Nur Zeremonie";
+            case "PartyOnly":
+                return "Nur Party";
+            case "CanNotAttend":
+                return "Kann nicht teil nehmen";
+            default:
+                return "";
+        }
+    }
+}

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
+using Radzen;
 using VogelWedding;
 using VogelWedding.Services;
 
@@ -28,5 +30,8 @@ builder.Services.AddScoped(_ =>
 	)
 );
 builder.Services.AddScoped<SupabaseService>();
+builder.Services.AddRadzenComponents();
+builder.Services.AddMudServices();
+
 
 await builder.Build().RunAsync();
