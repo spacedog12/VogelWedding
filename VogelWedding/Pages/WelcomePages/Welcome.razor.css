@@ -18,7 +18,7 @@
 
 .card-body.welcome-card {
     z-index: 10;
-    background-color: var(--text-color);
+    background-color: transparent;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 1rem;
@@ -26,4 +26,18 @@
     position: relative;
 
     /*color: var(--primary-color);*/
+}
+
+.card-body.welcome-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--text-color); /* Light gray with 10% opacity */
+    opacity: 80%;
+    z-index: -1; /* Make sure the background is behind the content */
+    border-radius: 8px; /* Match the rounded corners of the card */
+    backdrop-filter: blur(50px); /* Apply blur effect to everything behind */
 }

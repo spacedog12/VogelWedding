@@ -8,6 +8,9 @@ public class WishlistItem: BaseModel
 	public Guid ID { get; set; }
 	
 	
+	[Column("sort_number")]
+	public int SortNumber { get; set; }
+	
 	[Column("title")]
 	public string Title { get; set; }
 	
@@ -30,4 +33,6 @@ public class WishlistItem: BaseModel
 	
 	[Column("number_paid_users")]
 	public int? NumberPaidUsers { get; set; }
+	
+	public string ImageUrl { get; set; }
 }

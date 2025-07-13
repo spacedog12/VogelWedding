@@ -24,7 +24,7 @@ public class WishlistPurchase : BaseModel
 	public double PaidAmount { get; set; }
 	
 	
-	[Column("quantity")]
-	public int Quantity { get; set; }
+	// [Column("quantity")]
+	// public int Quantity { get; set; }
 	
 }

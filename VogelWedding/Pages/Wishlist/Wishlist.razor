@@ -1,116 +1,212 @@
-@page "/wunschliste"
+@page "/geschenke"
+@using System.Globalization
+
+@inject SupabaseService Supabase
+@inject IToastService ToastService
 
 <div class="wishlist-wrapper">
     <div class="background">
-        <img src="images/Luzern_1_rmb.png"
-             class="background-graphic"
-             alt=""/>
-        <img src="images/Zweig_gruen.png"
-             id="leftBranch"
-             class="background-graphic-branch"
-             alt=""/>
-        <img src="images/Zweig_gruen.png"
-             id="rightBranch"
-             class="background-graphic-branch"
-             alt=""/>
+        <img src="images/Luzern_1_rmb.png" class="background-graphic" alt=""/>
+        <img src="images/Zweig_gruen.png" id="leftBranch" class="background-graphic-branch" alt=""/>
+        <img src="images/Zweig_gruen.png" id="rightBranch" class="background-graphic-branch" alt=""/>
     </div>
-    
-    <h3>Wunschliste</h3>
 
-    @if (wishlistItems == null)
-    {
-        <p>Lade Wunschliste...</p>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var item in wishlistItems)
+    <!-- Info Text Wishlist -->
+    <div class="card wishlist-container">
+        <div class="card-body wishlist-card">
+            @* <h2 class="card-title">Wilkommen</h2> *@
+            <h2>Das grösste Geschenk für uns seid ihr</h2>
+            <p>
+                – dass ihr diesen Tag mit uns feiert, mitlebt, mitsingt,
+                mitgeniesst. Wer uns darüber hinaus gerne beschenken möchte:
+                wir freuen uns über Beiträge zu unserem gemeinsamen Start ins Ehe-Leben.
+                Wir haben eigentlich schon alles – <strong>außer Zeit zum Genießen</strong>.
+                Und genau da kommt ihr ins Spiel.<br/>
+                Wenn ihr uns eine Freude machen möchtet, dann am liebsten mit Dingen, die den Alltag versüßen
+                und uns gemeinsame Genussmomente schenken.
+                Ob Wellness, Massagen, gutes Essen, edle Tropfen, Zigarren (für die stilvollen Minuten), Kulturtrips,
+                Spieleabende, Ausflüge, Literatur, Theater, Musik oder Museumsbesuche –
+                wir lieben alles, was entspannt, inspiriert oder einfach Spaß macht.
+                Also: Schenkt uns keinen Toaster und keine Dekorationen – <strong>schenkt uns Erinnerungen</strong>.</p>
+            <p>
+                <strong>Vielen Dank, dass ihr mit uns feiert, an uns denkt – und vielleicht sogar ein bisschen Genuss in
+                    unser
+                    frisch verheiratetes Leben bringt.</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- wishlist -->
+    <div class="card wishlist-container mt-2">
+        <div class="card-body wishlist-card">
+            <h2 class="card-title">Geschenke</h2>
+
+            @if (wishlistItems == null)
             {
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5>@item.Title</h5>
-                            <p>@item.Description</p>
-                            @if (item.Price.HasValue)
-                            {
-                                <p>Preis: @item.Price.Value.ToString("C")</p>
-                            }
-                            @if (item.Quantity.HasValue)
-                            {
-                                <p>Verfügbar: @item.Quantity</p>
-                            }
-                            <button class="btn btn-primary" @onclick="() => OpenBuyModal(item)">Kaufen</button>
+                <p>Lade Geschenke...</p>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var item in wishlistItems)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body item-card">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="Image for @item.Title"
+                                             class="wishlist-item-image" />
+                                    }
+                                    <h3> @item.Title</h3>
+                                    <p>@item.Description</p>
+                                    @if (item.Price.HasValue)
+                                    {
+                                        @if (item.Quantity.HasValue)
+                                        {
+                                            <p>
+                                                <strong>Preis:</strong> @item.Price.Value.ToString("C", new CultureInfo("de-CH"))
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p>
+                                                <strong>Preis:</strong> @item.Price.Value.ToString("C", new CultureInfo("de-CH"))
+                                            </p>
+                                            <p>
+                                                <strong>Bereits
+                                                    geschenkt:</strong> @item.PaidAmount.Value.ToString("C", new CultureInfo("de-CH"))
+                                            </p>
+                                        }
+                                    }
+
+                                    @if (item.Quantity.HasValue)
+                                    {
+                                        <p>Verfügbar: @item.Quantity</p>
+                                    }
+
+                                    <button class="btn btn-primary"
+                                            disabled="@ButtonDisabled(item)"
+                                            @onclick="() => OpenBuyModal(item)">
+                                        Schenken
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                }
+
+                <!-- Modal -->
+                @if (showModal && selectedItem != null)
+                {
+                    <div class="modal show d-block" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Kauf: @selectedItem.Title</h5>
+                                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <EditForm Model="@purchaseModel" OnValidSubmit="SubmitPurchase">
+                                        <DataAnnotationsValidator/>
+                                        <div class="mb-3">
+                                            <label>Vorname</label>
+                                            <InputText class="form-control" @bind-Value="purchaseModel.FirstName"
+                                                       required/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label>Nachname</label>
+                                            <InputText class="form-control" @bind-Value="purchaseModel.FamilyName"
+                                                       required/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label>Email</label>
+                                            <InputText class="form-control" @bind-Value="purchaseModel.Email" required/>
+                                        </div>
+                                        @if (selectedItem.Price.HasValue && !selectedItem.Quantity.HasValue)
+                                        {
+                                            <div class="mb-3">
+                                                <label>Betrag (max. @selectedItem.Price.Value.ToString("C", new
+                                                                            CultureInfo("de-CH")))</label>
+                                                <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount"
+                                                             min="10"
+                                                             max="@selectedItem.Price"/>
+                                            </div>
+                                        }
+                                        else if (!selectedItem.Price.HasValue && !selectedItem.Quantity.HasValue)
+                                        {
+                                            <div class="mb-3">
+                                                <label>Betrag</label>
+                                                <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount"
+                                                             min="10"/>
+                                            </div>
+                                        }
+                                        else if (selectedItem.Price.HasValue && selectedItem.Quantity.HasValue)
+                                        {
+                                            <p>Preis pro
+                                                Stück: @selectedItem.Price.Value.ToString("C", new CultureInfo("de-CH"))
+                                            </p>
+                                            <InputNumber class="d-none" @bind-Value="purchaseModel.PaidAmount"/>
+                                            @* <InputNumber class="d-none" @bind-Value="purchaseModel.Quantity"/> *@
+                                        }
+                                        <button type="submit" class="btn btn-primary">Jetzt schenken</button>
+                                        <button type="button" class="btn btn-secondary ms-2" @onclick="CloseModal">
+                                            Abbrechen
+                                        </button>
+                                    </EditForm>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
+                    <div class="modal-backdrop fade show"></div>
+                }
 
-    <!-- Modal -->
-    @if (showModal && selectedItem != null)
-    {
-        <div class="modal show d-block" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Kauf: @selectedItem.Title</h5>
-                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <EditForm Model="@purchaseModel" OnValidSubmit="SubmitPurchase">
-                            <DataAnnotationsValidator/>
-                            <div class="mb-3">
-                                <label>Vorname</label>
-                                <InputText class="form-control" @bind-Value="purchaseModel.FirstName" required/>
-                            </div>
-                            <div class="mb-3">
-                                <label>Nachname</label>
-                                <InputText class="form-control" @bind-Value="purchaseModel.FamilyName" required/>
-                            </div>
-                            <div class="mb-3">
-                                <label>Email</label>
-                                <InputText class="form-control" @bind-Value="purchaseModel.Email" required/>
-                            </div>
-                            @if (selectedItem.Quantity.HasValue)
-                            {
-                                <div class="mb-3">
-                                    <label>Anzahl</label>
-                                    <InputNumber class="form-control" @bind-Value="purchaseModel.Quantity" min="1"
-                                                 max="@selectedItem.Quantity"/>
-                                </div>
-                            }
-                            @if (selectedItem.Price.HasValue)
-                            {
-                                <div class="mb-3">
-                                    <label>Betrag (max. @selectedItem.Price.Value.ToString("C"))</label>
-                                    <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount" min="1"
-                                                 max="@selectedItem.Price"/>
-                                </div>
-                            }
-                            <button type="submit" class="btn btn-success">Kauf abschließen</button>
-                            <button type="button" class="btn btn-secondary ms-2" @onclick="CloseModal">Abbrechen
-                            </button>
-                        </EditForm>
-                    </div>
-                </div>
             </div>
         </div>
-        <div class="modal-backdrop fade show"></div>
-    }
-</div>
+    </div>
 
 
 @code {
     private List<WishlistItem> wishlistItems;
+    private List<WishlistImages> images;
     private WishlistItem selectedItem;
     private WishlistPurchase purchaseModel = new();
     private bool showModal = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: Load wishlistItems from your database/service
-        wishlistItems = await LoadWishlistAsync();
+        try
+        {
+            wishlistItems = await GetWishlistItemsAsync();
+            images = await GetWishlistImagesAsync();
+
+            // Sort Items
+            wishlistItems = wishlistItems.OrderBy(item => item.SortNumber).ToList();
+
+            foreach (var item in wishlistItems)
+            {
+                var image = images.FirstOrDefault(i => i.WishlistItemId == item.ID);
+                if (image != null)
+                {
+                    item.ImageUrl = image.ImageUrl;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching Items: {ex.Message}");
+        }
+    }
+
+    private async Task<List<WishlistItem>> GetWishlistItemsAsync()
+    {
+        return await Supabase.GetWishlistItemsAsync();
+    }
+
+    private async Task<List<WishlistImages>> GetWishlistImagesAsync()
+    {
+        return await Supabase.GetWishlistImagesAsync();
     }
 
     private void OpenBuyModal(WishlistItem item)
@@ -118,9 +214,23 @@
         selectedItem = item;
         purchaseModel = new WishlistPurchase
         {
-            WishlistItemId = item.ID, Quantity = 1, PaidAmount = item.Price ?? 0
+            WishlistItemId = item.ID,
         };
+
+        if (item.Quantity.HasValue && item.Price.HasValue)
+        {
+            // Quantity-based item with price per unit
+            // purchaseModel.Quantity = 1;
+            purchaseModel.PaidAmount = item.Price.Value;
+        }
+        else
+        {
+            // Open contribution or single-price item
+            purchaseModel.PaidAmount = 10; // Minimum 10 CHF
+        }
+
         showModal = true;
+
     }
 
     private void CloseModal()
@@ -131,37 +241,37 @@
 
     private async Task SubmitPurchase()
     {
-        // TODO: Save purchaseModel to your database
-        // await SavePurchaseAsync(purchaseModel);
-        showModal = false;
-        selectedItem = null;
+        try
+        {
+            await Supabase.SetPurchaseAsync(purchaseModel);
+
+            // Refresh the wishlist items
+            wishlistItems = await GetWishlistItemsAsync();
+
+            // Close the modal
+            showModal = false;
+            selectedItem = null;
+
+            ToastService.ShowSuccess("Besten Dank für deinen Beitrag.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving purchase: {ex.Message}");
+            ToastService.ShowError($"Sorry, da ist was schief gelaufen: {ex.Message}");
+            // Here you might want to show an error message to the user
+        }
     }
 
-    // Dummy loader for demo
-    private Task<List<WishlistItem>> LoadWishlistAsync()
+    private bool ButtonDisabled(WishlistItem item)
     {
-        return Task.FromResult(new List<WishlistItem>
+        // Case 1: Quantity is null
+        if (item.Quantity == null)
         {
-            new WishlistItem
-            {
-                ID = Guid.NewGuid(),
-                Title = "Mixer",
-                Description = "Küchenmixer",
-                Price = 50,
-                Quantity = 2
-            },
-            new WishlistItem
-            {
-                ID = Guid.NewGuid(),
-                Title = "Bettwäsche",
-                Description = "Schöne Bettwäsche",
-                Price = 80,
-                Quantity = 1
-            },
-            new WishlistItem
-            {
-                ID = Guid.NewGuid(), Title = "Gutschein", Description = "Gutschein für ein Restaurant", Price = 100
-            }
-        });
+            // Button is active if Price is not 0 or Price is null
+            return item.Price.HasValue && item.Price.Value <= item.PaidAmount.Value;
+        }
+
+        // Case 2: Quantity is not null
+        return item.Quantity <= 0;
     }
 }

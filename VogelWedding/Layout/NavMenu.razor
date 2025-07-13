@@ -42,7 +42,7 @@
                 @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="photos" >
+                        <NavLink class="nav-link" href="bilder" >
                             <span class="bi bi-camera-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-1 ps-2">Fotos</span>
                         </NavLink>
@@ -52,9 +52,9 @@
                 @if (AccessService.CanAccessPage(settings.ContactPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="wishlist" >
+                        <NavLink class="nav-link" href="geschenke" >
                             <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
-                            <span class="nav-text ms-2 ps-2">Wunschliste</span>
+                            <span class="nav-text ms-2 ps-2">Geschenke</span>
                         </NavLink>
                     </li>
                 }
@@ -62,7 +62,7 @@
                 @if (AccessService.CanAccessPage(settings.ContactPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="contacts" >
+                        <NavLink class="nav-link" href="kontakte" >
                             <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-2 ps-2">Kontakte</span>
                         </NavLink>

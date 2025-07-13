@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using VogelWedding.Model;
 using Newtonsoft.Json;
+using VogelWedding.Pages.Wishlist;
 
 public class SupabaseService
 {
@@ -105,51 +106,48 @@ public class SupabaseService
 
 	public async Task<AppSettings?> GetSettingsAsync()
 	{
-    try
-    {
-        Console.WriteLine("Fetching settings from Supabase...");
-        var response = await _client
-	        .From<AppSettings>()
-	        .Get();
-	        // .Select("id, site_title, rsvp_enabled, notification_email, page_home_visibile, page_schedule_visible, page_addresses_visible, page_photos")
-	        // .Single();
-	        
-            
-        // Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
-        //
-        // if (response != null)
-        // {
-	       //  Console.WriteLine($"DB Photos visible: {response.Model.PhotosPageVisible}");
-	       //  Console.WriteLine($"DB Contact visible: {response.Model.ContactPageVisible}");
-        // }
-        //
-        //
-        // return response;
-        
-        // Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
+		try
+		{
+			Console.WriteLine("Fetching settings from Supabase...");
+			var response = await _client
+				.From<AppSettings>()
+				.Get();
+			// .Select("id, site_title, rsvp_enabled, notification_email, page_home_visibile, page_schedule_visible, page_addresses_visible, page_photos")
+			// .Single();
 
-        var settings = response?.Models.FirstOrDefault();
 
-        // if (settings != null)
-        // {
-	       //  Console.WriteLine($"DB Photos visible: {settings.PhotosPageVisible}");
-	       //  Console.WriteLine($"DB Contact visible: {settings.ContactPageVisible}");
-        // }
+			// Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
+			//
+			// if (response != null)
+			// {
+			//  Console.WriteLine($"DB Photos visible: {response.Model.PhotosPageVisible}");
+			//  Console.WriteLine($"DB Contact visible: {response.Model.ContactPageVisible}");
+			// }
+			//
+			//
+			// return response;
 
-        return settings;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error getting settings: {ex.Message}");
-        return new AppSettings 
-        {
-            Id = Guid.NewGuid(),
-            SiteTitle = "Our Wedding",
-            RsvpEnabled = true,
-            NotificationEmail = null
-        };
-    }
-}
+			// Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
+
+			var settings = response?.Models.FirstOrDefault();
+
+			// if (settings != null)
+			// {
+			//  Console.WriteLine($"DB Photos visible: {settings.PhotosPageVisible}");
+			//  Console.WriteLine($"DB Contact visible: {settings.ContactPageVisible}");
+			// }
+
+			return settings;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error getting settings: {ex.Message}");
+			return new AppSettings
+			{
+				Id = Guid.NewGuid(), SiteTitle = "Our Wedding", RsvpEnabled = true, NotificationEmail = null
+			};
+		}
+	}
 
 	public async Task UpdateSettingsAsync(AppSettings settings)
 	{
@@ -169,6 +167,77 @@ public class SupabaseService
 		{
 			Console.WriteLine($"Error updating settings: {ex.Message}");
 			throw;
+		}
+	}
+
+	public async Task<List<WishlistItem>> GetWishlistItemsAsync()
+	{
+		var result = await _client.From<WishlistItem>().Get();
+		return result.Models;
+	}
+
+	public async Task<List<WishlistImages>> GetWishlistImagesAsync()
+	{
+		var result = await _client.From<WishlistImages>().Get();
+		return result.Models;
+	}
+
+	public async Task SetPurchaseAsync(WishlistPurchase purchase)
+	{
+		try
+		{
+			await _client
+				.From<WishlistPurchase>()
+				.Insert(purchase);
+
+			var itemResponse = await _client
+				.From<WishlistItem>()
+				.Where(x => x.ID == purchase.WishlistItemId)
+				.Single();
+
+			if (itemResponse == null)
+			{
+				throw new Exception("Whislist item not found");
+			}
+
+
+			if (itemResponse.Quantity == null)
+			{
+				if (itemResponse.Price.HasValue)
+				{
+					// itemResponse.Price -= purchase.PaidAmount;
+					itemResponse.PaidAmount += purchase.PaidAmount;
+					itemResponse.NumberPaidUsers += 1;
+					
+					await _client
+						.From<WishlistItem>()
+						.Upsert(itemResponse);
+				}
+				else
+				{
+					itemResponse.PaidAmount += purchase.PaidAmount;
+					itemResponse.NumberPaidUsers += 1;
+
+					await _client
+						.From<WishlistItem>()
+						.Upsert(itemResponse);
+				}
+			}
+			else if (itemResponse.Price.HasValue)
+			{
+				// itemResponse.Quantity -= purchase.Quantity;
+				itemResponse.Quantity -= 1;
+				itemResponse.PaidAmount += purchase.PaidAmount;
+				itemResponse.NumberPaidUsers += 1;
+
+				await _client
+					.From<WishlistItem>()
+					.Upsert(itemResponse);
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Faild to save purchase to database: {ex.Message}");
 		}
 	}
 }
