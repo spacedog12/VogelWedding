@@ -163,28 +163,13 @@ public class SupabaseService
 	public async Task<List<AboutImages>> GetAboutImagesAsync()
 	{
 		var result = await _client.From<AboutImages>().Get();
-		Console.WriteLine($"Images fetcht in SupabaseService: {result.Models.Count}");
-		Console.WriteLine($"Raw response: {JsonConvert.SerializeObject(result)}");
 		return result.Models;
-		
-		// try
-		// {
-		// 	Console.WriteLine($"Fetching images for section: {section}");
-		// 	var result = await _client
-		// 		.From<AboutImages>()
-		// 		.Where(x => x.Section == section)  // Filtering by section
-		// 		.Get();
-		//
-		// 	Console.WriteLine($"Images fetched in SupabaseService: {result.Models.Count}");
-		// 	Console.WriteLine($"Raw response: {JsonConvert.SerializeObject(result)}");
-		//
-		// 	return result.Models;
-		// }
-		// catch (Exception ex)
-		// {
-		// 	Console.WriteLine($"Error fetching images: {ex.Message}");
-		// 	return new List<AboutImages>(); // Return an empty list in case of error
-		// }
+	}
+	
+	public async Task<List<FactoryImages>> GetFactoryImagesAsync()
+	{
+		var result = await _client.From<FactoryImages>().Get();
+		return result.Models;
 	}
 
 	public async Task SetPurchaseAsync(WishlistPurchase purchase)

@@ -26,40 +26,39 @@
     <!-- About us section -->
     <div class="card about-container" id="aboutUsSection">
         <div class="card-body about-card">
-            <AboutUs />
+            <AboutUs/>
         </div>
     </div>
-    
+
     <!-- About Grid section -->
     <div class="card about-container mt-4" id="aboutUsGridSection">
         <div class="card-body about-card">
             <AboutUsGrid @bind-IsMeetingPhaseVisible="meetingPhaseVisible"
                          @bind-IsRelationshipPhaseVisible="relationshipPhaseVisible"
                          @bind-IsProposalPhaseVisible="proposalPhaseVisible"/>
-            
+
         </div>
     </div>
-    
+
     <!-- About the chapel section -->
     <div class="card about-container mt-5" id="aboutTheChapelSection">
         <div class="card-body about-card">
-            <AboutTheChapel />
+            <AboutTheChapel/>
         </div>
     </div>
-    
+
     <!-- About the factory section -->
     @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
     {
-        <div class="card about-container mt-5" id="aboutTheFactorySection">
-            <div class="card-body about-card">
-                <AboutTheFactory />
-            </div>
+    <div class="card about-container mt-5" id="aboutTheFactorySection">
+        <div class="card-body about-card">
+            <AboutTheFactory/>
         </div>
+    </div>
     }
 </div>
 
 @code {
-
     private bool meetingPhaseVisible;
     private bool relationshipPhaseVisible;
     private bool proposalPhaseVisible;

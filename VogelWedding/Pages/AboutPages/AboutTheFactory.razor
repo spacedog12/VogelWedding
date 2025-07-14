@@ -1,16 +1,47 @@
+@inject SupabaseService Supabase
+
 <div class="card">
     <div class="card-body">
         <h2 class="card-title mb-2">The Factory</h2>
-        
+
         <div class="card-text mt-4">
-            <p>Die Feier findet in der <strong>Factory</strong> der Heilsarmee Luzern statt – ein Ort, der für uns mit vielen besonderen Erinnerungen verbunden ist.</p>
-            <p>Wir sind hier immer wieder bei Lobpreisabenden, Simon bedient auch mal die Tontechnik bei Jazzkonzerten, und während eines gemeinsamen Filmprojekts entstand nicht nur ein Video, 
-                sondern auch unser Bild, das ihr in unserem Flur bewundern könnt. Noch besonderer wird es durch die Geschichte von Simon: 
-                Am Abend vor unserem Zusammenkommen hat er hier beim Eröffnungskonzert Musik gemacht. Nach dem Konzert trafen wir uns noch zu später Stunde – und drückten endlich aus, was wir längst fühlten. 
+            <p>Die Feier findet in der <strong>Factory</strong> der Heilsarmee Luzern statt – ein Ort, der für uns mit
+                vielen besonderen Erinnerungen verbunden ist.</p>
+            <p>Wir sind hier immer wieder bei Lobpreisabenden, Simon bedient auch mal die Tontechnik bei Jazzkonzerten,
+                und während eines gemeinsamen Filmprojekts entstand nicht nur ein Video,
+                sondern auch unser Bild, das ihr in unserem Flur bewundern könnt. Noch besonderer wird es durch die
+                Geschichte von Simon:
+                Am Abend vor unserem Zusammenkommen hat er hier beim Eröffnungskonzert Musik gemacht. Nach dem Konzert
+                trafen wir uns noch zu später Stunde – und drückten endlich aus, was wir längst fühlten.
                 Ab diesem Moment waren wir nicht mehr nur Freunde.</p>
-            <p>Die Factory ist für uns nicht nur ein Veranstaltungsort, sondern ein Platz voller Geschichten, Freundschaft, Begegnungen und kreativer Energie.</p>
-            <p>Mehr über die Factory findet ihr hier: 
+            <p>Die Factory ist für uns nicht nur ein Veranstaltungsort, sondern ein Platz voller Geschichten,
+                Freundschaft, Begegnungen und kreativer Energie.</p>
+            <p>Mehr über die Factory findet ihr hier:
                 <a href="https://luzern.heilsarmee.ch" target="_blank"><u>Factory</u></a></p>
+
+            <div class="row mt-5">
+                @foreach (var image in images)
+                {
+                    <div class="col grid-container">
+                        <img src="@image.ImageUrl" alt="Factory" class="grid-image"
+                        />
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
+
+@code {
+    public List<FactoryImages> images;
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = await FetchImages();
+    }
+
+    private async Task<List<FactoryImages>> FetchImages()
+    {
+        return await Supabase.GetFactoryImagesAsync();
+    }
+}

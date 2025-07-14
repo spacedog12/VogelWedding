@@ -4,13 +4,13 @@
     /*width: 100%;*/
     overflow-x: hidden;
     /*border: none;*/
-    padding: 2rem 0rem;
+    padding: 2rem 1rem;
 }
 
 .wishlist-container {
     position: relative;
     z-index: 10;
-    margin: 5rem auto 0rem auto;
+    margin: 4rem auto 0rem auto;
     max-width: 100%;
     background: transparent;
     border: none;
@@ -22,7 +22,7 @@
     background-color: transparent;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 1rem;
+    /*margin-top: 1rem;*/
     padding: 2rem;
     position: relative;
 }
