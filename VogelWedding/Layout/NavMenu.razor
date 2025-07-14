@@ -29,11 +29,18 @@
                     </NavLink>
                 </li>
                 
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="information">
+                        <span class="bi bi-info-circle-fill" aria-hidden="true"></span>
+                        <span class="nav-text ms-1 ps-2">Infos</span>
+                    </NavLink>
+                </li>
+                
                 @if (AccessService.CanAccessPage(settings.AboutPageVisible))
                 {
                     <li class="nav-item">
                         <NavLink class="nav-link" href="über">
-                            <span class="bi bi-info-circle-fill" aria-hidden="true"></span>
+                            <span class="bi bi-balloon-heart-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-1 ps-2">Über</span>
                         </NavLink>
                     </li>
@@ -53,7 +60,7 @@
                 {
                     <li class="nav-item">
                         <NavLink class="nav-link" href="geschenke" >
-                            <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
+                            <span class="bi bi-gift-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-2 ps-2">Geschenke</span>
                         </NavLink>
                     </li>

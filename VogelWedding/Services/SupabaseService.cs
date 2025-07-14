@@ -172,6 +172,12 @@ public class SupabaseService
 		return result.Models;
 	}
 
+	public async Task<List<InformationImages>> GetInformationImagesAsync()
+	{
+		var result = await _client.From<InformationImages>().Get();
+		return result.Models;
+	}
+
 	public async Task SetPurchaseAsync(WishlistPurchase purchase)
 	{
 		try
