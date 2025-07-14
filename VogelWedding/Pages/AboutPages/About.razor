@@ -24,14 +24,14 @@
     </div>
 
     <!-- About us section -->
-    <div class="card about-container">
+    <div class="card about-container" id="aboutUsSection">
         <div class="card-body about-card">
             <AboutUs />
         </div>
     </div>
     
     <!-- About the chapel section -->
-    <div class="card about-container mt-2">
+    <div class="card about-container mt-2" id="aboutTheChapelSection">
         <div class="card-body about-card">
             <AboutTheChapel />
         </div>
@@ -40,7 +40,7 @@
     <!-- About the factory section -->
     @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
     {
-        <div class="card about-container mt-2">
+        <div class="card about-container mt-2" id="aboutTheFactorySection">
             <div class="card-body about-card">
                 <AboutTheFactory />
             </div>

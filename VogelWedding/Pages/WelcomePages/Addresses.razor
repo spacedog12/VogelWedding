@@ -13,16 +13,21 @@
 
                     <div class="mb-3">
                         <h6 class="form-label">Adresse:</h6>
-                        <p class="mb-0">Hofstrasse 3<br/>6004 Luzern</p>
+                        <p class="mb-0">Kapellplatz 1a<br/>6004 Luzern</p>
                     </div>
 
                     <div class="mb-3">
-                        <h6 class="form-label">Info:</h6>
+                        <h6 class="form-label">Anreise/Parking:</h6>
                         <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen
                             Verkehrsmitteln erreichbar.
                             Die nächste Bushaltestelle ist Schwanenplatz, Parkmöglichkeiten gibt es in den umliegenden
                             Parkhäusern
                             (Bahnhof, Altstadt, Löwencenter usw.).</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Mehr Infos:</h6>
+                        <a href="/über#aboutTheChapelSection"><u>Mehr über die Kapelle</u></a>
                     </div>
                 </div>
             </div>
@@ -39,13 +44,23 @@
                         </div>
 
                         <div class="mb-3">
-                            <h6 class="form-label">Info:</h6>
+                            <h6 class="form-label">Anreise/Parking:</h6>
                             <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
                                 erreichbar.
-                                Parkplätze sind vor Ort sehr begrenzt (das Altstadtparkhaus ist besonders nah), es
-                                empfiehlt sich,
+                                Parkplätze befinden sich an folgenden Orten, sind besonders nah und die ganze Nacht
+                                geöffnet:</p>
+                            <ul>
+                                <li>Migros-Parking an der Bruchstrasse 18</li>
+                                <li>Coop-Parking an der Bruchstrasse 9</li>
+                            </ul>
+                            <p>Es empfiehlt sich,
                                 frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
                                 Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Mehr Infos:</h6>
+                            <a href="/über#aboutTheFactorySection"><u>Mehr über die Factory</u></a>
                         </div>
                     </div>
                 </div>
@@ -59,12 +74,12 @@
                     <h6 class="form-label">Adresse:</h6>
                 </div>
                 <div class="col">
-                    <p class="mb-0">Hofstrasse 3<br/>6004 Luzern</p>
+                    <p class="mb-0">Kapellplatz 1a<br/>6004 Luzern</p>
                 </div>
             </div>
             <div class="row mt-4">
                 <div class="col-2">
-                    <h6 class="form-label">Info:</h6>
+                    <h6 class="form-label">Anreise/Parking:</h6>
                 </div>
                 <div class="col">
                     <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen Verkehrsmitteln
@@ -74,7 +89,15 @@
                         (Bahnhof, Altstadt, Löwencenter usw.).</p>
                 </div>
             </div>
-            
+            <div class="row mt-3">
+                <div class="col-2">
+                    <h6>Mehr Infos:</h6>
+                </div>
+                <div class="col">
+                    <a href="/über#aboutTheChapelSection"><u>Mehr über die Kapelle</u></a>
+                </div>
+            </div>
+
             @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
             {
                 <hr class="my-4"/>
@@ -90,15 +113,28 @@
                 </div>
                 <div class="row mt-4">
                     <div class="col-2">
-                        <h6 class="form-label">Info:</h6>
+                        <h6 class="form-label">Anreise/Parking:</h6>
                     </div>
                     <div class="col">
                         <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
                             erreichbar.
-                            Parkplätze sind vor Ort sehr begrenzt (das Altstadtparkhaus ist besonders nah), es
-                            empfiehlt sich,
+                            Parkplätze befinden sich an folgenden Orten, sind besonders nah und die ganze Nacht
+                            geöffnet:</p>
+                        <ul>
+                            <li>das Migros-Parking an der Bruchstrasse 18</li>
+                            <li>Coop-Parking an der Bruchstrasse 9</li>
+                        </ul>
+                        <p>Es empfiehlt sich,
                             frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
                             Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-2">
+                        <h6>Mehr Infos:</h6>
+                    </div>
+                    <div class="col">
+                        <a href="/über#aboutTheFactorySection"><u>Mehr über die Factory</u></a>
                     </div>
                 </div>
             }
