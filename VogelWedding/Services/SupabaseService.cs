@@ -112,30 +112,8 @@ public class SupabaseService
 			var response = await _client
 				.From<AppSettings>()
 				.Get();
-			// .Select("id, site_title, rsvp_enabled, notification_email, page_home_visibile, page_schedule_visible, page_addresses_visible, page_photos")
-			// .Single();
-
-
-			// Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
-			//
-			// if (response != null)
-			// {
-			//  Console.WriteLine($"DB Photos visible: {response.Model.PhotosPageVisible}");
-			//  Console.WriteLine($"DB Contact visible: {response.Model.ContactPageVisible}");
-			// }
-			//
-			//
-			// return response;
-
-			// Console.WriteLine($"Settings response: {JsonConvert.SerializeObject(response)}");
 
 			var settings = response?.Models.FirstOrDefault();
-
-			// if (settings != null)
-			// {
-			//  Console.WriteLine($"DB Photos visible: {settings.PhotosPageVisible}");
-			//  Console.WriteLine($"DB Contact visible: {settings.ContactPageVisible}");
-			// }
 
 			return settings;
 		}
@@ -180,6 +158,33 @@ public class SupabaseService
 	{
 		var result = await _client.From<WishlistImages>().Get();
 		return result.Models;
+	}
+
+	public async Task<List<AboutImages>> GetAboutImagesAsync()
+	{
+		var result = await _client.From<AboutImages>().Get();
+		Console.WriteLine($"Images fetcht in SupabaseService: {result.Models.Count}");
+		Console.WriteLine($"Raw response: {JsonConvert.SerializeObject(result)}");
+		return result.Models;
+		
+		// try
+		// {
+		// 	Console.WriteLine($"Fetching images for section: {section}");
+		// 	var result = await _client
+		// 		.From<AboutImages>()
+		// 		.Where(x => x.Section == section)  // Filtering by section
+		// 		.Get();
+		//
+		// 	Console.WriteLine($"Images fetched in SupabaseService: {result.Models.Count}");
+		// 	Console.WriteLine($"Raw response: {JsonConvert.SerializeObject(result)}");
+		//
+		// 	return result.Models;
+		// }
+		// catch (Exception ex)
+		// {
+		// 	Console.WriteLine($"Error fetching images: {ex.Message}");
+		// 	return new List<AboutImages>(); // Return an empty list in case of error
+		// }
 	}
 
 	public async Task SetPurchaseAsync(WishlistPurchase purchase)
