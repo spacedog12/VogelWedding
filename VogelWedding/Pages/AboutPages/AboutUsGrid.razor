@@ -177,8 +177,8 @@
     [Parameter]
     public EventCallback<bool> IsRelationshipPhaseVisibleChanged { get; set; }
 
-    private List<AboutImages> images;
-    private List<AboutImages> titleImages = new List<AboutImages>();
+    private List<AboutImages> images = [];
+    private List<AboutImages> titleImages = [];
     private string section;
 
     protected override async Task OnInitializedAsync()

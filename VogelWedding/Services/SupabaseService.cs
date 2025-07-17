@@ -20,8 +20,8 @@ public class SupabaseService
 	{
 		try
 		{
-			Console.WriteLine($"Submitting RSVP to Supabase...");
-			Console.WriteLine($"Payload: {JsonConvert.SerializeObject(entry)}");
+			// Console.WriteLine($"Submitting RSVP to Supabase...");
+			// Console.WriteLine($"Payload: {JsonConvert.SerializeObject(entry)}");
 
 
 			var response = await _client

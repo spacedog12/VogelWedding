@@ -20,7 +20,7 @@ public class AccessService
         {
             if (currentLevel != value)
             {
-                Console.WriteLine($"Access level changing from {currentLevel} to {value}"); // Debug print
+                // Console.WriteLine($"Access level changing from {currentLevel} to {value}"); // Debug print
                 currentLevel = value;
                 NotifyStateChange();
             }
@@ -31,7 +31,7 @@ public class AccessService
 
     public bool TryLoginWithCode(string? code)
     {
-        Console.WriteLine($"TryLoginWithCode called with code: {code}"); // Debug print
+        // Console.WriteLine($"TryLoginWithCode called with code: {code}"); // Debug print
         
         switch (code?.ToUpper())
         {
@@ -64,7 +64,7 @@ public class AccessService
 
     private void NotifyStateChange()
     {
-        Console.WriteLine("NotifyStateChanged called"); // Debug print
+        // Console.WriteLine("NotifyStateChanged called"); // Debug print
         OnChange?.Invoke();
     }
 }

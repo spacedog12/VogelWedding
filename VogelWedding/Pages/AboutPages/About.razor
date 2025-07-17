@@ -1,5 +1,7 @@
-@page "/über"
+@page "/ueber"
 @inject AccessService AccessService
+@inject IJSRuntime JSRuntime
+
 
 @*
     Inhalt:
@@ -62,5 +64,13 @@
     private bool meetingPhaseVisible;
     private bool relationshipPhaseVisible;
     private bool proposalPhaseVisible;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("scrollToFragment");
+        }
+    }
 
 }

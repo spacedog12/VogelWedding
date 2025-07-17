@@ -1,19 +1,20 @@
 .contacts-wrapper {
     position: relative;
     min-height: 100vh;
-    width: 100%;
+    /*width: 100%;*/
     overflow-x: hidden;
-    border: none;
+    /*border: none;*/
     padding: 2rem 1rem;
 }
 
 .contacts-container {
     position: relative;
     z-index: 10;
-    margin: 5rem auto 0rem auto;
+    margin: 4rem auto 0rem auto;
     max-width: 850px;
     background: transparent;
     border: none;
+    padding-top: 2rem;
 }
 
 .card-body.contacts-card {
@@ -21,7 +22,7 @@
     background-color: transparent;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 1rem;
+    /*margin: 1rem;*/
     padding: 2rem;
     position: relative;
 
