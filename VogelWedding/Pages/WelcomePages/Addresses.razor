@@ -1,5 +1,7 @@
 @* @page "/addresses" *@
 @inject AccessService AccessService
+@inject NavigationManager NavigationManager
+
 
 <div class="card">
     <div class="card-body">
@@ -27,7 +29,10 @@
 
                     <div class="mb-3">
                         <h6>Mehr Infos:</h6>
-                        <a href="/ueber#aboutTheChapelSection"><u>Mehr über die Kapelle</u></a>
+                        <div class="text-center">
+                            <a href="/ueber#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a>
+                        </div>
+                        @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheChapelSection"))"><u>Mehr über die Kapelle</u></button> *@
                     </div>
                 </div>
             </div>
@@ -60,7 +65,10 @@
 
                         <div class="mb-3">
                             <h6>Mehr Infos:</h6>
-                            <a href="/ueber#aboutTheFactorySection"><u>Mehr über die Factory</u></a>
+                            <div class="text-center">
+                                <a href="/ueber#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a>
+                            </div>
+                            @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheFactorySection"))"><u>Mehr über die Factory</u></button> *@
                         </div>
                     </div>
                 </div>
@@ -89,12 +97,13 @@
                         (Bahnhof, Altstadt, Löwencenter usw.).</p>
                 </div>
             </div>
-            <div class="row mt-3">
+            <div class="row mt-3 d-flex align-items-center">
                 <div class="col-2">
-                    <h6>Mehr Infos:</h6>
+                    <h6 class="mb-0">Mehr Infos:</h6>
                 </div>
                 <div class="col">
-                    <a href="/ueber#aboutTheChapelSection"><u>Mehr über die Kapelle</u></a>
+                    <a href="/ueber#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a>
+                    @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheChapelSection"))"><u>Mehr über die Kapelle</u></button> *@
                 </div>
             </div>
 
@@ -129,12 +138,13 @@
                             Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-2">
-                        <h6>Mehr Infos:</h6>
+                <div class="row mt-3 d-flex align-items-center">
+                    <div class="col-2 ">
+                        <h6 class="mb-0">Mehr Infos:</h6>
                     </div>
                     <div class="col">
-                        <a href="/ueber#aboutTheFactorySection"><u>Mehr über die Factory</u></a>
+                        <a href="/ueber#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a>
+                        @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheFactorySection"))"><u>Mehr über die Factory</u></button> *@
                     </div>
                 </div>
             }
