@@ -3,6 +3,7 @@
 
 @inject AccessService AccessService
 @inject SupabaseService Supabase
+@inject IJSRuntime JSRuntime
 
 <div class="information-wrapper">
      <div class="background">
@@ -31,7 +32,7 @@
                                    <div class="card-body item-card text-center">
                                         @if (!string.IsNullOrEmpty(GetImageUrl("Ceremony")))
                                         {
-                                             <div class="image-container">
+                                             <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(1)">
                                                   <img src="@GetImageUrl("Ceremony")"
                                                        class="information-item-image"/>
                                              </div>
@@ -39,7 +40,7 @@
                                         }
                                         <div class="text-center">
                                              <button class="btn btn-primary"
-                                                     @onclick="() => ToggleSection(1)">
+                                                     @onclick="() => ToggleSectionAndScroll(1)">
                                                   Zeremonie
                                              </button>
                                         </div>
@@ -50,10 +51,10 @@
                          <!-- Love trail -->
                          <div class="col-md-4 ">
                               <div class="card">
-                                   <div class="card-body item-card text-center">
+                                   <div class="card-body item-card text-center" >
                                         @if (!string.IsNullOrEmpty(GetImageUrl("LoveTrail")))
                                         {
-                                             <div class="image-container">
+                                             <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(2)">
                                                   <img src="@GetImageUrl("LoveTrail")"
                                                        class="information-item-image"/>
                                              </div>
@@ -61,7 +62,7 @@
                                         }
                                         <div class="text-center">
                                              <button class="btn btn-primary"
-                                                     @onclick="() => ToggleSection(2)">
+                                                     @onclick="() => ToggleSectionAndScroll(2)">
                                                   Love-Trail
                                              </button>
                                         </div>
@@ -75,7 +76,7 @@
                                    <div class="card-body item-card text-center">
                                         @if (!string.IsNullOrEmpty(GetImageUrl("Party")))
                                         {
-                                             <div class="image-container">
+                                             <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(3)">
                                                   <img src="@GetImageUrl("Party")"
                                                        class="information-item-image"/>
                                              </div>
@@ -83,7 +84,7 @@
                                         }
                                         <div class="text-center">
                                              <button class="btn btn-primary"
-                                                     @onclick="() => ToggleSection(3)">
+                                                     @onclick="() => ToggleSectionAndScroll(3)">
                                                   Fest
                                              </button>
                                         </div>
@@ -106,24 +107,30 @@
 
      @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
      {
-          <div class="card information-container mt-4">
+          <div class="card information-container mt-4" id="informationSection">
                <div class="card-body information-card">
                     <div class="row">
                          <div class="card ">
                               <div class="card-body item-card">
                                    @if (IsCeremonyVisible)
                                    {
-                                        <Ceremony/>
+                                        <div id="ceremonySection">
+                                             <Ceremony/>
+                                        </div>
                                    }
 
                                    @if (IsLoveTrailVisible)
                                    {
-                                        <LoveTrail/>
+                                        <div id="loveTrailSection">
+                                             <LoveTrail/>
+                                        </div>
                                    }
 
                                    @if (IsPartyVisible)
                                    {
-                                        <Party/>
+                                        <div id="partySection">
+                                             <Party/>
+                                        </div>
                                    }
                               </div>
                          </div>
@@ -173,6 +180,26 @@
           }
 
           return url;
+     }
+
+     private async Task ToggleSectionAndScroll(int sectionNumber)
+     {
+          ToggleSection(sectionNumber);
+
+          string sectionId = sectionNumber switch
+          {
+               1 => "ceremonySection",
+               2 => "loveTrailSection",
+               3 => "partySection",
+               _ => ""
+          };
+    
+          // Give the DOM time to update before scrolling to the specific section
+          await Task.Delay(150);
+          await JSRuntime.InvokeVoidAsync("scrollToFragment", "informationSection");
+
+          await Task.Delay(50);
+          await JSRuntime.InvokeVoidAsync("scrollToFragment", sectionId);
      }
 
      private void ToggleSection(int num)

@@ -1,20 +1,22 @@
 @inject SupabaseService Supabase;
+@inject IJSRuntime JSRuntime
 
 <div class="row">
     <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body item-card text-center">
-                <h3>Kennenlernphase</h3>
+                @* <h3>Kennenlernphase</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Kennenlernphase", titleImages)))
                 {
-                    <div class="image-container">
+                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(1)"
+                         style="cursor: pointer">
                         <img src="@GetImageUrl("Kennenlernphase", titleImages)"
                              class="about-item-image"/>
                     </div>
 
                 }
                 <div class="text-center">
-                    <button class="btn btn-primary" @onclick="() => ToggleSection(1)">Ich will mehr wissen</button>
+                    <button class="btn btn-primary" @onclick="() => ToggleSectionAndScroll(1)">Kennenlernphase</button>
                 </div>
             </div>
         </div>
@@ -22,16 +24,19 @@
     <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body item-card text-center">
-                <h3>Endlich ein Paar - Beziehungsalltag</h3>
+                @* <h3>Endlich ein Paar - Beziehungsalltag</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Beziehungsalltag", titleImages)))
                 {
-                    <div class="image-container">
+                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(2)"
+                         style="cursor: pointer">
                         <img src="@GetImageUrl("Beziehungsalltag", titleImages)"
                              class="about-item-image"/>
                     </div>
                 }
                 <div class="text-center">
-                    <button class="btn btn-primary" @onclick="() => ToggleSection(2)">Ich will mehr wissen</button>
+                    <button class="btn btn-primary" @onclick="() => ToggleSectionAndScroll(2)">Endlich ein Paar -
+                        Beziehungsalltag
+                    </button>
                 </div>
             </div>
         </div>
@@ -39,16 +44,19 @@
     <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body item-card text-center">
-                <h3>Die Antrags-Zeit</h3>
+                @* <h3>Die Antrags-Zeit</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Antrags-Zeit", titleImages)))
                 {
-                    <div class="image-container">
+                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(3)"
+                         style="cursor: pointer"
+                    >
                         <img src="@GetImageUrl("Antrags-Zeit", titleImages)"
                              class="about-item-image"/>
                     </div>
                 }
                 <div class="text-center">
-                    <button class="btn btn-primary" @onclick="() => ToggleSection(3)">Ich will mehr wissen</button>
+                    <button class="btn btn-primary" @onclick="() => ToggleSectionAndScroll(3)">Die Antrags-Zeit</button>
+
                 </div>
             </div>
         </div>
@@ -57,87 +65,109 @@
 
 @if (IsMeetingPhaseVisible || IsProposalPhaseVisible || IsRelationshipPhaseVisible)
 {
-    <div class="row mt-5">
+    <div class="row mt-5" id="aboutUsGridSection">
         <div class="card ">
             <div class="card-body item-card">
                 @if (IsMeetingPhaseVisible)
                 {
                     section = "Kennenlernphase";
-                    <p>Im Juni 2021 begegneten wir uns – digital. Romina hatte ein Format auf Instagram, bei dem sie
-                        christliche Musiker:innen einlud, um über ihre Songs und die Geschichten dahinter zu sprechen.
-                        Für eine dieser Ausgaben waren gleich zwei Gäste eingeladen: eine gemeinsame Bekannte – und
-                        Simon, der mit ihr zusammen gerade den Philipperbrief vertont und eine EP veröffentlicht
-                        hatte.</p>
-                    <p>Direkt nach dem Insta-Live war für beide klar: Diese Person muss ich unbedingt noch besser
-                        kennenlernen – könnte ja beruflich interessant sein! Also trafen wir uns gleich auf einen
-                        „Business-Drink“. Romina dachte: <i>Ein Produzent und Tontechniker ist immer praktisch – man
-                            weiß
-                            ja nie, welches Projekt als Nächstes kommt</i>.
-                        Und Simon dachte: <i>Wow – diese Frau ist gut vernetzt, kennt viele Räume, viele Menschen, hat
-                            immer kreative Ideen am Laufen. Das könnte spannend werden.</i></p>
-                    <p>Bereits einen Tag später schrieb Romina Simon wieder – sie suchte kurzfristig jemanden, der mit
-                        ihr im Gottesdienst Musik macht. Nach dem Apéro wurden wir von einem Freund, Philipp, spontan in
-                        den Pool eingeladen. Und irgendwo zwischen Chlorgeruch und Sommerabend dachten wir beide zum
-                        ersten Mal: <i>Vielleicht geht da mehr als nur Networking.</i></p>
-                    <p>Was dann folgte, war eine Serie von See-Schwimm-Einladungen von Simon – rein zufällig war er
-                        natürlich regelmäßig in Luzern. Und Romina sagte erstaunlich oft ja.</p>
-                    <p>Dann kam der Sommerurlaub. Und mit ihm ein leises Vermissen – das sich nicht mehr ganz als
-                        „Bekannten-Vermissen“ erklären ließ. Als Romina zurückkam, war klar: Es knistert. Aber wir waren
-                        beide vorsichtig. Bloß keine Enttäuschung. Bloß nicht zu schnell hoffen.
+                    <div id="section1">
+                        <p>Im Juni 2021 begegneten wir uns – digital. Romina hatte ein Format auf Instagram, bei dem sie
+                            christliche Musiker:innen einlud, um über ihre Songs und die Geschichten dahinter zu
+                            sprechen.
+                            Für eine dieser Ausgaben waren gleich zwei Gäste eingeladen: eine gemeinsame Bekannte – und
+                            Simon, der mit ihr zusammen gerade den Philipperbrief vertont und eine EP veröffentlicht
+                            hatte.</p>
+                        <p>Direkt nach dem Insta-Live war für beide klar: Diese Person muss ich unbedingt noch besser
+                            kennenlernen – könnte ja beruflich interessant sein! Also trafen wir uns gleich auf einen
+                            „Business-Drink“. Romina dachte: <i>Ein Produzent und Tontechniker ist immer praktisch – man
+                                weiß
+                                ja nie, welches Projekt als Nächstes kommt</i>.
+                            Und Simon dachte: <i>Wow – diese Frau ist gut vernetzt, kennt viele Räume, viele Menschen,
+                                hat
+                                immer kreative Ideen am Laufen. Das könnte spannend werden.</i></p>
+                        <p>Bereits einen Tag später schrieb Romina Simon wieder – sie suchte kurzfristig jemanden, der
+                            mit
+                            ihr im Gottesdienst Musik macht. Nach dem Apéro wurden wir von einem Freund, Philipp,
+                            spontan in
+                            den Pool eingeladen. Und irgendwo zwischen Chlorgeruch und Sommerabend dachten wir beide zum
+                            ersten Mal: <i>Vielleicht geht da mehr als nur Networking.</i></p>
+                        <p>Was dann folgte, war eine Serie von See-Schwimm-Einladungen von Simon – rein zufällig war er
+                            natürlich regelmäßig in Luzern. Und Romina sagte erstaunlich oft ja.</p>
+                        <p>Dann kam der Sommerurlaub. Und mit ihm ein leises Vermissen – das sich nicht mehr ganz als
+                            „Bekannten-Vermissen“ erklären ließ. Als Romina zurückkam, war klar: Es knistert. Aber wir
+                            waren
+                            beide vorsichtig. Bloß keine Enttäuschung. Bloß nicht zu schnell hoffen.
 
-                    </p>
+                        </p>
+                    </div>
                 }
 
                 @if (IsRelationshipPhaseVisible)
                 {
                     section = "Beziehungsalltag";
-                    <p>Im September 2021 wurden wir ein Paar.
-                        Und dann kam der Sturm.</p>
-                    <p>Bereits im Dezember begann Simons Depression, im Februar 2022 wurde Romina schwer krank. Long
-                        Covid, monatelang, jahrelang. Nur noch liegen. Licht, Geräusche, Bewegung – alles zu viel. Kein
-                        Arbeiten, kein Alltag. Und das ausgerechnet in einer frischen Beziehung.
-                        Eine Beziehung, die plötzlich mit Themen wie Pflege, Erschöpfung, Angst und Rückzug umgehen
-                        musste.</p>
-                    <p>Depression sucht Ablenkung. Long Covid braucht Ruhe. Keine einfache Mischung. Aber: Wir blieben.
-                        Wir lernten, kommunizierten, kämpften – gemeinsam. Und wir erlebten Wunder: kleine, große,
-                        stille. Dass unsere Liebe hielt – und wuchs. Dass wir uns nie in Frage stellten, auch wenn alles
-                        um uns herum ins Wanken geriet. Dass wir füreinander da waren – mit ganzem Herzen. Für uns war
-                        das schon das echte „In guten wie in schlechten Zeiten“.</p>
-                    <p>Hätten wir nicht mit Krankheit gerungen, hätten wir vermutlich schon viel früher geheiratet.
-                        Aber manchmal braucht es eben Geduld.
-                    </p>
+                    <div id="section2">
+                        <p>Im September 2021 wurden wir ein Paar.
+                            Und dann kam der Sturm.</p>
+                        <p>Bereits im Dezember begann Simons Depression, im Februar 2022 wurde Romina schwer krank. Long
+                            Covid, monatelang, jahrelang. Nur noch liegen. Licht, Geräusche, Bewegung – alles zu viel.
+                            Kein
+                            Arbeiten, kein Alltag. Und das ausgerechnet in einer frischen Beziehung.
+                            Eine Beziehung, die plötzlich mit Themen wie Pflege, Erschöpfung, Angst und Rückzug umgehen
+                            musste.</p>
+                        <p>Depression sucht Ablenkung. Long Covid braucht Ruhe. Keine einfache Mischung. Aber: Wir
+                            blieben.
+                            Wir lernten, kommunizierten, kämpften – gemeinsam. Und wir erlebten Wunder: kleine, große,
+                            stille. Dass unsere Liebe hielt – und wuchs. Dass wir uns nie in Frage stellten, auch wenn
+                            alles
+                            um uns herum ins Wanken geriet. Dass wir füreinander da waren – mit ganzem Herzen. Für uns
+                            war
+                            das schon das echte „In guten wie in schlechten Zeiten“.</p>
+                        <p>Hätten wir nicht mit Krankheit gerungen, hätten wir vermutlich schon viel früher geheiratet.
+                            Aber manchmal braucht es eben Geduld.
+                        </p>
+                    </div>
                 }
 
                 @if (IsProposalPhaseVisible)
                 {
                     section = "Antrags-Zeit";
-                    <p><strong>...oder: Wie wir uns verlobt haben (ganz ohne Kniefall, aber mit Dolce Vita)</strong></p>
-                    <p>Wir mögen Bergamo. Diese charmante italienische Stadt hat sich für uns zu einem kleinen
-                        Sehnsuchtsort entwickelt – perfekt für kurze <strong>Dolce-Vita-Auszeiten</strong>, wenn’s die
-                        Umstände erlauben.
-                        Im
-                        Mai 2023 war Simon zum ersten Mal mit dabei – und irgendwie war die Atmosphäre, die Antipasti,
-                        das
-                        Gelato und das gute Lebensgefühl dort so besonders, dass er, irgendwo zwischen Altstadt und
-                        Aussichtsterrasse, spürte: <i>Ich bin bereit für den nächsten Schritt.</i></p>
-                    <p>Wir wollten uns aber – gerade wegen unserer nicht ganz einfachen Lebenssituation – bewusst Zeit
-                        nehmen, diesen Schritt gut und in Ruhe zu prüfen. Simon ließ hin und wieder durchblicken:
-                        <i>"Also...ich könnte mich jetzt verloben."</i> Doch Romina wollte noch ein wenig warten.</p>
-                    <p>Dann kam ein Samstag im September. Romina saß beim Coiffeur, völlig tiefenentspannt, und dachte
-                        plötzlich: <i>„Doch. Jetzt stimmt`s. Es ist richtig und gut.“</i> Und weil sie’s nicht mehr für
-                        sich
-                        behalten konnte, tippte sie dem überraschten Simon direkt eine SMS ins Studio. Dort las er,
-                        völlig
-                        ahnungslos, plötzlich: <strong>„Ich bin jetzt bereit.“</strong></p>
-                    <p>Ab diesem Moment war für uns klar: Wir sind verlobt. Ganz ohne große Show, aber mit einem
-                        stillen
-                        „Ja“ mitten im Alltag. Und das passte irgendwie zu uns: ehrlich, entspannt, klar.</p>
-                    <p>Das Einzige, was dann noch fehlte, war der richtige Zeitpunkt. Denn gewisse organisatorische
-                        Hürden
-                        (wir grüßen freundlich alle Ämter!) mussten noch überwunden werden.</p>
-                    <p>Aber jetzt ist es soweit. <strong>Das Warten hat ein Ende. Juhui!</strong></p>
+                    <div id="section3">
+                        <p><strong>...oder: Wie wir uns verlobt haben (ganz ohne Kniefall, aber mit Dolce Vita)</strong>
+                        </p>
+                        <p>Wir mögen Bergamo. Diese charmante italienische Stadt hat sich für uns zu einem kleinen
+                            Sehnsuchtsort entwickelt – perfekt für kurze <strong>Dolce-Vita-Auszeiten</strong>, wenn’s
+                            die
+                            Umstände erlauben.
+                            Im
+                            Mai 2023 war Simon zum ersten Mal mit dabei – und irgendwie war die Atmosphäre, die
+                            Antipasti,
+                            das
+                            Gelato und das gute Lebensgefühl dort so besonders, dass er, irgendwo zwischen Altstadt und
+                            Aussichtsterrasse, spürte: <i>Ich bin bereit für den nächsten Schritt.</i></p>
+                        <p>Wir wollten uns aber – gerade wegen unserer nicht ganz einfachen Lebenssituation – bewusst
+                            Zeit
+                            nehmen, diesen Schritt gut und in Ruhe zu prüfen. Simon ließ hin und wieder durchblicken:
+                            <i>"Also...ich könnte mich jetzt verloben."</i> Doch Romina wollte noch ein wenig warten.
+                        </p>
+                        <p>Dann kam ein Samstag im September. Romina saß beim Coiffeur, völlig tiefenentspannt, und
+                            dachte
+                            plötzlich: <i>„Doch. Jetzt stimmt`s. Es ist richtig und gut.“</i> Und weil sie’s nicht mehr
+                            für
+                            sich
+                            behalten konnte, tippte sie dem überraschten Simon direkt eine SMS ins Studio. Dort las er,
+                            völlig
+                            ahnungslos, plötzlich: <strong>„Ich bin jetzt bereit.“</strong></p>
+                        <p>Ab diesem Moment war für uns klar: Wir sind verlobt. Ganz ohne große Show, aber mit einem
+                            stillen
+                            „Ja“ mitten im Alltag. Und das passte irgendwie zu uns: ehrlich, entspannt, klar.</p>
+                        <p>Das Einzige, was dann noch fehlte, war der richtige Zeitpunkt. Denn gewisse organisatorische
+                            Hürden
+                            (wir grüßen freundlich alle Ämter!) mussten noch überwunden werden.</p>
+                        <p>Aber jetzt ist es soweit. <strong>Das Warten hat ein Ende. Juhui!</strong></p>
+                    </div>
                 }
-                
+
                 <div class="row mt-5">
                     @foreach (var image in images)
                     {
@@ -145,8 +175,8 @@
                         {
                             <div class="col grid-container">
                                 <img src="@image.ImageUrl" alt="Kennenlernphase" class="grid-image"
-                                 />
-                            </div> 
+                                />
+                            </div>
                         }
                     }
                 </div>
@@ -223,6 +253,20 @@
         }
 
         return url;
+    }
+
+    private async Task ToggleSectionAndScroll(int sectionNumber)
+    {
+        await ToggleSection(sectionNumber);
+
+        // Give the DOM time to update before scrolling to the specific section
+        await Task.Delay(150);
+        await JSRuntime.InvokeVoidAsync("scrollToFragment", "aboutUsGridSection");
+
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("scrollToFragment", $"section{sectionNumber}");
+
+
     }
 
     public async Task ToggleSection(int num)
