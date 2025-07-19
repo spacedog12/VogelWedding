@@ -216,15 +216,15 @@
         try
         {
             images = await GetAboutImagesAsync();
-            Console.WriteLine($"Fetched Images: {images.Count}");
+            // Console.WriteLine($"Fetched Images: {images.Count}");
 
             titleImages = images.Where(image => image.Title).ToList();
-            Console.WriteLine($"Found title images: {titleImages.Count}");
+            // Console.WriteLine($"Found title images: {titleImages.Count}");
             // Log each title image for debugging
-            foreach (var image in titleImages)
-            {
-                Console.WriteLine($"Title Image - Section: {image.Section}, URL: {image.ImageUrl}");
-            }
+            // foreach (var image in titleImages)
+            // {
+            //     Console.WriteLine($"Title Image - Section: {image.Section}, URL: {image.ImageUrl}");
+            // }
 
         }
         catch (Exception ex)
