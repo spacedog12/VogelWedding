@@ -201,7 +201,7 @@
 
     private async Task<List<WishlistItem>> GetWishlistItemsAsync()
     {
-        return await Supabase.GetWishlistItemsAsync();
+        return await Supabase.GetEntriesAsync<WishlistItem>();
     }
     //
     // private async Task<List<WishlistImages>> GetWishlistImagesAsync()

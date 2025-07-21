@@ -163,7 +163,7 @@
 
      private async Task<List<InformationImages>> GetImagesAsync()
      {
-          return await Supabase.GetInformationImagesAsync();
+          return await Supabase.GetEntriesAsync<InformationImages>();
      }
      
      private string GetImageUrl(string title)

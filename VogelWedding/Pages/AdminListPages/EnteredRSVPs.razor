@@ -123,7 +123,7 @@
 
     private async Task<List<RsvpEntry>> GetRsvpEntries()
     {
-        return await Supabase.GetRsvpEntriesAsync();
+        return await Supabase.GetEntriesAsync<RsvpEntry>();
     }
 
     private bool FilterFunc(RsvpEntry element)

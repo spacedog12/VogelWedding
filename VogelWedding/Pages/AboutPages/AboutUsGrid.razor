@@ -236,7 +236,7 @@
 
     private async Task<List<AboutImages>> GetAboutImagesAsync()
     {
-        return await Supabase.GetAboutImagesAsync();
+        return await Supabase.GetEntriesAsync<AboutImages>();
     }
 
     private string GetImageUrl(string section, List<AboutImages> imagesList)

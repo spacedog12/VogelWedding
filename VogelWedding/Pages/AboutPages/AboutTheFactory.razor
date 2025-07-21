@@ -42,6 +42,6 @@
 
     private async Task<List<FactoryImages>> FetchImages()
     {
-        return await Supabase.GetFactoryImagesAsync();
+        return await Supabase.GetEntriesAsync<FactoryImages>();
     }
 }

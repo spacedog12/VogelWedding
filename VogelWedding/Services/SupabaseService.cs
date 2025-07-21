@@ -50,10 +50,18 @@ public class SupabaseService
 
 	}
 
-	public async Task<List<RsvpEntry>> GetRsvpEntriesAsync()
+	public async Task<List<T>> GetEntriesAsync<T>(CancellationToken cancellationToken = default) where T : BaseModel, new()
 	{
-		var res = await _client.From<RsvpEntry>().Get();
-		return res.Models;
+		try
+		{
+			var res = await _client.From<T>().Get(cancellationToken);
+			return res?.Models ?? new List<T>();
+		}
+		catch (Exception ex)
+		{
+			// Log the error or handle it appropriately
+			throw new Exception($"Failed to fetch entries of type {typeof(T).Name}", ex);
+		}
 	}
 
 	public async Task<string> UploadPhotoAsync(IBrowserFile file, string? name, string? comment)
@@ -146,36 +154,6 @@ public class SupabaseService
 			Console.WriteLine($"Error updating settings: {ex.Message}");
 			throw;
 		}
-	}
-
-	public async Task<List<WishlistItem>> GetWishlistItemsAsync()
-	{
-		var result = await _client.From<WishlistItem>().Get();
-		return result.Models;
-	}
-
-	// public async Task<List<WishlistImages>> GetWishlistImagesAsync()
-	// {
-	// 	var result = await _client.From<WishlistImages>().Get();
-	// 	return result.Models;
-	// }
-
-	public async Task<List<AboutImages>> GetAboutImagesAsync()
-	{
-		var result = await _client.From<AboutImages>().Get();
-		return result.Models;
-	}
-	
-	public async Task<List<FactoryImages>> GetFactoryImagesAsync()
-	{
-		var result = await _client.From<FactoryImages>().Get();
-		return result.Models;
-	}
-
-	public async Task<List<InformationImages>> GetInformationImagesAsync()
-	{
-		var result = await _client.From<InformationImages>().Get();
-		return result.Models;
 	}
 
 	public async Task SetPurchaseAsync(WishlistPurchase purchase)
