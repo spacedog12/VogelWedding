@@ -169,7 +169,7 @@
 
 @code {
     private List<WishlistItem> wishlistItems;
-    private List<WishlistImages> images = [];
+    // private List<WishlistImages> images = [];
     private WishlistItem selectedItem;
     private WishlistPurchase purchaseModel = new();
     private bool showModal = false;
@@ -179,19 +179,19 @@
         try
         {
             wishlistItems = await GetWishlistItemsAsync();
-            images = await GetWishlistImagesAsync();
+            // images = await GetWishlistImagesAsync();
 
             // Sort Items
             wishlistItems = wishlistItems.OrderBy(item => item.SortNumber).ToList();
 
-            foreach (var item in wishlistItems)
-            {
-                var image = images.FirstOrDefault(i => i.WishlistItemId == item.ID);
-                if (image != null)
-                {
-                    item.ImageUrl = image.ImageUrl;
-                }
-            }
+            // foreach (var item in wishlistItems)
+            // {
+            //     var image = images.FirstOrDefault(i => i.WishlistItemId == item.ID);
+            //     if (image != null)
+            //     {
+            //         item.ImageUrl = image.ImageUrl;
+            //     }
+            // }
         }
         catch (Exception ex)
         {
@@ -203,11 +203,11 @@
     {
         return await Supabase.GetWishlistItemsAsync();
     }
-
-    private async Task<List<WishlistImages>> GetWishlistImagesAsync()
-    {
-        return await Supabase.GetWishlistImagesAsync();
-    }
+    //
+    // private async Task<List<WishlistImages>> GetWishlistImagesAsync()
+    // {
+    //     return await Supabase.GetWishlistImagesAsync();
+    // }
 
     private void OpenBuyModal(WishlistItem item)
     {

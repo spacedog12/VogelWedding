@@ -154,11 +154,11 @@ public class SupabaseService
 		return result.Models;
 	}
 
-	public async Task<List<WishlistImages>> GetWishlistImagesAsync()
-	{
-		var result = await _client.From<WishlistImages>().Get();
-		return result.Models;
-	}
+	// public async Task<List<WishlistImages>> GetWishlistImagesAsync()
+	// {
+	// 	var result = await _client.From<WishlistImages>().Get();
+	// 	return result.Models;
+	// }
 
 	public async Task<List<AboutImages>> GetAboutImagesAsync()
 	{

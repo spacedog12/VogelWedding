@@ -51,6 +51,7 @@ public class RsvpEntry : BaseModel, IValidatableObject
     
     [Column("zip_code")]
     [Required(ErrorMessage = "Bitte Postleitzahl angeben.")]
+    [RegularExpression(@"^\d{4}$", ErrorMessage = "Bitte geben Sie eine gültige Postleitzahl ein (4 Ziffern)")]
     [Display(Name = "Postleitzahl")]
     public string ZipCode { get; set; }
     
@@ -63,6 +64,7 @@ public class RsvpEntry : BaseModel, IValidatableObject
     
     [Column("email_address")]
     [Required(ErrorMessage = "Bitte gib deine Email Addresse an.")]
+    [EmailAddress(ErrorMessage = "Bitte geben Sie eine gültige E-Mail-Adresse ein")]
     [Display(Name = "Email Addresse")]
     public string EmailAddress { get; set; }
     

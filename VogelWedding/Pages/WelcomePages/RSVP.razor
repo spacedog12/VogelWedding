@@ -59,7 +59,7 @@
                            class="@GetValidationClass(() => model.EmailAddress)"
                            @attributes="@(new Dictionary<string, object>
                                         {
-                                            ["placeholder"] = "", ["type"] = "text"
+                                            ["placeholder"] = "", ["type"] = "email"
                                         })"/>
                 <label for="floatingInput">@GetDisplayName(() => model.EmailAddress)</label>
                 <ValidationMessage For="@(() => model.EmailAddress)"/>
@@ -90,7 +90,7 @@
                                class="@GetValidationClass(() => model.ZipCode)"
                                @attributes="@(new Dictionary<string, object>
                                             {
-                                                ["placeholder"] = " ", ["type"] = "text"
+                                                ["placeholder"] = " ", ["type"] = "number"
                                             })"/>
                     <label for="floatingInput">@GetDisplayName(() => model.ZipCode)</label>
                     <ValidationMessage For="@(() => model.ZipCode)"/>

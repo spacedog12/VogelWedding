@@ -34,5 +34,7 @@ public class WishlistItem: BaseModel
 	[Column("number_paid_users")]
 	public int? NumberPaidUsers { get; set; }
 	
+	
+	[Column("image_url")]
 	public string ImageUrl { get; set; }
 }
