@@ -12,14 +12,14 @@
 
 <div class="welcome-wrapper">
     <div class="background">
-        <img src="images/Luzern_1_rmb.png"
+        <img src="images/backgroundImages/Luzern_1_rmb.png"
              class="background-graphic"
              alt=""/>
-        <img src="images/Zweig_gruen.png"
+        <img src="images/backgroundImages/Zweig_gruen.png"
              id="leftBranch"
              class="background-graphic-branch"
              alt=""/>
-        <img src="images/Zweig_gruen.png"
+        <img src="images/backgroundImages/Zweig_gruen.png"
              id="rightBranch"
              class="background-graphic-branch"
              alt=""/>
@@ -28,7 +28,10 @@
     <!-- Welcome section -->
     <div class="card welcome-container">
         <div class="card-body welcome-card">
-            <h2 class="card-title">Willkommen auf unserer Hochzeitswebsite!</h2>
+            <img src="images/Welcome/Welcome.png"
+                 class="welcome-img img-fluid mb-4"
+                 alt=""/>
+            <h2 class="card-title">Willkommen auf unserer Hochzeitswebseite</h2>
             <p class="mt-4">
                 Wir freuen uns riesig, diesen besonderen Tag mit euch zu feiern und gemeinsam ein neues Kapitel in
                 unserem Leben aufzuschlagen.
@@ -42,6 +45,11 @@
                 Zeigt euch mit Stil, Charme und dem gewissen Etwas. Fühlt euch wohl in eurem Look
                 – aber gönnt euch (und uns) ein bisschen Glamour!
             </p>
+            <p><strong>Infos für Familien</strong><br/>
+                Kinder sind beim Nachmittagsprogramm herzlich willkommen. Für das Fest am Abend bitten wir jedoch um
+                Verständnis, dass aufgrund der räumlichen Gegebenheiten nur Erwachsene auf der Gästeliste stehen können
+                (mit Ausnahme unserer beiden Hochzeitskinder).
+            </p>
             <p>Liebe Grüsse
                 <strong>Romina und Simon</strong>
             </p>
@@ -49,28 +57,28 @@
     </div>
 
     <!-- RSVP section -->
-    @if (AccessService.CanAccessRsvp(settings.RsvpEnabled))
-    {
+    @* @if (AccessService.CanAccessRsvp(settings.RsvpEnabled)) *@
+    @* { *@
         <div class="card welcome-container mt-2">
             <div class="card-body welcome-card">
                 <RSVP/>
             </div>
         </div>
-    }
+    // }
 
-    <!-- Schedule section -->
-    <div class="card welcome-container mt-2">
-        <div class="card-body welcome-card">
-            <Schedule/>
-        </div>
-    </div>
-
-    <!-- Addresses section -->
-    <div class="card welcome-container mt-2">
-        <div class="card-body welcome-card">
-            <Addresses/>
-        </div>
-    </div>
+    @* <!-- Schedule section --> *@
+    @* <div class="card welcome-container mt-2"> *@
+    @*     <div class="card-body welcome-card"> *@
+    @*         <Schedule/> *@
+    @*     </div> *@
+    @* </div> *@
+    @* *@
+    @* <!-- Addresses section --> *@
+    @* <div class="card welcome-container mt-2"> *@
+    @*     <div class="card-body welcome-card"> *@
+    @*         <Addresses/> *@
+    @*     </div> *@
+    @* </div> *@
 </div>
 
 @code {

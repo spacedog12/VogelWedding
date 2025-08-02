@@ -1,47 +1,95 @@
-﻿@inject AccessService AccessService
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject AccessService AccessService
 @inject SettingsService SettingsService
-
-@* 
-    Aufbau:
-    ✅ Home
-    ✅ Über
-    - Wunschliste
-    - Fotos 
-    - Kontakte
-*@
+@inject NavigationManager NavigationManager
+@inject InformationSectionService InformationSection
 
 <nav class="navbar navbar-expand-md navbar-dark mb-4">
     <div class="container-fluid">
         @* <a class="navbar-brand" href="">@title</a> *@
-        <img class="navbar-brand object-fit-contain " src = "images/logo_2.png" />
+        <img class="navbar-brand object-fit-contain " src="images/logo/logo_2.png" />
         <button class="navbar-toggler @NavButtonCssClass" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-label="Toggle navigation" @onclick="ToggleNavMenu">
+            data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-label="Toggle navigation"
+            @onclick="HandleMobileMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse" @onclick="ToggleNavMenu">
+
+        <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse" @onclick="HandleMobileMenu">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                         @* <i class="bi bi-house-heart-fill"></i> *@
-                        <span class="bi bi-house-heart-fill" aria-hidden="true"></span>
-                        <span class="nav-text ms-1 ps-2">Home</span>
+                        <span class="bi bi-envelope-heart-fill" aria-hidden="true"></span>
+                        <span class="nav-text ms-1 ps-2">Einladung & Anmeldung
+                        </span>
                     </NavLink>
                 </li>
-                
-                <li class="nav-item">
+
+                <!-- Dropdown mobile only -->
+                <li class="nav-item dropdown d-md-none">
+                    <div class="nav-link dropdown-toggle @(isSubmenuOpen ? "show" : "")"
+                         @onclick="HandleSubmenu" 
+                         @onclick:preventDefault 
+                         @onclick:stopPropagation>
+                        <span class="bi bi-info-circle-fill" aria-hidden="true"></span>
+                        <span class="nav-text ms-1 ps-2">Hochzeitsguide</span>
+                        @* <i class="bi bi-chevron-down arrow-icon @(isSubmenuOpen ? "rotated" : "")"></i> *@
+
+                    </div>
+
+                    <div class="dropdown-menu @(isSubmenuOpen ? "show" : "")">
+                        <!-- TODO: Fill in the Menu links from the Information page -->
+                        <NavLink class="nav-link" href="information" 
+                                 @onclick="() => NavigateToSection(1)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 1 ? "active" : "")">
+                            <span class="bi bi-house-heart-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Zeremonie</span>
+                        </NavLink>
+                        
+                        <NavLink class="nav-link" href="information"
+                                 @onclick="() => NavigateToSection(2)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 2 ? "active" : "")">
+                            <span class="bi bi-signpost-split-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Love-Trail</span>
+                        </NavLink>
+                        
+                        <NavLink class="nav-link" href="information"
+                                 @onclick="() => NavigateToSection(3)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 3 ? "active" : "")">
+                            <span class="bi bi-balloon-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Fest</span>
+                        </NavLink>
+                        
+                        <NavLink class="nav-link" href="information"
+                                 @onclick="() => NavigateToSection(4)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 4 ? "active" : "")">
+                            <span class="bi bi-geo-alt-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Locations & Addressen</span>
+                        </NavLink>
+                        
+                        <NavLink class="nav-link" href="information"
+                                 @onclick="() => NavigateToSection(5)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 5 ? "active" : "")">
+                            <span class="bi bi-clock-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Tagesablauf</span>
+                        </NavLink>
+                    </div>
+                </li>
+
+
+                <li class="nav-item d-none d-md-block">
                     <NavLink class="nav-link" href="information">
                         <span class="bi bi-info-circle-fill" aria-hidden="true"></span>
-                        <span class="nav-text ms-1 ps-2">Infos</span>
+                        <span class="nav-text ms-1 ps-2">Hochzeitsguide</span>
                     </NavLink>
                 </li>
-                
+
                 @if (AccessService.CanAccessPage(settings.AboutPageVisible))
                 {
                     <li class="nav-item">
                         <NavLink class="nav-link" href="ueber">
                             <span class="bi bi-balloon-heart-fill" aria-hidden="true"></span>
-                            <span class="nav-text ms-1 ps-2">Über</span>
+                            <span class="nav-text ms-1 ps-2">Wir Zwei</span>
                         </NavLink>
                     </li>
                 }
@@ -49,17 +97,17 @@
                 @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="bilder" >
+                        <NavLink class="nav-link" href="bilder">
                             <span class="bi bi-camera-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-1 ps-2">Fotos</span>
                         </NavLink>
                     </li>
                 }
-                
+
                 @if (AccessService.CanAccessPage(settings.ContactPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="geschenke" >
+                        <NavLink class="nav-link" href="geschenke">
                             <span class="bi bi-gift-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-2 ps-2">Geschenke</span>
                         </NavLink>
@@ -69,12 +117,19 @@
                 @if (AccessService.CanAccessPage(settings.ContactPageVisible))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="kontakte" >
+                        <NavLink class="nav-link" href="kontakte">
                             <span class="bi bi-chat-heart-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-2 ps-2">Kontakte</span>
                         </NavLink>
                     </li>
                 }
+
+                @* <li class="nav-item"> *@
+                @*     <NavLink class="nav-link" href="wishlist-debug"> *@
+                @*         <span class="bi bi-chat-heart-fill" aria-hidden="true"></span> *@
+                @*         <span class="nav-text ms-2 ps-2">Debug</span> *@
+                @*     </NavLink> *@
+                @* </li> *@
 
                 @if (AccessService.CurrentLevel == AccessLevel.Admin)
                 {
@@ -85,13 +140,13 @@
                         </NavLink>
                     </li>
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="settings" >
+                        <NavLink class="nav-link" href="settings">
                             <span class="bi bi-gear-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-2 ps-2">Einstellungen</span>
                         </NavLink>
                     </li>
                 }
-                
+
                 @* <li class="nav-item"> *@
                 @*     <NavLink class="nav-link" href="addresses" > *@
                 @*         <span class="bi bi-gear-fill" aria-hidden="true"></span> *@
@@ -109,26 +164,47 @@
 </nav>
 
 @code {
-    private bool collapseNavMenu = true;
-    private string? NavBarCssClass => collapseNavMenu ? null : "show";
-    private string? NavButtonCssClass => collapseNavMenu ? "collapsed" : null;
+    private bool isMobileMenuOpen = true;
+    private bool isSubmenuOpen;
     private string title = "";
-    
     private AppSettings settings => SettingsService.CurrentSettings;
     [Parameter] public bool IsVisible { get; set; }
 
     private string NavMenuCssClass => "nav-container" + (IsVisible ? " show" : "");
+    private string? NavBarCssClass => isMobileMenuOpen ? null : "show";
+    private string? NavButtonCssClass => isMobileMenuOpen ? "collapsed" : null;
 
-    private void ToggleNavMenu()
+
+    private void HandleMobileMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
+        isMobileMenuOpen = !isMobileMenuOpen;
+        StateHasChanged();
     }
-    
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+        StateHasChanged();
+    }
+
+    private void HandleSubmenu()
+    {
+        isSubmenuOpen = !isSubmenuOpen;
+        StateHasChanged();
+    }
+
+    private void CloseSubmenu()
+    {
+        isSubmenuOpen = false;
+        StateHasChanged();
+        // collapseNavMenu = true;
+    }
+
     private async Task UpdateTitle()
     {
         title = SettingsService.CurrentSettings.SiteTitle;
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         await SettingsService.LoadSettings();
@@ -141,5 +217,16 @@
     {
         AccessService.OnChange -= StateHasChanged;
         SettingsService.OnSettingsChanged -= StateHasChanged;
+    }
+
+    private async Task NavigateToSection(int sectionNumber)
+    {
+        InformationSection.SelectedSection = sectionNumber;
+        HandleSubmenu();
+        if (!NavigationManager.Uri.EndsWith("/information"))
+        {
+            NavigationManager.NavigateTo("information");
+        }
+
     }
 }

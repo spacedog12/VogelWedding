@@ -43,8 +43,22 @@
     backdrop-filter: blur(50px); /* Apply blur effect to everything behind */
 }
 
+.information-card .row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -0.5rem; /* Compensate for card padding */
+    width: 100%;
+}
+
+.information-card .col-md-4 {
+    flex: 0 0 auto;
+    width: 20%; /* Since you have 5 items, each should take up 20% */
+    padding: 0 0.5rem; /* Add some spacing between cards */
+}
+
 .btn.btn-primary {
-    width: 50%;
+    width: 100%;
 }
 
 .col-md-4 .card {
@@ -75,3 +89,4 @@
     max-height: 300px;
     margin-bottom: 15px;
 }
+

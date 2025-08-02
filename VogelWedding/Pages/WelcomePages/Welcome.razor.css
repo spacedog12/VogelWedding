@@ -10,10 +10,11 @@
 .welcome-container {
     position: relative;
     z-index: 10;
-    margin: 5rem auto 0rem auto;
-    max-width: 950px;
+    margin: 4rem auto 0rem auto;
+    max-width: 100%;
     background: transparent;
     border: none;
+    padding-top: 2rem;
 }
 
 .card-body.welcome-card {
@@ -21,7 +22,7 @@
     background-color: transparent;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 1rem;
+    /*margin: 1rem;*/
     padding: 2rem;
     position: relative;
 
@@ -40,4 +41,9 @@
     z-index: -1; /* Make sure the background is behind the content */
     border-radius: 8px; /* Match the rounded corners of the card */
     backdrop-filter: blur(50px); /* Apply blur effect to everything behind */
+}
+
+.welcome-img {
+    max-width: 100%;
+    height: auto;
 }
