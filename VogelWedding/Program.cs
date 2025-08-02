@@ -25,11 +25,13 @@ builder.Services.AddScoped(_ =>
 		new Supabase.SupabaseOptions
 		{
 			AutoRefreshToken = true,
-			AutoConnectRealtime = false,
+			AutoConnectRealtime = true,
 		}
 	)
 );
 builder.Services.AddScoped<SupabaseService>();
+builder.Services.AddScoped<SupabaseWishlistService>();
+builder.Services.AddScoped<InformationSectionService>();
 builder.Services.AddRadzenComponents();
 builder.Services.AddMudServices();
 

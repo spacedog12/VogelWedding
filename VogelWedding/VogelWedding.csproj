@@ -11,18 +11,22 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.3" PrivateAssets="all"/>
         <PackageReference Include="MudBlazor" Version="8.8.0" />
         <PackageReference Include="Radzen.Blazor" Version="7.1.2" />
-        <PackageReference Include="Supabase" Version="1.1.1" />
+        <PackageReference Include="Supabase" Version="1.1.0" />
+        <PackageReference Include="supabase-csharp" Version="0.16.2" />
+        <PackageReference Include="Supabase.Realtime" Version="7.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="wwwroot\images\Luzern_2_removedBackground.png" />
-      <None Include="wwwroot\images\Zweig_darkish_RB.png" />
+      <Folder Include="wwwroot\images\About\Antrags-Zeit\" />
+      <Folder Include="wwwroot\images\About\Beziehungsalltag\" />
+      <Folder Include="wwwroot\images\About\Kennenlernphase\" />
+      <Folder Include="wwwroot\images\Welcome\" />
     </ItemGroup>
     
-    <ItemGroup>
-        <Content Include="wwwroot\images\*\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+<!--    <ItemGroup>-->
+<!--        <Content Include="wwwroot\images\*\*">-->
+<!--            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
+<!--        </Content>-->
+<!--    </ItemGroup>-->
 
 </Project>
