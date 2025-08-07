@@ -189,23 +189,12 @@
 
 @code {
 
-    [Parameter]
-    public bool IsMeetingPhaseVisible { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> IsMeetingPhaseVisibleChanged { get; set; }
-
-    [Parameter]
-    public bool IsProposalPhaseVisible { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> IsProposalPhaseVisibleChanged { get; set; }
-
-    [Parameter]
-    public bool IsRelationshipPhaseVisible { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> IsRelationshipPhaseVisibleChanged { get; set; }
+    [Parameter] public bool IsMeetingPhaseVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsMeetingPhaseVisibleChanged { get; set; }
+    [Parameter] public bool IsProposalPhaseVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsProposalPhaseVisibleChanged { get; set; }
+    [Parameter] public bool IsRelationshipPhaseVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsRelationshipPhaseVisibleChanged { get; set; }
 
     private List<AboutImages> images = [];
     private List<AboutImages> titleImages = [];
@@ -271,28 +260,31 @@
 
     public async Task ToggleSection(int num)
     {
+        var visibility = new Dictionary<string, bool>
+        {
+            {
+                "MeetingPhase", false
+            },
+            {
+                "ProposalPhase", false
+            },
+            {
+                "RelationshipPhase", false
+            }
+        };
+
         switch (num)
         {
-            case 1:
-                await IsMeetingPhaseVisibleChanged.InvokeAsync(!IsMeetingPhaseVisible);
-                await IsProposalPhaseVisibleChanged.InvokeAsync(false);
-                await IsRelationshipPhaseVisibleChanged.InvokeAsync(false);
-                break;
-            case 2:
-                await IsMeetingPhaseVisibleChanged.InvokeAsync(false);
-                await IsProposalPhaseVisibleChanged.InvokeAsync(false);
-                await IsRelationshipPhaseVisibleChanged.InvokeAsync(!IsRelationshipPhaseVisible);
-                break;
-            case 3:
-                await IsMeetingPhaseVisibleChanged.InvokeAsync(false);
-                await IsProposalPhaseVisibleChanged.InvokeAsync(!IsProposalPhaseVisible);
-                await IsRelationshipPhaseVisibleChanged.InvokeAsync(false);
-                break;
-            default:
-                await IsMeetingPhaseVisibleChanged.InvokeAsync(false);
-                await IsProposalPhaseVisibleChanged.InvokeAsync(false);
-                await IsRelationshipPhaseVisibleChanged.InvokeAsync(false);
-                break;
+            case 1: visibility["MeetingPhase"] = true; break;
+            case 2: visibility["RelationshipPhase"] = true; break;
+            case 3: visibility["ProposalPhase"] = true; break;
+            default: visibility["MeetingPhase"] = true; break;
         }
+
+        await IsMeetingPhaseVisibleChanged.InvokeAsync(visibility["MeetingPhase"]);
+        await IsRelationshipPhaseVisibleChanged.InvokeAsync(visibility["RelationshipPhase"]);
+        await IsProposalPhaseVisibleChanged.InvokeAsync(visibility["ProposalPhase"]);
+        
+        StateHasChanged();
     }
 }

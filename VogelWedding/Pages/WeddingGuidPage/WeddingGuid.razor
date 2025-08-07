@@ -142,7 +142,7 @@
                                    </div>
                               </div>
                          </div>
-                         
+
                          <!-- Contributions -->
                          <div class="col-md-4">
                               <div class="card">
@@ -222,7 +222,7 @@
                                         <Schedule/>
                                    </div>
                               }
-                              
+
                               @if (IsContributionsVisible)
                               {
                                    <div id="scheduleSection">
@@ -247,7 +247,7 @@
                          </div>
                     </div>
                </div>
-               
+
                @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
                {
                     <div class="card aboutInformation-container mt-4" id="informationSection">
@@ -344,65 +344,45 @@
 
      private void ToggleSection(int num)
      {
+          var visibility = new Dictionary<string, bool>
+          {
+               {
+                    "Ceremony", false
+               },
+               {
+                    "LoveTrail", false
+               },
+               {
+                    "Party", false
+               },
+               {
+                    "Addresses", false
+               },
+               {
+                    "Schedule", false
+               },
+               {
+                    "Contributions", false
+               }
+          };
+
           switch (num)
           {
-               case 1:
-                    IsCeremonyVisible = true;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = false;
-                    break;
-               case 2:
-                    IsCeremonyVisible = false;
-                    IsLoveTrailVisible = true;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = false;
-                    break;
-               case 3:
-                    IsCeremonyVisible = false;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = true;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = false;
-                    break;
-               case 4:
-                    IsCeremonyVisible = false;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = true;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = false;
-                    break;
-               case 5:
-                    IsCeremonyVisible = false;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = true;
-                    IsContributionsVisible = false;
-                    break;
-               case 6:
-                    IsCeremonyVisible = false;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = true;
-                    break;
-               default:
-                    IsCeremonyVisible = true;
-                    IsLoveTrailVisible = false;
-                    IsPartyVisible = false;
-                    IsAddressesVisible = false;
-                    IsScheduleVisible = false;
-                    IsContributionsVisible = false;
-                    break;
+               case 1: visibility["Ceremony"] = true; break;
+               case 2: visibility["LoveTrail"] = true; break;
+               case 3: visibility["Party"] = true; break;
+               case 4: visibility["Addresses"] = true; break;
+               case 5: visibility["Schedule"] = true; break;
+               case 6: visibility["Contributions"] = true; break;
+               default: visibility["Ceremony"] = true; break;
           }
+
+          IsCeremonyVisible = visibility["Ceremony"];
+          IsLoveTrailVisible = visibility["LoveTrail"];
+          IsPartyVisible = visibility["Party"];
+          IsAddressesVisible = visibility["Addresses"];
+          IsScheduleVisible = visibility["Schedule"];
+          IsContributionsVisible = visibility["Contributions"];
 
           StateHasChanged();
      }
