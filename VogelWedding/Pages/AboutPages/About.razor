@@ -1,14 +1,8 @@
 @page "/ueber"
+
 @inject AccessService AccessService
 @inject IJSRuntime JSRuntime
-
-
-@*
-    Inhalt:
-    ✅ Über uns
-    ✅ Über die Kapelle 
-    ✅ Über die Factory (invited)
-*@
+@inject IBlazorCurrentDeviceService CurrentDevice
 
 <div class="about-wrapper">
     <div class="background">
@@ -27,14 +21,14 @@
 
     <!-- About us section -->
     <div class="card about-container" id="aboutUsSection">
-        <div class="card-body about-card">
+        <div class="@(IsMobile ? "about-card" : "card-body about-card")">
             <AboutUs/>
         </div>
     </div>
 
     <!-- About Grid section -->
     <div class="card about-container mt-4" id="aboutUsGridSection">
-        <div class="card-body about-card">
+        <div class="@(IsMobile ? "about-card" : "card-body about-card")">
             <AboutUsGrid @bind-IsMeetingPhaseVisible="meetingPhaseVisible"
                          @bind-IsRelationshipPhaseVisible="relationshipPhaseVisible"
                          @bind-IsProposalPhaseVisible="proposalPhaseVisible"/>
@@ -42,34 +36,38 @@
         </div>
     </div>
 
-    <!-- About the chapel section -->
-    <div class="card about-container mt-5" id="aboutTheChapelSection">
-        <div class="card-body about-card">
-            <AboutTheChapel/>
-        </div>
-    </div>
-
-    <!-- About the factory section -->
-    @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
-    {
-    <div class="card about-container mt-5" id="aboutTheFactorySection">
-        <div class="card-body about-card">
-            <AboutTheFactory/>
-        </div>
-    </div>
-    }
+    
+    @* <!-- About the chapel section --> *@
+    @* <div class="card about-container mt-5" id="aboutTheChapelSection"> *@
+    @*     <div class="card-body about-card"> *@
+    @*         <AboutTheChapel/> *@
+    @*     </div> *@
+    @* </div> *@
+    @* *@
+    @* <!-- About the factory section --> *@
+    @* @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited) *@
+    @* { *@
+    @* <div class="card about-container mt-5" id="aboutTheFactorySection"> *@
+    @*     <div class="card-body about-card"> *@
+    @*         <AboutTheFactory/> *@
+    @*     </div> *@
+    @* </div> *@
+    @* } *@
 </div>
 
 @code {
     private bool meetingPhaseVisible;
     private bool relationshipPhaseVisible;
     private bool proposalPhaseVisible;
+    private bool IsMobile { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            IsMobile = await CurrentDevice.Mobile();
             await JSRuntime.InvokeVoidAsync("scrollToFragment");
+            StateHasChanged();
         }
     }
 

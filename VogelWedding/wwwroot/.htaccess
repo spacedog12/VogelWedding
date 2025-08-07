@@ -1,0 +1,7 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Ensure all routes are routed to index.html to allow Blazor routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.html [L]

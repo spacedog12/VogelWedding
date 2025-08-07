@@ -17,6 +17,27 @@
     padding-top: 2rem;
 }
 
+.aboutInformation-container {
+    position: relative;
+    z-index: 10;
+    margin: 2rem auto 0rem auto;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+}
+
+@media (min-width: 768px) {
+    .aboutInformation-container {
+        padding-top: 2rem;
+    }
+}
+    
+@media (max-width: 768px) {
+    .information-card {
+        margin-top: 2rem !important; /* Increased margin for mobile view */
+    }
+}
+
 .card-body.information-card {
     z-index: 10;
     background-color: transparent;
@@ -53,7 +74,7 @@
 
 .information-card .col-md-4 {
     flex: 0 0 auto;
-    width: 20%; /* Since you have 5 items, each should take up 20% */
+    width: 16.667%; /* Since you have 5 items, each should take up 20% */
     padding: 0 0.5rem; /* Add some spacing between cards */
 }
 

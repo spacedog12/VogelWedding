@@ -1,3 +1,4 @@
+using BlazorCurrentDevice;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<SupabaseWishlistService>();
 builder.Services.AddScoped<InformationSectionService>();
 builder.Services.AddRadzenComponents();
 builder.Services.AddMudServices();
+builder.Services.AddBlazorCurrentDevice();
 
 
 await builder.Build().RunAsync();

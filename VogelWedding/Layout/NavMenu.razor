@@ -73,6 +73,13 @@
                             <span class="bi bi-clock-fill" aria-hidden="true"></span>
                             <span class="nav-text ms-1 ps-2">Tagesablauf</span>
                         </NavLink>
+                        
+                        <NavLink class="nav-link" href="information"
+                                 @onclick="() => NavigateToSection(6)"
+                                 ActiveClass="@(InformationSection.SelectedSection == 6 ? "active" : "")">
+                            <span class="bi bi-box-seam-fill" aria-hidden="true"></span>
+                            <span class="nav-text ms-1 ps-2">Beiträge</span>
+                        </NavLink>
                     </div>
                 </li>
 

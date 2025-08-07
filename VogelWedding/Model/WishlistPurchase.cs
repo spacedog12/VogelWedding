@@ -1,4 +1,5 @@
 using Supabase.Postgrest.Attributes;
+using System.ComponentModel.DataAnnotations;
 namespace VogelWedding.Model;
 
 [Table("WishlistPurchases")]
@@ -17,6 +18,7 @@ public class WishlistPurchase : BaseModel
 	
 	
 	[Column("email")]
+	[EmailAddress(ErrorMessage = "Bitte geben Sie eine gültige E-Mail-Adresse ein")]
 	public string Email { get; set; }
 	
 	

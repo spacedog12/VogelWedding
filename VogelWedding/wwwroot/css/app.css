@@ -258,6 +258,7 @@ code {
     width: 40%;
     height: auto;
     top: 50%;
+    opacity: 0.5;
 }
 
 #leftBranch {

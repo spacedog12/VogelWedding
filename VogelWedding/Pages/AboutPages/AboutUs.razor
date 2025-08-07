@@ -1,7 +1,9 @@
+@inject IBlazorCurrentDeviceService CurrentDevice
+
 <div class="card">
-    <div class="card-body">
-        <h2 class="card-title">Unsere Geschichte</h2>
-        <h5 class="card-subtitle mt-4">vom Insta-Live zur Lebensreise</h5>
+    <div class="@(IsMobile ? "" : "card-body")">
+        <h1 class="card-title">Unsere Geschichte</h1>
+        <h3 class="card-subtitle mt-6 mb-3">vom Insta-Live zur Lebensreise</h3>
 
         <div class="card-text">
             <p>Manchmal schreibt das Leben die besten Drehbücher. Und manchmal beginnt alles mit einem Instagram-Live.</p>
@@ -17,3 +19,18 @@
         </div>
     </div>
 </div>
+
+@code {
+
+    private bool IsMobile { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
+
+}

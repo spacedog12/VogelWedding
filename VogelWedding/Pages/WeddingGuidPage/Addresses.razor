@@ -5,22 +5,22 @@
 
 @* <div class="card"> *@
 @*     <div class="card-body"> *@
-        <h2 class="card-title">Adressen</h2>
+        <h1 class="card-title">Adressen</h1>
         <hr class="my-4 d-none d-md-block"/>
 
         <!-- Mobile view -->
         <div class="mt-4 d-md-none">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Peterskapelle</h5>
+                    <h2 class="card-title">Peterskapelle</h2>
 
                     <div class="mb-3">
-                        <h6 class="form-label">Adresse:</h6>
+                        <h4 class="form-label">Adresse:</h4>
                         <p class="mb-0">Kapellplatz 1a<br/>6004 Luzern</p>
                     </div>
 
                     <div class="mb-3">
-                        <h6 class="form-label">Anreise/Parking:</h6>
+                        <h4 class="form-label">Anreise/Parking:</h4>
                         <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen
                             Verkehrsmitteln erreichbar.
                             Die nächste Bushaltestelle ist Schwanenplatz, Parkmöglichkeiten gibt es in den umliegenden
@@ -29,9 +29,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <h6>Mehr Infos:</h6>
+                        <h4>Über die Location:</h4>
                         <div class="text-center">
-                            <a href="/ueber#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a>
+                            <a href="/information#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a>
                         </div>
                         @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheChapelSection"))"><u>Mehr über die Kapelle</u></button> *@
                     </div>
@@ -42,15 +42,15 @@
             {
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Factory</h5>
+                        <h2 class="card-title">Factory</h2>
 
                         <div class="mb-3">
-                            <h6 class="form-label">Adresse:</h6>
+                            <h4 class="form-label">Adresse:</h4>
                             <p class="mb-0">Bruchstrasse 59<br/>6003 Luzern</p>
                         </div>
 
                         <div class="mb-3">
-                            <h6 class="form-label">Anreise/Parking:</h6>
+                            <h4 class="form-label">Anreise/Parking:</h4>
                             <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
                                 erreichbar.
                                 Parkplätze befinden sich an folgenden Orten, sind besonders nah und die ganze Nacht
@@ -59,15 +59,12 @@
                                 <li>Migros-Parking an der Bruchstrasse 18</li>
                                 <li>Coop-Parking an der Bruchstrasse 9</li>
                             </ul>
-                            <p>Es empfiehlt sich,
-                                frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
-                                Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
                         </div>
 
                         <div class="mb-3">
-                            <h6>Mehr Infos:</h6>
+                            <h4>Über die Location:</h4>
                             <div class="text-center">
-                                <a href="/ueber#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a>
+                                <a href="/information#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a>
                             </div>
                             @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheFactorySection"))"><u>Mehr über die Factory</u></button> *@
                         </div>
@@ -79,10 +76,10 @@
         
         <!-- Desktop view -->
         <div class="d-none d-md-block">
-            <h5 class="card-title mt-4">Peterskapelle</h5>
+            <h2 class="card-title mt-4">Peterskapelle</h2>
             <div class="row mt-3">
                 <div class="col-2">
-                    <h6 class="form-label">Adresse:</h6>
+                    <h4 class="form-label">Adresse:</h4>
                 </div>
                 <div class="col">
                     <p class="mb-0">Kapellplatz 1a<br/>6004 Luzern</p>
@@ -90,7 +87,7 @@
             </div>
             <div class="row mt-4">
                 <div class="col-2">
-                    <h6 class="form-label">Anreise/Parking:</h6>
+                    <h4 class="form-label">Anreise/Parking:</h4>
                 </div>
                 <div class="col">
                     <p class="mb-0">Die Kapelle liegt zentral in der Stadt und ist gut mit öffentlichen Verkehrsmitteln
@@ -100,24 +97,24 @@
                         (Bahnhof, Altstadt, Löwencenter usw.).</p>
                 </div>
             </div>
-            <div class="row mt-3 d-flex align-items-center">
-                <div class="col-2">
-                    <h6 class="mb-0">Mehr Infos:</h6>
-                </div>
-                <div class="col">
-                    <a href="/ueber#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a>
-                    @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheChapelSection"))"><u>Mehr über die Kapelle</u></button> *@
-                </div>
-            </div>
+            @* <div class="row mt-3 d-flex align-items-center"> *@
+            @*     <div class="col-2"> *@
+            @*         <h4 class="mb-0">Über die Location:</h4> *@
+            @*     </div> *@
+            @*     <div class="col"> *@
+            @*         <a href="/information#aboutTheChapelSection" class="btn btn-link">Mehr über die Kapelle</a> *@
+            @*         $1$ <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheChapelSection"))"><u>Mehr über die Kapelle</u></button> #1# *@
+            @*     </div> *@
+            @* </div> *@
 
             @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
             {
                 <hr class="my-4"/>
 
-                <h5 class="card-title mt-4">Factory</h5>
+                <h2 class="card-title mt-4">Factory</h2>
                 <div class="row mt-3">
                     <div class="col-2">
-                        <h6 class="form-label">Adresse:</h6>
+                        <h4 class="form-label">Adresse:</h4>
                     </div>
                     <div class="col">
                         <p class="mb-0">Bruchstrasse 59<br/>6003 Luzern</p>
@@ -125,7 +122,7 @@
                 </div>
                 <div class="row mt-4">
                     <div class="col-2">
-                        <h6 class="form-label">Anreise/Parking:</h6>
+                        <h4 class="form-label">Anreise/Parking:</h4>
                     </div>
                     <div class="col">
                         <p class="mb-0">Auch die Factory ist gut mit dem Auto und öffentlichen Verkehrsmitteln
@@ -136,20 +133,17 @@
                             <li>das Migros-Parking an der Bruchstrasse 18</li>
                             <li>Coop-Parking an der Bruchstrasse 9</li>
                         </ul>
-                        <p>Es empfiehlt sich,
-                            frühzeitig anzureisen oder öffentliche Verkehrsmittel zu nutzen.
-                            Die nächsten Bushaltestellen sind Pilatusplatz oder Hirzenhof.</p>
                     </div>
                 </div>
-                <div class="row mt-3 d-flex align-items-center">
-                    <div class="col-2 ">
-                        <h6 class="mb-0">Mehr Infos:</h6>
-                    </div>
-                    <div class="col">
-                        <a href="/ueber#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a>
-                        @* <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheFactorySection"))"><u>Mehr über die Factory</u></button> *@
-                    </div>
-                </div>
+                @* <div class="row mt-3 d-flex align-items-center"> *@
+                @*     <div class="col-2 "> *@
+                @*         <h4 class="mb-0">Über die Location:</h4> *@
+                @*     </div> *@
+                @*     <div class="col"> *@
+                @*         <a href="/information#aboutTheFactorySection" class="btn btn-link">Mehr über die Factory</a> *@
+                @*         $1$ <button class="btn btn-link p-0" @onclick="@(() => NavigationManager.NavigateTo("/ueber#aboutTheFactorySection"))"><u>Mehr über die Factory</u></button> #1# *@
+                @*     </div> *@
+                @* </div> *@
             }
         </div>
 @*     </div> *@

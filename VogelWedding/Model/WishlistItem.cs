@@ -1,10 +1,12 @@
 using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 namespace VogelWedding.Model;
 
 [Table("Wishlist")]
 public class WishlistItem: BaseModel
 {
 	[Column("id")]
+	[PrimaryKey("id")]
 	public Guid ID { get; set; }
 	
 	

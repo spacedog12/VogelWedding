@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BlazorCurrentDevice" Version="1.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.3" PrivateAssets="all"/>
         <PackageReference Include="MudBlazor" Version="8.8.0" />
@@ -17,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="HelperCode\" />
       <Folder Include="wwwroot\images\About\Antrags-Zeit\" />
       <Folder Include="wwwroot\images\About\Beziehungsalltag\" />
       <Folder Include="wwwroot\images\About\Kennenlernphase\" />

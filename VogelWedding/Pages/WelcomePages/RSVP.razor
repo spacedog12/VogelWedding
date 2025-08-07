@@ -17,7 +17,7 @@
 
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">Anmeldung</h2>
+        <h1 class="card-title">Anmeldung</h1>
         <hr class="my-4 d-none d-md-block"/>
 
         <EditForm EditContext="@editContext"
@@ -59,7 +59,7 @@
                            class="@GetValidationClass(() => model.EmailAddress)"
                            @attributes="@(new Dictionary<string, object>
                                         {
-                                            ["placeholder"] = "", ["type"] = "email"
+                                            ["placeholder"] = " ", ["type"] = "email"
                                         })"/>
                 <label for="floatingInput">@GetDisplayName(() => model.EmailAddress)</label>
                 <ValidationMessage For="@(() => model.EmailAddress)"/>
@@ -68,7 +68,7 @@
 
             <!-- Address -->
             <div class="mb-3">
-                <label class="from-label">Addresse</label>
+                @* <h5 class="from-label">Addresse</h5> *@
 
                 <!-- Street -->
                 <div class="mb-2 form-floating">
@@ -118,8 +118,8 @@
                         <div class="form-check">
                             <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
                                         id="attending-receptionAndCeremony"/>
-                            <label class="form-check-label" for="attending-yes">Ich nehme am Empfang, inklusive
-                                Zeremonie teil</label>
+                            <label class="form-check-label" for="attending-yes">Ich nehme an der Zeremonie, inklusive
+                                Empfang teil</label>
                         </div>
                     }
                     else
@@ -127,23 +127,15 @@
                         <div class="form-check">
                             <InputRadio Value="@("ReceptionCeremonyAndParty")" class="form-check-input"
                                         id="attending-receptionAndCeremony"/>
-                            <label class="form-check-label" for="attending-yes">Ich nehme an allem teil (Empfang,
-                                Zeremonie und Fest)</label>
+                            <label class="form-check-label" for="attending-yes">Ich nehme an Empfang, Zeremonie und Fest teil.</label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <InputRadio Value="@("CeremonyOnly")" class="form-check-input" id="attending-no"/>
+                            <label class="form-check-label" for="attending-no">Ich nehme nur an der Zeremonie teil</label>
                         </div>
                     }
-                    <div class="form-check">
-                        <InputRadio Value="@("CeremonyOnly")" class="form-check-input" id="attending-no"/>
-                        <label class="form-check-label" for="attending-no">Ich nehme nur an der Zeremonie teil</label>
-                    </div>
-
-                    @* @if (AccessService.CurrentLevel == AccessLevel.GuestInvited) *@
-                    @* { *@
-                    @*     <div class="form-check"> *@
-                    @*         <InputRadio Value="@("PartyOnly")" class="form-check-input" *@
-                    @*                     id="attending-receptionAndCeremony"/> *@
-                    @*         <label class="form-check-label" for="attending-yes">Ich nehme nur am Fest teil</label> *@
-                    @*     </div> *@
-                    @* } *@
+                    
                     <div class="form-check">
                         <InputRadio Value="@("CanNotAttend")" class="form-check-input" id="attending-no"/>
                         <label class="form-check-label" for="attending-no">Ich kann nicht teil nehmen</label>
@@ -162,7 +154,7 @@
                         <div style="width: 35%">
                             <InputNumber @bind-Value="model.NumberOfAttendees"
                                          DisplayName="Anzahl Teilnehmer"
-                                         min="0"
+                                         min="1"
                                          max="10"
                                          class="@GetValidationClassForNumber(() => model.NumberOfAttendees)"
                             />
@@ -172,37 +164,41 @@
 
 
                     <!-- Buffet contribution -->
-                    <div class="mb-5 mt-5">
-                        <InputCheckbox @bind-Value="model.BuffetContribution" class="form-check-input mr-3"/>
-                        <label class="form-check-label">Ich bringe gerne etwas fürs Kuchenbuﬀet am Nachmittag beim
-                            Empfang mit!</label>
-                        
-                       @if (model.BuffetContribution)
-                       {
-                           <h2 class="mt-5"><strong style="color: red">Wichtige Information:</strong></h2>
-                           <label>
-                               <strong>
-                                   Es wird eine Person mit lebensbedrohlicher Nussallergie anwesend sein.
-                                   Bitte verzichte daher - wenn möglich- auf Nüsse oder kennzeichne klar,
-                                   wenn dein Beitrag Nüsse enthält.<br/>
-                                   <u>Achtung:</u> Alles mit <span style="color: red">ERDNUSS</span> ist ganz verboten -
-                                   darf auch keine Spuren im Raum/Luft enthalten!<br/>
-                                   Vielen Dank für dein Verständnis und deine Rücksichtnahme!
-                               </strong>
-                           </label>
-                           @if (!infoAccepted)
-                           {
-                               <div class="text-center mt-5">
-                                   <button type="button"
-                                           class="btn btn-primary"
-                                           style=""
-                                           @onclick="AcceptInfo">
-                                       Ich verzichte auf ERDNÜSSE
-                                   </button>
-                               </div>
-                           }
-                       }
-                    </div>
+                    @if (model.Attending != "CeremonyOnly")
+                    {
+                        <div class="mb-5 mt-5">
+                            <InputCheckbox @bind-Value="model.BuffetContribution" class="form-check-input mr-3"/>
+                            <label class="form-check-label">Ich bringe gerne etwas fürs Kuchenbuﬀet am Nachmittag beim
+                                Empfang mit!</label>
+
+                            @if (model.BuffetContribution)
+                            {
+                                <h2 class="mt-5"><strong style="color: red">Wichtige Information:</strong></h2>
+                                <label>
+                                    <strong>
+                                        Es wird eine Person mit lebensbedrohlicher Nussallergie anwesend sein.
+                                        Bitte verzichte daher - wenn möglich- auf Nüsse oder kennzeichne klar,
+                                        wenn dein Beitrag Nüsse enthält.<br/>
+                                        <u>Achtung:</u> Alles mit <span style="color: red">ERDNUSS</span> ist ganz
+                                        verboten -
+                                        darf auch keine Spuren im Raum/Luft enthalten!<br/>
+                                        Vielen Dank für dein Verständnis und deine Rücksichtnahme!
+                                    </strong>
+                                </label>
+                                @if (!infoAccepted)
+                                {
+                                    <div class="text-center mt-5">
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                style=""
+                                                @onclick="AcceptInfo">
+                                            Ich verzichte auf ERDNÜSSE
+                                        </button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
 
 
                     <!-- Message -->
@@ -211,10 +207,14 @@
                         <InputTextArea @bind-Value="model.Message" class="form-control"/>
                     </div>
                 }
+                else
+                {
+                    model.NumberOfAttendees = 0;
+                }
             }
             else
             {
-                model.NumberOfAttendees = 0;
+                model.NumberOfAttendees = 1;
             }
 
             <div class="text-center">
@@ -294,7 +294,7 @@
         if (!hasInvalidSubmit && (model.Attending is null || model.Attending == "CanNotAttend"))
             return "form-control";
 
-        if (model.NumberOfAttendees <= 0 || model.NumberOfAttendees > 10)
+        if ( model.NumberOfAttendees > 10) // model.NumberOfAttendees <= 1 ||
             return "form-control is-invalid";
 
         return "form-control is-valid";

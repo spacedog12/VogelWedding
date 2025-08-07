@@ -32,7 +32,7 @@ public class RsvpEntry : BaseModel, IValidatableObject
     
     
     [Column("number_of_attendees")]
-    // [Range(1, 11, ErrorMessage = "Bitte gib die Anzahl Teilnehmer an.")]
+    [Range(0, 11, ErrorMessage = "Bitte gib die Anzahl Teilnehmer an.")]
     [Display(Name = "Anzahl Personen")]
     public int NumberOfAttendees { get; set; }
     

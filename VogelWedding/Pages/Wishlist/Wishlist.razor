@@ -25,16 +25,16 @@
     <div class="card wishlist-container">
         <div class="card-body wishlist-card">
             @* <h2 class="card-title">Wilkommen</h2> *@
-            <h2>Das grösste Geschenk für uns seid ihr</h2>
+            <h1>Das grösste Geschenk für uns seid ihr</h1>
             <p>
                 – dass ihr diesen Tag mit uns feiert, mitlebt, mitsingt,
                 mitgeniesst. Wer uns darüber hinaus gerne beschenken möchte:
                 wir freuen uns über Beiträge zu unserem gemeinsamen Start ins Ehe-Leben.
                 Wir haben eigentlich schon alles – <strong>außer Zeit zum Genießen</strong>.
-                Und genau da kommt ihr ins Spiel.<br />
+                Und genau da kommt ihr ins Spiel.<br/>
                 Wenn ihr uns eine Freude machen möchtet, dann am liebsten mit Dingen, die den Alltag versüßen
                 und uns gemeinsame Genussmomente schenken.
-                Ob Wellness, Massagen, gutes Essen, edle Tropfen, Zigarren (für die stilvollen Minuten), Kulturtrips,
+                Ob Wellness, Massagen, gutes Essen, edle Tropfen, Kulturtrips,
                 Spieleabende, Ausflüge, Literatur, Theater, Musik oder Museumsbesuche –
                 wir lieben alles, was entspannt, inspiriert oder einfach Spaß macht.
                 Also: Schenkt uns keinen Toaster und keine Dekorationen – <strong>schenkt uns Erinnerungen</strong>.</p>
@@ -49,7 +49,7 @@
     <!-- wishlist -->
     <div class="card wishlist-container mt-2">
         <div class="card-body wishlist-card">
-            <h2 class="card-title">Geschenke</h2>
+            <h1 class="card-title">Geschenke</h1>
 
             @if (wishlistItems == null)
             {
@@ -65,7 +65,8 @@
                                 <div class="card-body item-card">
                                     @if (!string.IsNullOrEmpty(item.ImageUrl))
                                     {
-                                        <img src="@item.ImageUrl" alt="Image for @item.Title" class="wishlist-item-image" />
+                                        <img src="@item.ImageUrl" alt="Image for @item.Title"
+                                             class="wishlist-item-image"/>
                                     }
                                     <h3> @item.Title</h3>
                                     <p>@item.Description</p>
@@ -95,7 +96,7 @@
                                     }
 
                                     <button class="btn btn-primary" disabled="@ButtonDisabled(item)"
-                                        @onclick="() => OpenBuyModal(item)">
+                                            @onclick="() => OpenBuyModal(item)">
                                         Schenken
                                     </button>
                                 </div>
@@ -117,33 +118,38 @@
                             </div>
                             <div class="modal-body">
                                 <EditForm Model="@purchaseModel" OnValidSubmit="SubmitPurchase">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="mb-3">
                                         <label>Vorname</label>
-                                        <InputText class="form-control" @bind-Value="purchaseModel.FirstName" required />
+                                        <InputText class="form-control" @bind-Value="purchaseModel.FirstName" required/>
                                     </div>
                                     <div class="mb-3">
                                         <label>Nachname</label>
-                                        <InputText class="form-control" @bind-Value="purchaseModel.FamilyName" required />
+                                        <InputText class="form-control" @bind-Value="purchaseModel.FamilyName"
+                                                   required/>
                                     </div>
                                     <div class="mb-3">
                                         <label>Email</label>
-                                        <InputText class="form-control" @bind-Value="purchaseModel.Email" required />
+                                        <InputText class="form-control" @bind-Value="purchaseModel.Email" required/>
+                                        <ValidationMessage For="@(() => purchaseModel.Email)"/>
                                     </div>
+
                                     @if (selectedItem.Price.HasValue && !selectedItem.Quantity.HasValue)
                                     {
                                         <div class="mb-3">
-                                            <label>Betrag (max. @selectedItem.Price.Value.ToString("C", new
-                                                                                        CultureInfo("de-CH")))</label>
-                                    <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount" min="10"
-                                        max="@selectedItem.Price" />
-                                </div>
-                                                                }
+                                            <label>Betrag</label> <!-- (max. @selectedItem.Price.Value.ToString("C", new
+                                                                        CultureInfo("de-CH"))) -->
+                                            <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount"
+                                                         min="10"
+                                                         max="@selectedItem.Price"/>
+                                        </div>
+                                    }
                                     else if (!selectedItem.Price.HasValue && !selectedItem.Quantity.HasValue)
                                     {
                                         <div class="mb-3">
                                             <label>Betrag</label>
-                                            <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount" min="10" />
+                                            <InputNumber class="form-control" @bind-Value="purchaseModel.PaidAmount"
+                                                         min="10"/>
                                         </div>
                                     }
                                     else if (selectedItem.Price.HasValue && selectedItem.Quantity.HasValue)
@@ -151,7 +157,7 @@
                                         <p>Preis pro
                                             Stück: @selectedItem.Price.Value.ToString("C", new CultureInfo("de-CH"))
                                         </p>
-                                        <InputNumber class="d-none" @bind-Value="purchaseModel.PaidAmount" />
+                                        <InputNumber class="d-none" @bind-Value="purchaseModel.PaidAmount"/>
                                         @* <InputNumber class="d-none" @bind-Value="purchaseModel.Quantity"/> *@
                                     }
                                     <button type="submit" class="btn btn-primary">Jetzt schenken</button>
@@ -172,7 +178,9 @@
 
 
 @code {
+
     private List<WishlistItem> wishlistItems;
+
     // private List<WishlistImages> images = [];
     private WishlistItem selectedItem;
     private WishlistPurchase purchaseModel = new();
@@ -290,6 +298,7 @@
 
             // Refresh the wishlist items
             wishlistItems = await GetWishlistItemsAsync();
+            SortWishlistItems();
 
             // Close the modal
             showModal = false;

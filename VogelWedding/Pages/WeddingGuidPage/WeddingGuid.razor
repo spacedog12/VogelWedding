@@ -5,6 +5,7 @@
 @inject SupabaseService Supabase
 @inject IJSRuntime JSRuntime
 @inject InformationSectionService InformationSection
+@inject IBlazorCurrentDeviceService CurrentDevice;
 
 <div class="information-wrapper">
      <div class="background">
@@ -112,7 +113,7 @@
                                         <div class="text-center">
                                              <button class="btn btn-primary"
                                                      @onclick="() => ToggleSectionAndScroll(4)">
-                                                  Locations & Addressen
+                                                  Locations
                                              </button>
                                         </div>
                                    </div>
@@ -141,6 +142,29 @@
                                    </div>
                               </div>
                          </div>
+                         
+                         <!-- Contributions -->
+                         <div class="col-md-4">
+                              <div class="card">
+                                   <div class="card-body item-card text-center">
+                                        @if (!string.IsNullOrEmpty(GetImageUrl("Contributions")))
+                                        {
+                                             <div class="image-container"
+                                                  @onclick="async () => await ToggleSectionAndScroll(6)">
+                                                  <img src="@GetImageUrl("Contributions")"
+                                                       class="information-item-image"/>
+                                             </div>
+
+                                        }
+                                        <div class="text-center">
+                                             <button class="btn btn-primary"
+                                                     @onclick="() => ToggleSectionAndScroll(6)">
+                                                  Beiträge
+                                             </button>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
                     </div>
                }
 
@@ -158,49 +182,83 @@
      @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
      {
           <div class="card information-container mt-4" id="informationSection">
-               <div class="card-body information-card">
-                    <div class="row">
-                         <div class="card ">
-                              <div class="card-body item-card">
-                                   @if (IsCeremonyVisible)
-                                   {
-                                        <div id="ceremonySection">
-                                             <Ceremony/>
-                                        </div>
-                                   }
+               <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+                    @* <span>@IsMobile</span> *@
+                    @* <div class="row"> *@
 
-                                   @if (IsLoveTrailVisible)
-                                   {
-                                        <div id="loveTrailSection">
-                                             <LoveTrail/>
-                                        </div>
-                                   }
+                    <div class="card ">
+                         <div class="card-body item-card">
+                              @if (IsCeremonyVisible)
+                              {
+                                   <div id="ceremonySection">
+                                        <Ceremony/>
+                                   </div>
+                              }
 
-                                   @if (IsPartyVisible)
-                                   {
-                                        <div id="partySection">
-                                             <Party/>
-                                        </div>
-                                   }
+                              @if (IsLoveTrailVisible)
+                              {
+                                   <div id="loveTrailSection">
+                                        <LoveTrail/>
+                                   </div>
+                              }
 
-                                   @if (IsAddressesVisible)
-                                   {
-                                        <div id="addressSection">
-                                             <Addresses/>
-                                        </div>
-                                   }
+                              @if (IsPartyVisible)
+                              {
+                                   <div id="partySection">
+                                        <Party/>
+                                   </div>
+                              }
 
-                                   @if (IsScheduleVisible)
-                                   {
-                                        <div id="scheduleSection">
-                                             <Schedule/>
-                                        </div>
-                                   }
-                              </div>
+                              @if (IsAddressesVisible)
+                              {
+                                   <div id="addressSection">
+                                        <Addresses/>
+                                   </div>
+                              }
+
+                              @if (IsScheduleVisible)
+                              {
+                                   <div id="scheduleSection">
+                                        <Schedule/>
+                                   </div>
+                              }
+                              
+                              @if (IsContributionsVisible)
+                              {
+                                   <div id="scheduleSection">
+                                        <Contributions/>
+                                   </div>
+                              }
+                         </div>
+                    </div>
+                    @* </div> *@
+               </div>
+          </div>
+     }
+
+     @if (AccessService.CurrentLevel >= AccessLevel.GuestAll)
+     {
+          @if (IsAddressesVisible)
+          {
+               <div class="card aboutInformation-container mt-4" id="informationSection">
+                    <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+                         <div id="aboutTheChapelSection">
+                              <AboutTheChapel/>
                          </div>
                     </div>
                </div>
-          </div>
+               
+               @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+               {
+                    <div class="card aboutInformation-container mt-4" id="informationSection">
+                         <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+                              <div id="aboutTheFactorySection">
+                                   <AboutTheFactory/>
+                              </div>
+                         </div>
+                    </div>
+               }
+          }
      }
 </div>
 
@@ -212,8 +270,19 @@
      private bool IsPartyVisible = false;
      private bool IsAddressesVisible = false;
      private bool IsScheduleVisible = false;
+     private bool IsContributionsVisible = false;
+     private bool IsMobile { get; set; }
 
      private List<InformationImages> images = [];
+
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+     {
+          if (firstRender)
+          {
+               IsMobile = await CurrentDevice.Mobile();
+               StateHasChanged();
+          }
+     }
 
      protected override async Task OnInitializedAsync()
      {
@@ -261,6 +330,7 @@
                3 => "partySection",
                4 => "addressSection",
                5 => "scheduleSection",
+               6 => "contributions",
                _ => ""
           };
 
@@ -282,6 +352,7 @@
                     IsPartyVisible = false;
                     IsAddressesVisible = false;
                     IsScheduleVisible = false;
+                    IsContributionsVisible = false;
                     break;
                case 2:
                     IsCeremonyVisible = false;
@@ -289,6 +360,7 @@
                     IsPartyVisible = false;
                     IsAddressesVisible = false;
                     IsScheduleVisible = false;
+                    IsContributionsVisible = false;
                     break;
                case 3:
                     IsCeremonyVisible = false;
@@ -296,6 +368,7 @@
                     IsPartyVisible = true;
                     IsAddressesVisible = false;
                     IsScheduleVisible = false;
+                    IsContributionsVisible = false;
                     break;
                case 4:
                     IsCeremonyVisible = false;
@@ -303,6 +376,7 @@
                     IsPartyVisible = false;
                     IsAddressesVisible = true;
                     IsScheduleVisible = false;
+                    IsContributionsVisible = false;
                     break;
                case 5:
                     IsCeremonyVisible = false;
@@ -310,6 +384,15 @@
                     IsPartyVisible = false;
                     IsAddressesVisible = false;
                     IsScheduleVisible = true;
+                    IsContributionsVisible = false;
+                    break;
+               case 6:
+                    IsCeremonyVisible = false;
+                    IsLoveTrailVisible = false;
+                    IsPartyVisible = false;
+                    IsAddressesVisible = false;
+                    IsScheduleVisible = false;
+                    IsContributionsVisible = true;
                     break;
                default:
                     IsCeremonyVisible = true;
@@ -317,6 +400,7 @@
                     IsPartyVisible = false;
                     IsAddressesVisible = false;
                     IsScheduleVisible = false;
+                    IsContributionsVisible = false;
                     break;
           }
 

@@ -35,10 +35,10 @@ public class AccessService
         
         switch (code?.ToUpper())
         {
-            case "FREUDE2025":
+            case "FREUDE2026":
                 CurrentLevel = AccessLevel.GuestAll;
                 return true;
-            case "FEST2025":
+            case "FEST2026":
                 CurrentLevel = AccessLevel.GuestInvited;
                 return true;
             default:
