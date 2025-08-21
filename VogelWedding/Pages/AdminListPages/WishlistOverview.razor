@@ -1,0 +1,216 @@
+@page "/wishlist-overview"
+@using MudBlazor
+
+@inject SupabaseService Supabase
+@inject IBlazorCurrentDeviceService CurrentDevice
+
+<MudThemeProvider/>
+<MudPopoverProvider/>
+
+<div class="page-wrapper">
+    <Background/>
+
+    <div class="card page-container">
+        <!-- Revenue should -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted mb-5">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Übersicht</h1>
+                    <h3 class="card-subtitle">Einnahmen Soll:</h3>
+                    <p>@GetTotalAmountShouldRevenue().ToString("F2") CHF</p>
+                    <hr class="mt-4"/>
+                    <h3 class="card-subtitle">Einnahmen Ist:</h3>
+                    <p>@GetTotalAmountIsRevenue().ToString("F2") CHF</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wishlist overview -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted">
+            <MudTable Items="@_wishlistItems"
+                      Dense="true"
+                      Hover="true"
+                      Bordered="false"
+                      Filter="new Func<WishlistItem, bool>(FilterFunc)"
+                      SortLabel="Sort By"
+                      FixedHeader="true"
+                      HorizontalScrollbar="true"
+                      Height="645px"
+                      Loading="@_loading"
+                      LoadingProgressColor="Color.Info"
+                      Style="@(IsMobile ? "overflow-x:hidden; white-space: normal; width:100%;" : "overflow-x:auto; white-space: nowrap;")">
+                <ColGroup>
+                    /* Sort Number */
+                    <col style="width: 50px;"/>
+                    /* Title */
+                    <col style="width: 100px;"/>
+                    /* Quantity */
+                    <col style="width: 100px;"/>
+                    /* Price */
+                    <col style="width: 100px;"/>
+                    /* Total Amount */
+                    <col style="width: 100px;"/>
+                    /* Total Buyer */
+                    <col style="width: 100px;"/>
+                </ColGroup>
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Geschenkübersicht</MudText>
+                    <MudSpacer/>
+                    <MudTextField @bind-Value="_searchString"
+                                  Placeholder="Suchen"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  AdornmentColor="Color.Primary"
+                                  IconSize="Size.Medium"
+                                  Class="mt-0"/>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                           SortBy="new Func<WishlistItem, object>(x => x.SortNumber)">Nr.
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistItem, object>(x => x.Title)">Geschenk
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistItem, object>(x => x.Quantity)">Rest Menge
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistItem, object>(x => x.Price)">Zielwert
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistItem, object>(x => x.PaidAmount)">Total Einnahmen
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistItem, object>(x => x.NumberPaidUsers)">Total
+                            Käufer
+                        </MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr."
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.SortNumber
+                    </MudTd>
+                    <MudTd DataLabel="Geschenk"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.Title
+                    </MudTd>
+                    <MudTd DataLabel="Rest Menge"
+                           Class="text-center"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.Quantity
+                    </MudTd>
+                    <MudTd DataLabel="Preis"
+                           Class="text-end"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @(context.Price?.ToString("F2") ?? "-")
+                        CHF
+                    </MudTd>
+                    <MudTd DataLabel="Total Einnahmen"
+                           Class="text-end"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @(context.PaidAmount?.ToString("F2") ?? "-") CHF
+                    </MudTd>
+                    <MudTd DataLabel="Total Käufer"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.NumberPaidUsers
+                    </MudTd>
+                </RowTemplate>
+
+                <NoRecordsContent>
+                    <MudText>Keine Einträge gefunden.</MudText>
+                </NoRecordsContent>
+            </MudTable>
+
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<WishlistItem> _wishlistItems = [];
+    private List<WishlistPurchase> _wishlistPurchases = [];
+    private decimal _totalAmount = 0;
+    private string _searchString = "";
+    private bool _loading = false;
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _wishlistItems = await GetWishlistItems();
+            _wishlistPurchases = await GetWishlistPurchases();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Wishlist items: {ex.Message}");
+            throw;
+        }
+    }
+
+    private async Task<List<WishlistItem>> GetWishlistItems()
+    {
+        return await Supabase.GetEntriesAsync<WishlistItem>();
+    }
+    
+    private async Task<List<WishlistPurchase>> GetWishlistPurchases()
+    {
+        return await Supabase.GetEntriesAsync<WishlistPurchase>();
+    }
+
+    private bool FilterFunc(WishlistItem element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString)) return true;
+
+        return element.Title?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private double GetTotalAmountShouldRevenue()
+    {
+        return _wishlistItems.Sum(item => item.PaidAmount ?? 0.0);
+    }
+
+    private double GetTotalAmountIsRevenue()
+    {
+        var num = 0.0;
+        
+        foreach (var item in _wishlistPurchases)
+        {
+            if (item.MoneyReceived && item.MoneyReceivedDate != null)
+            {
+                num += item.PaidAmount;
+            }
+        }
+
+        return num;
+    }
+
+}

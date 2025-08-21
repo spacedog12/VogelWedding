@@ -1,6 +1,7 @@
 @page "/enteredRSVPs"
 @inject AccessService AccessService
 @inject SupabaseService Supabase
+@inject IBlazorCurrentDeviceService CurrentDevice
 @using Radzen
 @using Radzen.Blazor
 @using MudBlazor
@@ -10,23 +11,26 @@
 <MudThemeProvider/>
 <MudPopoverProvider/>
 
-<div class="enteredRsvps-wrapper">
-    <div class="background">
-        <img src="images/backgroundImages/Luzern_1_rmb.png"
-             class="background-graphic"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="leftBranch"
-             class="background-graphic-branch"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="rightBranch"
-             class="background-graphic-branch"
-             alt=""/>
-    </div>
+<div class="page-wrapper">
+    <Background/>
 
-    <div class="enteredRsvps-container">
-        <div class="card enteredRsvps-card">
+    <div class="card page-container">
+        <!-- Summary -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted mb-5">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Übersicht</h1>
+                    <h3 class="card-subtitle">Total Teilnehmer:</h3>
+                    <p>@GetTotalAttendees(true) Fest / @GetTotalAttendees(false) Zeremonie</p>
+                    <hr class="mt-4"/>
+                    <h3 class="card-subtitle">Total Kuchen:</h3>
+                    <p>@GetTotalCakes()</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RSVP List -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted">
             <MudTable Items="@rsvpEntries"
                       Dense="true"
                       Hover="true"
@@ -35,10 +39,30 @@
                       SortLabel="Sort By"
                       FixedHeader="true"
                       HorizontalScrollbar="true"
-                      Height="650px"
-                      Loading="@_loading"   
+                      Height="645px"
+                      Loading="@_loading"
                       LoadingProgressColor="Color.Info"
-                     >
+                      Style="@(IsMobile ? "overflow-x:hidden; white-space: normal; width:100%;" : "overflow-x:auto; white-space: nowrap;")">
+                <ColGroup>
+                    /* Vorname */
+                    <col style="width: 60px"/>
+                    /* Nachname */
+                    <col style="width: 100px"/>
+                    /* Anmeldung */
+                    <col style="width: 100px"/>
+                    /* Teilnehmer */
+                    <col style="width: 100px"/>
+                    /* Email */
+                    <col style="width: 100px"/>
+                    /* Addresse */
+                    <col style="width: 100px"/>
+                    /* Buffet */
+                    <col style="width: 60px"/>
+                    /* Mitteilung */
+                    <col style="width: 200px; max-width: 200px"/>
+                    /* Registrierung von */
+                    <col style="width: 100px"/>
+                </ColGroup>
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Anmeldungen</MudText>
                     <MudSpacer/>
@@ -50,19 +74,19 @@
                                   Class="mt-0"/>
                 </ToolBarContent>
                 <HeaderContent>
-                    <MudTh Style="width: 4%">
+                    <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.FirstName)">Vorname
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.FamilyName)">Nachname
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<RsvpEntry, object>(x => x.FamilyName)">Nachname
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Attending)">Anmeldung
                         </MudTableSortLabel>
                     </MudTh>
-                    <MudTh Style="width: 8%">
+                    <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.NumberOfAttendees)">
                             Teilnehmer
                         </MudTableSortLabel>
@@ -71,12 +95,12 @@
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.EmailAddress)">Email
                         </MudTableSortLabel>
                     </MudTh>
-                    <MudTh Style="width: 30%">Addresse</MudTh>
+                    <MudTh>Addresse</MudTh>
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.BuffetContribution)">Buffet
                         </MudTableSortLabel>
                     </MudTh>
-                    <MudTh Style="width: 40%;">
+                    <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Message)">Mitteilung
                         </MudTableSortLabel>
                     </MudTh>
@@ -86,20 +110,67 @@
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Vorname">@context.FirstName</MudTd>
-                    <MudTd DataLabel="Nachname">@context.FamilyName</MudTd>
-                    <MudTd DataLabel="Nimmt teil">@GetAttendingText(context.Attending)</MudTd>
-                    <MudTd DataLabel="Menü">@context.NumberOfAttendees</MudTd>
-                    <MudTd DataLabel="Menü">@context.EmailAddress</MudTd>
-                    <MudTd DataLabel="Menü">@context.Street, @context.ZipCode @context.Place</MudTd>
-                    <MudTd DataLabel="Menü">@(context.BuffetContribution ? "Ja" : "Nein")</MudTd>
-                    <MudTd DataLabel="Menü">@context.Message</MudTd>
-                    <MudTd DataLabel="Registrierung von">@(context.Invited ? "Fest" : "Zeremonie")</MudTd>
+                    <MudTd DataLabel="Vorname"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.FirstName
+                    </MudTd>
+                    <MudTd DataLabel="Nachname"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.FamilyName
+                    </MudTd>
+                    <MudTd DataLabel="Anmeldung"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @GetAttendingText(context.Attending)
+                    </MudTd>
+                    <MudTd DataLabel="Teilnehmer"
+                           style="text-align:center">
+                        @context.NumberOfAttendees
+                    </MudTd>
+                    <MudTd DataLabel="Email"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.EmailAddress
+                    </MudTd>
+                    <MudTd DataLabel="Addresse"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.Street, @context.ZipCode @context.Place
+                    </MudTd>
+                    <MudTd DataLabel="Buffet">
+                        @(context.BuffetContribution ? "Ja" : "Nein")
+                    </MudTd>
+                    <MudTd DataLabel="Mitteilung"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+
+                        @context.Message
+
+                    </MudTd>
+                    <MudTd DataLabel="Registrierung von"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @(context.Invited ? "Fest" : "Zeremonie")
+                    </MudTd>
                 </RowTemplate>
                 @* <PagerContent> *@
                 @*     <MudTablePager /> *@
                 @* </PagerContent> *@
+                
+                <NoRecordsContent>
+                    <MudText>Keine Einträge gefunden.</MudText>
+                </NoRecordsContent>
             </MudTable>
+
         </div>
     </div>
 </div>
@@ -108,6 +179,16 @@
     private List<RsvpEntry> rsvpEntries = new List<RsvpEntry>();
     private string _searchString = "";
     private bool _loading = false;
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,5 +232,35 @@
             default:
                 return "";
         }
+    }
+
+    private int GetTotalAttendees(bool invited)
+    {
+        var num = 0;
+
+        foreach (var entry in rsvpEntries)
+        {
+            if (entry.Invited == invited)
+            {
+                num += entry.NumberOfAttendees;
+            }
+        }
+
+        return num;
+    }
+
+    private int GetTotalCakes()
+    {
+        var num = 0;
+
+        foreach (var entry in rsvpEntries)
+        {
+            if (entry.BuffetContribution)
+            {
+                num++;
+            }
+        }
+
+        return num;
     }
 }

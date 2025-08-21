@@ -1,24 +1,13 @@
 @page "/kontakte"
 @inject AccessService AccessService
+@inject IBlazorCurrentDeviceService CurrentDevice
 
-<div class="contacts-wrapper">
-    <div class="background">
-        <img src="images/backgroundImages/Luzern_1_rmb.png"
-             class="background-graphic"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="leftBranch"
-             class="background-graphic-branch"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="rightBranch"
-             class="background-graphic-branch"
-             alt=""/>
-    </div>
+<div class="page-wrapper" > <!-- xmlns="http://www.w3.org/1999/html" -->
+    <Background/>
 
     <!-- contacts section -->
-    <div class="card contacts-container">
-        <div class="card-body contacts-card">
+    <div class="card page-container">
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted">
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title">Unsere Tätschmeister:innen</h1>
@@ -28,29 +17,37 @@
                             organisatorischen Anliegen wenden könnt – wir haben da zwei absolute Vollprofis am
                             Start:</p>
                         <ul>
-                            <li class="mb-2"><strong>Eli</strong> – ein langjähriger Freund von Simon, begabter Moderator, Meister der
+                            <li class="mb-2"><strong>Eli</strong> – ein langjähriger Freund von Simon, begabter
+                                Moderator, Meister der
                                 guten Laune und
                                 zuverlässig
                                 wie
-                                ein Schweizer Uhrwerk. Ob spontan, strukturiert oder spaßbereit – Eli ist für (fast) jeden
+                                ein Schweizer Uhrwerk. Ob spontan, strukturiert oder spaßbereit – Eli ist für (fast)
+                                jeden
                                 Unfug
                                 zu
-                                haben, hat den Überblick und das Herz am rechten Fleck. Und das Wichtigste: Er bleibt auch
+                                haben, hat den Überblick und das Herz am rechten Fleck. Und das Wichtigste: Er bleibt
+                                auch
                                 dann
                                 cool,
-                                wenn das Mikro pfeift oder die Getränke ausgehen.</li>
-                            <li><strong>Julia</strong> – eine liebe Freundin von Romina, mit der alles vor Jahren auf einer
+                                wenn das Mikro pfeift oder die Getränke ausgehen.
+                            </li>
+                            <li><strong>Julia</strong> – eine liebe Freundin von Romina, mit der alles vor Jahren auf
+                                einer
                                 Jugendreise
                                 begann.
                                 Seither
-                                hat sie es sich zur Aufgabe gemacht, Romina mit unnötigen Katzenwitzen und Katzen-Reels zu
+                                hat sie es sich zur Aufgabe gemacht, Romina mit unnötigen Katzenwitzen und Katzen-Reels
+                                zu
                                 versorgen
                                 –
-                                konsequent und mit Hingabe. Hinter dieser flauschigen Fassade steckt eine vielseitig begabte
+                                konsequent und mit Hingabe. Hinter dieser flauschigen Fassade steckt eine vielseitig
+                                begabte
                                 Frau
                                 mit
                                 grossem Organisationstalent, Blick fürs Detail und Sinn für Struktur, Stil und
-                                Situationskomik.</li>
+                                Situationskomik.
+                            </li>
                         </ul>
                         <p>Beide begleiten unseren Tag mit offenen Augen, wachem Herzen und helfenden Händen – und
                             stehen
@@ -62,20 +59,37 @@
                             vorstellen.</p>
 
                     </div>
-                    
+
                     <hr class="my-4"/>
-                    
-                    <h4 class="card-title">Kontaktdaten</h4>
+
+                    <h2 class="card-title">Kontaktdaten</h2>
                     <div class="row">
                         <div class="col">
-                            <h5>Eli</h5>
-                            <p><strong>Phone:</strong> 079 314 58 43</p>
-                            <p><strong>Email:</strong> muster@something.ch</p>
+                            <h3>Eli</h3>
+                            <p><strong>Phone: </strong>
+                                <a href="tel:+41 79 780 19 81"
+                                   class="btn-link">
+                                    +41 79 780 19 81
+                                </a></p>
+                            <p><strong>Email: </strong>
+                                <a href="mailto:elias.blaser@bluewin.ch"
+                                   class="btn-link">
+                                    elias.blaser@bluewin.ch
+                                </a></p>
                         </div>
                         <div class="col">
-                            <h5>Julia</h5>
-                            <p><strong>Phone:</strong> 079 314 58 43</p>
-                            <p><strong>Email:</strong> muster@something.ch</p>
+                            <h3>Julia</h3>
+                            <p><strong>Phone: </strong>
+                                <a href="tel:+41 77 473 29 88"
+                                   class="btn-link">
+                                    +41 77 473 29 88
+                                </a></p>
+                            <p><strong>Email: </strong>
+                                <a href="mailto:julia-pfister@outlook.com"
+                                   class="btn-link">
+                                    julia-pfister@outlook.com
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -86,6 +100,16 @@
 
 
 @code {
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
 
 }

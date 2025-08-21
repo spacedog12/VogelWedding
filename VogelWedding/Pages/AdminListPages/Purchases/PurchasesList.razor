@@ -1,0 +1,215 @@
+@using MudBlazor
+@inject SupabaseService Supabase
+
+<div class="card page-container">
+    <div class="card-body page-card-frosted">
+        <h1 class="card-title">@Title</h1>
+
+        @if (_purchases is null)
+        {
+            <p>Lade Daten...</p>
+        }
+        else if (!Filtered.Any())
+        {
+            <p>@EmptyMessage</p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var purchase in Filtered)
+                {
+                    <div class="col-md-3 mb-4" @key="purchase.ID">
+                        <div class="card">
+                            <div class="card-body item-card">
+                                <div>
+                                    <div>
+                                        <h3>@purchase.FirstName @purchase.FamilyName</h3>
+                                        <h6>@purchase.PurchasedAt.ToString("dd.MM.yyyy | HH:mm:ss")</h6>
+                                    </div>
+                                    <hr mb-4/>
+                                    <p>@GetItemName(purchase.WishlistItemId)</p>
+                                    <p>@purchase.PaidAmount CHF</p>
+                                </div>
+                                <p>
+                                    @if (EnableMailToLinks)
+                                    {
+                                        <a class="btn-link" href="@BuildMailTo(purchase)"
+                                           target="_blank">@purchase.Email</a>
+                                    }
+                                    else
+                                    {
+                                        @purchase.Email
+                                    }
+
+                                </p>
+
+                                <hr mb-4/>
+
+                                @if (ShowEmailCheckbox)
+                                {
+                                    <MudCheckBox @bind-Value="DraftFor(purchase).EmailSent">
+                                        Rechnung versendet
+                                    </MudCheckBox>
+                                }
+
+                                @if (ShowMoneyCheckbox)
+                                {
+                                    <MudCheckBox @bind-Value="DraftFor(purchase).MoneyReceived">
+                                        Geld erhalten
+                                    </MudCheckBox>
+                                }
+
+                                <div class="text-center">
+                                    <button class="btn btn-primary" @onclick="() => UpdateItemStatus(purchase)">
+                                        Speichern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string EmptyMessage { get; set; } = "Keine Einträge.";
+
+    [Parameter]
+    public Func<WishlistPurchase, bool> Filter { get; set; } = _ => true;
+
+    [Parameter]
+    public bool ShowEmailCheckbox { get; set; } = true;
+
+    [Parameter]
+    public bool ShowMoneyCheckbox { get; set; } = true;
+
+    [Parameter]
+    public bool EnableMailToLinks { get; set; } = false;
+
+    private List<WishlistPurchase>? _purchases;
+    private readonly Dictionary<Guid, string> _itemNames = new();
+    private readonly Dictionary<Guid, PurchaseDraft> _drafts = new();
+    private InvoiceModel? _invoiceUrl;
+    private InvoiceModel? _bankingInfoItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _purchases = await Supabase.GetEntriesAsync<WishlistPurchase>();
+
+        var items = await Supabase.GetEntriesAsync<WishlistItem>();
+        foreach (var item in items)
+            _itemNames[item.ID] = item.Title;
+
+        // Seed drafts
+        foreach (var p in _purchases)
+            DraftFor(p);
+
+        await GetInvoice();
+    }
+
+    private IEnumerable<WishlistPurchase> Filtered =>
+        (_purchases ?? Enumerable.Empty<WishlistPurchase>()).Where(Filter);
+
+    private string GetItemName(Guid id) =>
+        _itemNames.TryGetValue(id, out var name) ? name : string.Empty;
+
+    private sealed class PurchaseDraft
+    {
+        public bool EmailSent { get; set; }
+        public bool MoneyReceived { get; set; }
+    }
+
+    private PurchaseDraft DraftFor(WishlistPurchase purchase)
+    {
+        if (!_drafts.TryGetValue(purchase.ID, out var d))
+        {
+            d = new PurchaseDraft
+            {
+                EmailSent = purchase.EmailSent, MoneyReceived = purchase.MoneyReceived
+            };
+            _drafts[purchase.ID] = d;
+        }
+
+        return d;
+    }
+
+    private async Task UpdateItemStatus(WishlistPurchase purchase)
+    {
+        var draft = DraftFor(purchase);
+
+        purchase.EmailSent = draft.EmailSent;
+        purchase.MoneyReceived = draft.MoneyReceived;
+
+        if (purchase.MoneyReceived)
+            purchase.MoneyReceivedDate ??= DateTimeOffset.UtcNow;
+        else
+            purchase.MoneyReceivedDate = null;
+
+        if (purchase.EmailSent)
+            purchase.EmailSentDate ??= DateTimeOffset.UtcNow;
+        else
+            purchase.EmailSentDate = null;
+
+        await Supabase.UpdatePurchaseAsync(purchase);
+
+        // re-sync draft
+        draft.EmailSent = purchase.EmailSent;
+        purchase.MoneyReceived = purchase.MoneyReceived;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetInvoice()
+    {
+        _invoiceUrl = await Supabase.GetInvoiceByIdAsync(1);
+        _bankingInfoItem = await Supabase.GetInvoiceByIdAsync(2);
+        // Debugging
+        // Console.WriteLine($"Invoice count: {_invoiceUrl.Count}");
+    }
+
+    private string BuildMailTo(WishlistPurchase purchase)
+    {
+        var subject = $"Rechnung für \"{GetItemName(purchase.WishlistItemId)}\"";
+        var amount = purchase.PaidAmount.ToString("F2");
+        var invoiceLine = !string.IsNullOrWhiteSpace(_invoiceUrl?.PdfUrl)
+            ? $"{_invoiceUrl?.PdfUrl}"
+            : string.Empty;
+
+        var bankingLine = !string.IsNullOrWhiteSpace(_bankingInfoItem?.PdfUrl)
+            ? $"{_bankingInfoItem.PdfUrl}"
+            : string.Empty;
+
+        var bankingItems = bankingLine.Split([','], StringSplitOptions.RemoveEmptyEntries);
+        var counter = 0;
+        foreach (var item in bankingItems)
+        {
+            Console.WriteLine($"item: {item}");
+            counter++;
+        }
+
+        Console.WriteLine(counter);
+
+
+        Console.WriteLine($"_invoiceUrl: {_invoiceUrl?.PdfUrl}  ");
+        Console.WriteLine($"invoiceLine: {invoiceLine}");
+
+        // Use %0D%0A for newlines
+        var body = string.Join("\r\n", new[]
+        {
+            $"Liebe/r {purchase.FirstName} {purchase.FamilyName},", "", $"Vielen Dank für deinen/euren Beitrag zum Wunsch: {GetItemName(purchase.WishlistItemId)}.", $"Betrag: {purchase.PaidAmount.ToString("F2")} CHF.\n", "Wir freuen uns riesig über deine/eure Unterstützung und Wertschätzung – sie bedeuten uns sehr viel.", "Damit du/ihr das Geschenk bequem überweisen kannst/könnt, findest du/findet ihr hier die Rechnung und unsere Kontodaten:\n", "-------------------------------------------------------------------------\n", "Link zur QR-Rechnung:", $"{invoiceLine}\n", "-------------------------------------------------------------------------\n", "Kontodaten:\n", $"{bankingItems[0]}\n", $"{bankingItems[1]}\n", $"{bankingItems[2]}\n", "-------------------------------------------------------------------------\n", "Nochmals von Herzen danke für deine/eure Großzügigkeit – wir freuen uns schon darauf, dich/euch an unserem Hochzeitstag zu sehen und gemeinsam schöne Erinnerungen zu schaffen.\n", "Herzliche Grüsse", "Romina und Simon"
+        });
+
+        var s = Uri.EscapeDataString(subject);
+        var b = Uri.EscapeDataString(body);
+
+        return $"mailto:{purchase.Email}?subject={s}&body={b}";
+    }
+
+}

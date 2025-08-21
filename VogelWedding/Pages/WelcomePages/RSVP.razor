@@ -6,6 +6,7 @@
 @inject AccessService AccessService
 @inject SupabaseService Supabase
 @inject IToastService ToastService
+@inject IBlazorCurrentDeviceService CurrentDevice
 
 @* @if (AccessService.CurrentLevel < AccessLevel.GuestInvited) *@
 @* { *@
@@ -113,29 +114,24 @@
             <!-- Attending information, from when on will I attend -->
             <div class="mb-3">
                 <InputRadioGroup @bind-Value="model.Attending">
-                    @if (AccessService.CurrentLevel == AccessLevel.GuestAll)
-                    {
-                        <div class="form-check">
-                            <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
-                                        id="attending-receptionAndCeremony"/>
-                            <label class="form-check-label" for="attending-yes">Ich nehme an der Zeremonie, inklusive
-                                Empfang teil</label>
-                        </div>
-                    }
-                    else
+                    @if (AccessService.CurrentLevel == AccessLevel.GuestInvited)
                     {
                         <div class="form-check">
                             <InputRadio Value="@("ReceptionCeremonyAndParty")" class="form-check-input"
                                         id="attending-receptionAndCeremony"/>
-                            <label class="form-check-label" for="attending-yes">Ich nehme an Empfang, Zeremonie und Fest teil.</label>
-                        </div>
-                        
-                        <div class="form-check">
-                            <InputRadio Value="@("CeremonyOnly")" class="form-check-input" id="attending-no"/>
-                            <label class="form-check-label" for="attending-no">Ich nehme nur an der Zeremonie teil</label>
+                            <label class="form-check-label" for="attending-yes">Ich nehme an Empfang, Zeremonie und Fest
+                                teil.</label>
                         </div>
                     }
-                    
+
+                    <div class="form-check">
+                        <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
+                                    id="attending-receptionAndCeremony"/>
+                        <label class="form-check-label" for="attending-yes">Ich nehme an der Zeremonie, inklusive
+                            Empfang teil</label>
+                    </div>
+
+
                     <div class="form-check">
                         <InputRadio Value="@("CanNotAttend")" class="form-check-input" id="attending-no"/>
                         <label class="form-check-label" for="attending-no">Ich kann nicht teil nehmen</label>
@@ -235,6 +231,16 @@
     private bool hasInvalidSubmit = false;
     private EditContext editContext;
     private bool infoAccepted = false;
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -294,7 +300,7 @@
         if (!hasInvalidSubmit && (model.Attending is null || model.Attending == "CanNotAttend"))
             return "form-control";
 
-        if ( model.NumberOfAttendees > 10) // model.NumberOfAttendees <= 1 ||
+        if (model.NumberOfAttendees > 10) // model.NumberOfAttendees <= 1 ||
             return "form-control is-invalid";
 
         return "form-control is-valid";

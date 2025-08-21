@@ -1,0 +1,18 @@
+@page "/purchases/open-bills"
+
+<div class="page-wrapper">
+    <Background/>
+    <PurchasesList Title="Offene Rechnungen" 
+                   EmptyMessage="Keine offnene Rechnungen vorhanden."
+                   ShowEmailCheckbox="false"
+                   ShowMoneyCheckbox="true"
+                   EnableMailToLinks="false"
+                   Filter="@(purchase => purchase.EmailSent && !purchase.MoneyReceived)"/>
+    
+</div>
+
+@code {
+
+    
+
+}

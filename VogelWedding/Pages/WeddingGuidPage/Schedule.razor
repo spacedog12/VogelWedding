@@ -4,73 +4,83 @@
 @* <div class="card schedule-wrapper"> *@
 @*     <div class="card schedule-container"> *@
 @*         <div class="card-body schedule-card"> *@
-            <h1 class="card-title">Ablauf</h1>
+<h1 class="card-title">Ablauf</h1>
 
-            <div class="timeline mt-6">
-                <div class="timeline-item">
-                    <h5>Empfang</h5>
-                    <p><strong>13:30 Uhr</strong> - Peterskapelle<br>
-                        Ein entspanntes Ankommen, ein Wiedersehen und Kennenlernen
-                        – mit Kaffee, Tee, Kuchen und grosser Vorfreude.</p>
-                </div>
+<div class="timeline mt-6">
+    <div class="timeline-item">
+        <h5>Empfang</h5>
+        <p><strong>13:00 Uhr</strong> - Peterskapelle<br>
+            Ein entspanntes Ankommen, ein Wiedersehen und Kennenlernen
+            – mit Kaffee, Tee, Kuchen und grosser Vorfreude.</p>
+    </div>
+</div>
+
+<div class="timeline mt-6">
+    <div class="timeline-item">
+        <h5>Zeremonie</h5>
+        <div><strong>15:00 Uhr</strong> - Peterskapelle<br>
+            Wir feiern gemeinsam den Moment, in dem wir "Ja" sagen vor Gott. Persönlich, feierlich und mit
+            viel
+            Herz.
+        </div>
+    </div>
+</div>
+
+@if (AccessService.CurrentLevel == AccessLevel.GuestAll)
+{
+    <div class="timeline mt-6">
+        <div class="timeline-item">
+            <h5>Feiern</h5>
+            <div><strong>16:00 Uhr</strong> - Peterskapelle<br>
+                Anstossen
             </div>
+        </div>
+    </div>
 
-            <div class="timeline mt-6">
-                <div class="timeline-item">
-                    <h5>Zeremonie</h5>
-                    <div><strong>15:00 Uhr</strong> - Peterskapelle<br>
-                        Wir feiern gemeinsam den Moment, in dem wir "Ja" sagen vor Gott. Persönlich, feierlich und mit
-                        viel
-                        Herz.
-                    </div>
-                </div>
+    <div class="timeline mt-6">
+        <div class="timeline-item">
+            <h5>Ende</h5>
+            <div><strong>16:30 Uhr</strong> - Peterskapelle<br>
+                @* Für die Empfangsgäste endet die Feier hier *@
+                @* – wir danken euch herzlich, dass ihr diesen besonderen Teil mit uns geteilt habt. *@
+                Verabschiedung Brautpaar, Ende und wer Zeit und Energie hat, kann gerne beim Aufräumen helfen.
             </div>
+        </div>
+    </div>
+}
 
-            @if (AccessService.CurrentLevel == AccessLevel.GuestAll)
-            {
-                <div class="timeline mt-6">
-                    <div class="timeline-item">
-                        <h5>Ende</h5>
-                        <div><strong>16:30 Uhr</strong> - Peterskapelle<br>
-                            Für die Empfangsgäste endet die Feier hier
-                            – wir danken euch herzlich, dass ihr diesen besonderen Teil mit uns geteilt habt.
-                        </div>
-                    </div>
-                </div>
-            }
+@if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+{
+    <div class="timeline mt-6">
+        <div class="timeline-item">
+            <h5>Love-Trail </h5>
+            <p><strong>16:30 Uhr (ca. 30 min)</strong> - Spaziergang durch Luzern<br>
+                Für alle, die weiter mit uns feiern: Ihr spaziert gemeinsam zur Fest-Location
+                – begleitet von kleinen Überraschungen entlang des Wegs.</p>
+        </div>
+    </div>
 
-            @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
-            {
-                <div class="timeline mt-6">
-                    <div class="timeline-item">
-                        <h5>Love-Trail </h5>
-                        <p><strong>16:30 Uhr (ca. 30 min)</strong> - Spaziergang durch Luzern<br>
-                            Für alle, die weiter mit uns feiern: Ihr spaziert gemeinsam zur Fest-Location
-                            – begleitet von kleinen Überraschungen entlang des Wegs.</p>
-                    </div>
-                </div>
+    <div class="timeline mt-6">
+        <div class="timeline-item">
+            <h5>Empfang Fest </h5>
+            <p><strong>17:30 Uhr</strong> - Factory<br>
+                Ankommen des Brautpaars, umarmen, fröhlich sein. Wir heißen euch willkommen an unserem
+                Festort
+                – es wird gegessen, gelacht, getanzt, gespielt und gefeiert!</p>
+        </div>
+    </div>
 
-                <div class="timeline mt-6">
-                    <div class="timeline-item">
-                        <h5>Empfang Fest </h5>
-                        <p><strong>17:30 Uhr</strong> - Factory<br>
-                            Ankommen des Brautpaars, umarmen, fröhlich sein. Wir heißen euch willkommen an unserem
-                            Festort
-                            – es wird gegessen, gelacht, getanzt, gespielt und gefeiert!</p>
-                    </div>
-                </div>
-
-                <div class="timeline mt-6">
-                    <div class="timeline-item">
-                        <h5>Ende der Feier</h5>
-                        <p><strong>00:00 Uhr</strong> - Factory<br>
-                            Irgendwann wird auch der schönste Tag müde. Dann sagen wir leise „Gute Nacht“ – und laut
-                            „Danke, dass ihr da wart!“. Für alle die danach noch ein bisschen bleiben möchten: Wir
-                            lassen den Abend gemütlich ausklingen. Keine Party mehr, aber ein kleines Danach für alle,
-                            die noch nicht gleich los möchten.</p>
-                    </div>
-                </div>
-            }
+    <div class="timeline mt-6">
+        <div class="timeline-item">
+            <h5>Ende der Feier</h5>
+            <p><strong>00:00 Uhr</strong> - Factory<br>
+                Irgendwann wird auch der schönste Tag müde. Dann sagen wir leise „Gute Nacht“ – und laut
+                „Danke, dass ihr da wart!“. Für alle die danach noch ein bisschen bleiben möchten: Wir
+                lassen den Abend gemütlich ausklingen. Keine Party mehr, aber ein kleines Danach für alle,
+                die noch nicht gleich los möchten.</p>
+        </div>
+    </div>
+}
 @*         </div> *@
 @*     </div> *@
 @* </div> *@

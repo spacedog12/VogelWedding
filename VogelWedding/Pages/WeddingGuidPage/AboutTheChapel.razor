@@ -1,3 +1,5 @@
+@inject SupabaseService Supabase
+
 <div class="card">
     <div class="card-body">
         <h1 class="card-title mb-2">Die Peterskapelle</h1>
@@ -25,6 +27,29 @@
                 <a href="https://www.kathluzern.ch/meine-kirche/pfarreien-standorte/peterskapelle" target="_blank"
                    class="btn btn-link">kathluzern.ch</a></p>
 
+            <div class="row mt-5">
+                @foreach (var image in images)
+                {
+                    <div class="col grid-container">
+                        <img src="@image.ImageUrl" alt="Kapelle" class="grid-image"
+                        />
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
+
+@code {
+    public List<ChapelImages> images = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = await FetchImages();
+    }
+
+    private async Task<List<ChapelImages>> FetchImages()
+    {
+        return await Supabase.GetEntriesAsync<ChapelImages>();
+    }
+}

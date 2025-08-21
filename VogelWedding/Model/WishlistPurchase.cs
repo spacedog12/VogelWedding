@@ -5,6 +5,11 @@ namespace VogelWedding.Model;
 [Table("WishlistPurchases")]
 public class WishlistPurchase : BaseModel
 {
+	[PrimaryKey("id", shouldInsert: false)]
+	[Column("id")]
+	public Guid ID { get; set; } = Guid.NewGuid();
+	
+	
 	[Column("wishlist_item_id")]
 	public Guid WishlistItemId { get; set; }
 	
@@ -26,7 +31,21 @@ public class WishlistPurchase : BaseModel
 	public double PaidAmount { get; set; }
 	
 	
-	// [Column("quantity")]
-	// public int Quantity { get; set; }
+	[Column("purchased_at")]
+	public DateTimeOffset PurchasedAt { get; set; }
 	
+	
+	[Column("email_sent")]
+	public bool EmailSent { get; set; }
+	
+	
+	[Column("money_received")]
+	public bool MoneyReceived { get; set; }
+
+
+	[Column("money_received_date")]
+	public DateTimeOffset? MoneyReceivedDate { get; set; }
+	
+	[Column("email_sent_date")]
+	public DateTimeOffset? EmailSentDate { get; set; }
 }

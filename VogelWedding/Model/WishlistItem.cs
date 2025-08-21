@@ -6,8 +6,8 @@ namespace VogelWedding.Model;
 public class WishlistItem: BaseModel
 {
 	[Column("id")]
-	[PrimaryKey("id")]
-	public Guid ID { get; set; }
+	[PrimaryKey("id", shouldInsert: false)]
+	public Guid ID { get; set; } = Guid.NewGuid();
 	
 	
 	[Column("sort_number")]

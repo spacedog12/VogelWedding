@@ -4,6 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>fe710349-46d0-4ab7-83fa-a39aef29aa2d</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,11 +19,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="HelperCode\" />
       <Folder Include="wwwroot\images\About\Antrags-Zeit\" />
       <Folder Include="wwwroot\images\About\Beziehungsalltag\" />
       <Folder Include="wwwroot\images\About\Kennenlernphase\" />
       <Folder Include="wwwroot\images\Welcome\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
     </ItemGroup>
     
 <!--    <ItemGroup>-->

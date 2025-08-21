@@ -1,70 +1,5 @@
-.information-wrapper {
-    position: relative;
-    min-height: 100vh;
-    width: 100%;
-    overflow-x: hidden;
-    border: none;
-    padding: 2rem 1rem;
-}
-
-.information-container {
-    position: relative;
-    z-index: 10;
-    margin: 4rem auto 0rem auto;
-    max-width: 100%;
-    background: transparent;
-    border: none;
-    padding-top: 2rem;
-}
-
-.aboutInformation-container {
-    position: relative;
-    z-index: 10;
-    margin: 2rem auto 0rem auto;
-    max-width: 100%;
-    background: transparent;
-    border: none;
-}
-
-@media (min-width: 768px) {
-    .aboutInformation-container {
-        padding-top: 2rem;
-    }
-}
-    
-@media (max-width: 768px) {
-    .information-card {
-        margin-top: 2rem !important; /* Increased margin for mobile view */
-    }
-}
-
-.card-body.information-card {
-    z-index: 10;
-    background-color: transparent;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /*margin: 1rem;*/
-    padding: 2rem;
-    position: relative;
-
-    /*color: var(--primary-color);*/
-}
-
-.card-body.information-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--text-color); /* Light gray with 10% opacity */
-    opacity: 80%;
-    z-index: -1; /* Make sure the background is behind the content */
-    border-radius: 8px; /* Match the rounded corners of the card */
-    backdrop-filter: blur(50px); /* Apply blur effect to everything behind */
-}
-
-.information-card .row {
+/* Horizontal scroll row within the frosted card */
+.page-card-frosted.info-card .row {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -72,29 +7,27 @@
     width: 100%;
 }
 
-.information-card .col-md-4 {
+/* Columns sizing inside the horizontal scroller */
+.page-card-frosted.info-card .col-md-4 {
     flex: 0 0 auto;
     width: 16.667%; /* Since you have 5 items, each should take up 20% */
     padding: 0 0.5rem; /* Add some spacing between cards */
 }
 
-.btn.btn-primary {
+/* Make the CTA buttons full width in the tiles */
+.page-card-frosted.info-card .btn.btn-primary {
     width: 100%;
 }
 
-.col-md-4 .card {
+/* Equal-height cards and flexible card bodies */
+.page-card-frosted.info-card .col-md-4 .card {
     height: 100%;  /* Make all cards take full height of their container */
     display: flex;
     flex-direction: column;
 }
 
-.card-body.item-card {
-    flex: 1;  /* Make card body take remaining space */
-    display: flex;
-    flex-direction: column;
-}
-
-.image-container {
+/* Image container and image sizing */
+.page-card-frosted.info-card .image-container {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -103,7 +36,7 @@
     /*text-align: center; !* Ensure text is centered *!*/
 }
 
-.information-item-image {
+.page-card-frosted.info-card .information-item-image {
     max-width: 100%;
     height: auto;
     object-fit: cover;

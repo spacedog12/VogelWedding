@@ -28,6 +28,17 @@ html, body {
     
 }
 
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    padding-top: 0px; /* Adjust this value to match your NavBar height */
+}
+
 .login-wrapper {
     position: fixed;
     top: 0;

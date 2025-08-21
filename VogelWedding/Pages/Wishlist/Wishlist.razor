@@ -1,54 +1,45 @@
 @page "/geschenke"
 @using System.Globalization
-@implements IAsyncDisposable
 
 @inject SupabaseService Supabase
 @* @inject SupabaseWishlistService WishlistService *@
 @inject IToastService ToastService
+@inject IBlazorCurrentDeviceService CurrentDevice
 
-<div class="wishlist-wrapper">
-    <div class="background">
-        <img src="images/backgroundImages/Luzern_1_rmb.png"
-             class="background-graphic"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="leftBranch"
-             class="background-graphic-branch"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="rightBranch"
-             class="background-graphic-branch"
-             alt=""/>
-    </div>
+<div class="page-wrapper">
+    <Background/>
 
     <!-- Info Text Wishlist -->
-    <div class="card wishlist-container">
-        <div class="card-body wishlist-card">
+    <div class="card page-container">
+        <div class="card-body page-card-frosted">
             @* <h2 class="card-title">Wilkommen</h2> *@
             <h1>Das grösste Geschenk für uns seid ihr</h1>
             <p>
-                – dass ihr diesen Tag mit uns feiert, mitlebt, mitsingt,
-                mitgeniesst. Wer uns darüber hinaus gerne beschenken möchte:
-                wir freuen uns über Beiträge zu unserem gemeinsamen Start ins Ehe-Leben.
-                Wir haben eigentlich schon alles – <strong>außer Zeit zum Genießen</strong>.
-                Und genau da kommt ihr ins Spiel.<br/>
-                Wenn ihr uns eine Freude machen möchtet, dann am liebsten mit Dingen, die den Alltag versüßen
-                und uns gemeinsame Genussmomente schenken.
-                Ob Wellness, Massagen, gutes Essen, edle Tropfen, Kulturtrips,
-                Spieleabende, Ausflüge, Literatur, Theater, Musik oder Museumsbesuche –
-                wir lieben alles, was entspannt, inspiriert oder einfach Spaß macht.
-                Also: Schenkt uns keinen Toaster und keine Dekorationen – <strong>schenkt uns Erinnerungen</strong>.</p>
+                – dass ihr diesen Tag mit uns feiert, mitlebt, mitsingt, mitgeniesst.
+                Wer uns darüber hinaus gerne beschenken möchte: wir freuen uns über Beiträge zu unserem gemeinsamen
+                Start ins Ehe-Leben. Wir haben eigentlich schon alles – <i>außer Zeit zum Genießen</i>. Und genau da
+                kommt ihr
+                ins Spiel.</p>
             <p>
-                <strong>Vielen Dank, dass ihr mit uns feiert, an uns denkt – und vielleicht sogar ein bisschen Genuss in
-                    unser
-                    frisch verheiratetes Leben bringt.</strong>
+                Wenn ihr uns eine Freude machen möchtet, dann am liebsten mit Dingen, die den Alltag versüßen und uns
+                gemeinsame Genussmomente schenken. Ob Wellness, Massagen, gutes Essen, edle Tropfen, Kulturtrips,
+                Spieleabende, Ausflüge, Literatur, Theater, Musik oder Museumsbesuche – wir lieben alles, was entspannt,
+                inspiriert oder einfach Spaß macht. Also: Schenkt uns keinen Toaster und keine Dekorationen – <i>schenkt
+                    uns Erinnerungen.</i></p>
+            <p>Und falls ihr uns mit einer kleinen Portion Spannung überraschen wollt: <i>auch über ein paar Win for
+                    Life-Lose freuen wir uns sehr</i> – man weiss ja nie, vielleicht liegt unser Glück ja in einem
+                dieser
+                kleinen Kärtchen. 😉</p>
+            <p>
+                <strong>Vielen Dank, dass ihr mit uns feiert, an uns denkt – und vielleicht sogar ein bisschen Genuss
+                    (oder das große Los) in unser frisch verheiratetes Leben bringt.</strong>
             </p>
         </div>
     </div>
 
     <!-- wishlist -->
-    <div class="card wishlist-container mt-2">
-        <div class="card-body wishlist-card">
+    <div class="card page-container mt-2">
+        <div class="card-body page-card-frosted">
             <h1 class="card-title">Geschenke</h1>
 
             @if (wishlistItems == null)
@@ -172,6 +163,112 @@
                 <div class="modal-backdrop fade show"></div>
             }
 
+            <!-- Modal for confirmation / error -->
+            @if (showConfirmationModal && selectedItem != null)
+            {
+                <div class="modal show d-block" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                @* <h5 class="modal-title">Bestätigung: @selectedItem.Title</h5> *@
+                                @* <button type="button" class="btn-close-white" @onclick="CloseConfirmationModal"></button> *@
+                                @switch (purchaseResult)
+                                {
+                                    case PurchaseResult.Success:
+                                        <h5 class="modal-title">✅ Erfolgreich: @selectedItem.Title</h5>
+                                        break;
+                                    case PurchaseResult.NotAvailable:
+                                        <h5 class="modal-title">⚠️ Nicht verfügbar: @selectedItem.Title</h5>
+                                        break;
+                                    case PurchaseResult.DatabaseError:
+                                        <h5 class="modal-title">❌ Fehler: @selectedItem.Title</h5>
+                                        break;
+                                }
+
+                            </div>
+                            <div class="modal-body">
+                                @* @if (isItemAvailable) *@
+                                @* { *@
+                                @*     <div class="text-center"> *@
+                                @*         <h4>Herzlichen Dank!</h4> *@
+                                @*         <p>Dein Geschenk wurde erfolgreich reserviert.</p> *@
+                                @*         <p>Du erhältst in Kürze eine Mail mit den Zahlungsdetails.</p> *@
+                                @*         <button type="button" *@
+                                @*                 class="btn btn-primary" *@
+                                @*                 @onclick="FinalizeSubmit"> *@
+                                @*             Ok *@
+                                @*         </button> *@
+                                @*     </div> *@
+                                @* } *@
+                                @* else *@
+                                @* { *@
+                                @*     <div class="text-center"> *@
+                                @*         <h4>Sorry!</h4> *@
+                                @*         <p>Da war jemand schneller beim Kauf und das Geschenk ist bereits vollständig *@
+                                @*             finanziert 🥳.\n *@
+                                @*             Beim Nächsten mal funktionierts bestimmt.</p> *@
+                                @*         <button type="button" *@
+                                @*                 class="btn btn-primary" *@
+                                @*                 @onclick="CloseAllModals"> *@
+                                @*             Zurück zur Übersicht *@
+                                @*         </button> *@
+                                @*     </div> *@
+                                @* } *@
+                                @switch (purchaseResult)
+                                {
+                                    case PurchaseResult.Success:
+                                        <div class="text-center">
+                                            <h4>Herzlichen Dank!</h4>
+                                            <p>Dein Geschenk wurde erfolgreich reserviert.</p>
+                                            <p>Du erhältst in Kürze eine Mail mit den Zahlungsdetails.</p>
+                                            <button type="button"
+                                                    class="btn btn-primary"
+                                                    @onclick="FinalizeSubmit">
+                                                Ok
+                                            </button>
+                                        </div>
+                                        break;
+
+                                    case PurchaseResult.NotAvailable:
+                                        <div class="text-center">
+                                            <h4>Sorry!</h4>
+                                            <p>Da war jemand schneller beim Kauf.<br/>
+                                                Beim Nächsten mal funktionierts bestimmt.
+                                            </p>
+                                            <button type="button"
+                                                    class="btn btn-primary"
+                                                    @onclick="CloseAllModals">
+                                                Zurück zur Übersicht
+                                            </button>
+                                        </div>
+                                        break;
+
+                                    case PurchaseResult.DatabaseError:
+                                        <div class="text-center">
+                                            <h4 class="">Technischer Fehler</h4>
+                                            <p>Entschuldigung, beim Verarbeiten deines Kaufs ist ein Fehler
+                                                aufgetreten.</p>
+                                            <div class="alert alert-danger">
+                                                <strong>Fehlermeldung:</strong> @errorMessage
+                                            </div>
+                                            <p>Bitte versuche es später nochmal oder kontaktiere uns direkt.</p>
+                                            <div>
+                                                <button type="button"
+                                                        class="btn btn-primary me-2"
+                                                        @onclick="CloseAllModals">
+                                                    Zurück zur Übersicht
+                                                </button>
+                                            </div>
+                                        </div>
+                                        break;
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-backdrop fade show"></div>
+            }
         </div>
     </div>
 </div>
@@ -185,24 +282,37 @@
     private WishlistItem selectedItem;
     private WishlistPurchase purchaseModel = new();
     private bool showModal = false;
+    private bool showConfirmationModal = false;
+    private bool isItemAvailable;
+    private PurchaseResult purchaseResult;
+    private string errorMessage = "";
+    private bool IsMobile { get; set; }
+
+    private enum PurchaseResult
+    {
+        Success,
+        NotAvailable,
+        DatabaseError
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             wishlistItems = await GetWishlistItemsAsync();
-            // images = await GetWishlistImagesAsync();
 
             // Sort Items
             SortWishlistItems();
-
-            // Subscribe to wishlist changes
-            @* WishlistService.OnWishlistItemInserted += HandleWishlistItemInserted;
-            WishlistService.OnWishlistItemUpdated += HandleWishlistItemUpdated;
-            WishlistService.OnWishlistItemDeleted += HandleWishlistItemDeleted;
-
-
-            await WishlistService.SubscribeToWishlistAsync(); *@
 
         }
         catch (Exception ex)
@@ -240,25 +350,10 @@
         InvokeAsync(StateHasChanged);
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        // Unsubscribe from events
-        @* WishlistService.OnWishlistItemInserted -= HandleWishlistItemInserted;
-        WishlistService.OnWishlistItemUpdated -= HandleWishlistItemUpdated;
-        WishlistService.OnWishlistItemDeleted -= HandleWishlistItemDeleted; *@
-
-    }
-
-
     private async Task<List<WishlistItem>> GetWishlistItemsAsync()
     {
         return await Supabase.GetEntriesAsync<WishlistItem>();
     }
-    //
-    // private async Task<List<WishlistImages>> GetWishlistImagesAsync()
-    // {
-    // return await Supabase.GetWishlistImagesAsync();
-    // }
 
     private void OpenBuyModal(WishlistItem item)
     {
@@ -290,21 +385,79 @@
         selectedItem = null;
     }
 
+    private void CloseConfirmationModal()
+    {
+        showConfirmationModal = false;
+    }
+
     private async Task SubmitPurchase()
     {
         try
         {
+            // Check availablility first
+            var currentItem = await Supabase.GetWishlistItemAsync(selectedItem.ID);
+            isItemAvailable = IsItemStillAvailable(currentItem);
+
+            if (!isItemAvailable)
+            {
+                purchaseResult = PurchaseResult.NotAvailable;
+                showModal = false;
+                showConfirmationModal = true;
+
+                wishlistItems = await GetWishlistItemsAsync();
+                SortWishlistItems();
+                return;
+            }
+
+            // Show confirmation modal
             await Supabase.SetPurchaseAsync(purchaseModel);
 
-            // Refresh the wishlist items
-            wishlistItems = await GetWishlistItemsAsync();
-            SortWishlistItems();
-
-            // Close the modal
+            purchaseResult = PurchaseResult.Success;
             showModal = false;
-            selectedItem = null;
+            showConfirmationModal = true;
 
-            ToastService.ShowSuccess("Besten Dank für deinen Beitrag.");
+            await RefreshWishlistItems();
+            SortWishlistItems();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking availability: {ex.Message}");
+
+            purchaseResult = PurchaseResult.DatabaseError;
+            errorMessage = ex.Message;
+            showModal = false;
+            showConfirmationModal = true;
+        }
+    }
+
+    private bool IsItemStillAvailable(WishlistItem item)
+    {
+        if (item.Quantity.HasValue)
+        {
+            return item.Quantity > 0;
+        }
+
+        if (item.Price.HasValue)
+        {
+            return item.PaidAmount < item.Price;
+        }
+
+        return true; // For items without quantity or price constraints
+    }
+
+    private async Task FinalizeSubmit()
+    {
+        try
+        {
+            // await Supabase.SetPurchaseAsync(purchaseModel);
+
+            // Refresh the wishlist items
+            // wishlistItems = await GetWishlistItemsAsync();
+            // SortWishlistItems();
+            // await RefreshWishlistItems();
+
+            // Close the modals
+            CloseAllModals();
         }
         catch (Exception ex)
         {
@@ -312,6 +465,22 @@
             ToastService.ShowError($"Sorry, da ist was schief gelaufen: {ex.Message}");
             // Here you might want to show an error message to the user
         }
+    }
+
+    private async Task RefreshWishlistItems()
+    {
+        wishlistItems = await GetWishlistItemsAsync();
+        SortWishlistItems();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void CloseAllModals()
+    {
+        showModal = false;
+        showConfirmationModal = false;
+        selectedItem = null;
+        errorMessage = "";
+        InvokeAsync(StateHasChanged);
     }
 
     private bool ButtonDisabled(WishlistItem item)

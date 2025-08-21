@@ -1,0 +1,271 @@
+@page "/purchases/overview"
+@using MudBlazor
+@inject SupabaseService Supabase
+@inject IBlazorCurrentDeviceService CurrentDevice
+
+<MudThemeProvider/>
+<MudPopoverProvider/>
+
+<div class="page-wrapper">
+    <Background/>
+
+    <div class="card page-container">
+        <!-- Revenue should -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted mb-5">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Übersicht</h1>
+                    <h3 class="card-subtitle">Einnahmen Soll:</h3>
+                    <p>@GetTotalAmountShouldRevenue().ToString("F2") CHF</p>
+                    <hr class="mt-4"/>
+                    <h3 class="card-subtitle">Einnahmen Ist:</h3>
+                    <p>@GetTotalAmountIsRevenue().ToString("F2") CHF</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases -->
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted">
+
+            <MudTable Items="@Filtered"
+                      Dense="true"
+                      Hover="true"
+                      Bordered="false"
+                      FixedHeader="true"
+                      Height="70vh"
+                      Loading="@_loading"
+                      Filter="new Func<WishlistPurchase, bool>(FilterFunc)"
+                      SortLabel="Sortieren"
+                      HorizontalScrollbar="true"
+                      Style="@(IsMobile ? "overflow-x:hidden; white-space: normal; width:100%;" : "overflow-x:auto; white-space: nowrap;")">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Käufe</MudText>
+                    <MudSpacer/>
+                    <MudText Class="me-4">Total: @(_purchases?.Count ?? 0)</MudText>
+                    <MudTextField @bind-Value="_search"
+                                  Placeholder="Suchen (Name, E-Mail, Artikel)"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mt-0"/>
+                </ToolBarContent>
+
+                <ColGroup>
+                    /* Käufer */
+                    <col style="width: 180px"/>
+                    /* E-Mail */
+                    <col style="width: 220px"/>
+                    /* Artikel */
+                    <col style="width: 240px"/>
+                    /* Betrag */
+                    <col style="width: 120px"/>
+                    /* E-Mail gesendet */
+                    <col style="width: 140px"/>
+                    /* Email gesendet am */
+                    <col style="width: 200px"/>
+                    /* Geld erhalten */
+                    <col style="width: 160px"/>
+                    /* Erhalten am */
+                    <col style="width: 200px"/>
+                </ColGroup>
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Gekaufte Artikel</MudText>
+                    <MudSpacer/>
+                    <MudTextField @bind-Value="_search"
+                                  Placeholder="Suchen (Name, E-Mail, Artikel)"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mt-0"/>
+                </ToolBarContent>
+
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.FamilyName)">
+                            Käufer
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.Email)">
+                            E-Mail
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel
+                            SortBy="new Func<WishlistPurchase, object>(x => ItemNameOf(x.WishlistItemId))">
+                            Artikel
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh align="right">
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.PaidAmount)">
+                            Betrag
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.EmailSent)">
+                            E-Mail gesendet
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.EmailSentDate)">
+                            Email gesendet am
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.MoneyReceived)">
+                            Geld erhalten
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<WishlistPurchase, object>(x => x.MoneyReceivedDate)">
+                            Betrag erhalten
+                        </MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd DataLabel="Käufer"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.FirstName @context.FamilyName
+                    </MudTd>
+                    <MudTd DataLabel="E-Mail"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.Email
+                    </MudTd>
+                    <MudTd DataLabel="Artikel" Title="@ItemNameOf(context.WishlistItemId)"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @ItemNameOf(context.WishlistItemId)
+                    </MudTd>
+                    <MudTd DataLabel="Betrag" Align="Align.Right"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @context.PaidAmount.ToString("F2") CHF
+                    </MudTd>
+                    <MudTd DataLabel="E-Mail gesendet"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;"
+                           Class="text-center">
+                        @(context.EmailSent ? "Ja" : "Nein")
+                    </MudTd>
+                    <MudTd DataLabel="Email gesendet am"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @(context.EmailSentDate.HasValue
+                            ? context.EmailSentDate.Value.LocalDateTime.ToString("dd.MM.yyyy | HH:mm:ss")
+                            : "-")
+                    </MudTd>
+                    <MudTd DataLabel="Geld erhalten"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;"
+                           Class="text-center">
+                        @(context.MoneyReceived ? "Ja" : "Nein")
+                    </MudTd>
+                    <MudTd DataLabel="Erhalten am"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                                  text-overflow:ellipsis;">
+                        @(context.MoneyReceivedDate.HasValue
+                            ? context.MoneyReceivedDate.Value.LocalDateTime.ToString("dd.MM.yyyy | HH:mm:ss")
+                            : "-")
+                    </MudTd>
+                </RowTemplate>
+
+                <NoRecordsContent>
+                    <MudText>Keine Einträge gefunden.</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<WishlistPurchase>? _purchases = [];
+    private List<WishlistItem> _wishlistItems = [];
+    private readonly Dictionary<Guid, string> _itemNames = new();
+    private string _search = string.Empty;
+    private bool _loading;
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _purchases = await GetWishlistPurchases();
+            _wishlistItems = await GetWishlistItems();
+
+            foreach (var item in _wishlistItems)
+            {
+                _itemNames.Add(item.ID, item.Title);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task<List<WishlistItem>> GetWishlistItems()
+    {
+        return await Supabase.GetEntriesAsync<WishlistItem>();
+    }
+
+    private async Task<List<WishlistPurchase>> GetWishlistPurchases()
+    {
+        return await Supabase.GetEntriesAsync<WishlistPurchase>();
+    }
+
+    private IEnumerable<WishlistPurchase> Filtered =>
+        (_purchases ?? Enumerable.Empty<WishlistPurchase>())
+        .Where(FilterFunc);
+
+    private bool FilterFunc(WishlistPurchase p)
+    {
+        if (string.IsNullOrWhiteSpace(_search)) return true;
+        var term = _search.Trim();
+        return (p.FirstName?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
+               || (p.FamilyName?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
+               || (p.Email?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
+               || (ItemNameOf(p.WishlistItemId)?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private string ItemNameOf(Guid id) =>
+        _itemNames.TryGetValue(id, out var name) ? name : "(Unbekannt)";
+
+    private double GetTotalAmountShouldRevenue()
+    {
+        return _wishlistItems.Sum(item => item.PaidAmount ?? 0.0);
+    }
+
+    private double GetTotalAmountIsRevenue()
+    {
+        var num = 0.0;
+
+        foreach (var item in _purchases)
+        {
+            if (item.MoneyReceived && item.MoneyReceivedDate != null)
+            {
+                num += item.PaidAmount;
+            }
+        }
+
+        return num;
+    }
+}

@@ -1,17 +1,18 @@
 @inject SupabaseService Supabase;
 @inject IJSRuntime JSRuntime
+@inject IBlazorCurrentDeviceService CurrentDevice
 
 <div class="row">
     <div class="col-md-4 mb-4">
         <div class="card">
-            <div class="card-body item-card text-center">
+            <div class="card-body section-button-card text-center">
                 @* <h3>Kennenlernphase</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Kennenlernphase", titleImages)))
                 {
-                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(1)"
+                    <div class="grid-container" @onclick="async () => await ToggleSectionAndScroll(1)"
                          style="cursor: pointer">
                         <img src="@GetImageUrl("Kennenlernphase", titleImages)"
-                             class="about-item-image"/>
+                             class="section-button-image"/>
                     </div>
 
                 }
@@ -23,14 +24,14 @@
     </div>
     <div class="col-md-4 mb-4">
         <div class="card">
-            <div class="card-body item-card text-center">
+            <div class="card-body section-button-card text-center">
                 @* <h3>Endlich ein Paar - Beziehungsalltag</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Beziehungsalltag", titleImages)))
                 {
-                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(2)"
+                    <div class="grid-container" @onclick="async () => await ToggleSectionAndScroll(2)"
                          style="cursor: pointer">
                         <img src="@GetImageUrl("Beziehungsalltag", titleImages)"
-                             class="about-item-image"/>
+                             class="section-button-image"/>
                     </div>
                 }
                 <div class="text-center">
@@ -43,15 +44,15 @@
     </div>
     <div class="col-md-4 mb-4">
         <div class="card">
-            <div class="card-body item-card text-center">
+            <div class="card-body section-button-card text-center">
                 @* <h3>Die Antrags-Zeit</h3> *@
                 @if (!string.IsNullOrEmpty(GetImageUrl("Antrags-Zeit", titleImages)))
                 {
-                    <div class="image-container" @onclick="async () => await ToggleSectionAndScroll(3)"
+                    <div class="grid-container" @onclick="async () => await ToggleSectionAndScroll(3)"
                          style="cursor: pointer"
                     >
                         <img src="@GetImageUrl("Antrags-Zeit", titleImages)"
-                             class="about-item-image"/>
+                             class="section-button-image"/>
                     </div>
                 }
                 <div class="text-center">
@@ -67,7 +68,7 @@
 {
     <div class="row mt-5" id="aboutUsGridSection">
         <div class="card ">
-            <div class="card-body item-card">
+            <div class="card-body">
                 @if (IsMeetingPhaseVisible)
                 {
                     section = "Kennenlernphase";
@@ -199,6 +200,16 @@
     private List<AboutImages> images = [];
     private List<AboutImages> titleImages = [];
     private string section;
+    private bool IsMobile { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

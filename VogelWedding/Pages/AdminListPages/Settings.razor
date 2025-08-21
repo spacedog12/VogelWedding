@@ -3,134 +3,146 @@
 @inject NavigationManager NavigationManager
 @inject SettingsService SettingsService
 
-@* TODO: Remove when finished Debugin *@
-<h1>Debug: Access Level = @AccessService.CurrentLevel</h1>
-
-@if (AccessService.CurrentLevel != AccessLevel.Admin)
-{
-    <div class="alert alert-danger" role="alert">
-        You don't have permission to view this page.
-    </div>
-}
-else
-{
-    <div class="card settings-wrapper">
-        <div class="card-header">
-            <h3 class="mb-0">Settings</h3>
+<div class="page-wrapper">
+    @if (AccessService.CurrentLevel != AccessLevel.Admin)
+    {
+        <div class="alert alert-danger" role="alert">
+            You don't have permission to view this page.
         </div>
-        <div class="card-body">
-            <form @onsubmit="SaveSettings">
-                <div class="mb-3">
-                    <h5>Einstellungen</h5>
-                    @* <div class="mb-3"> *@
-                    @*     <label class="form-label">Webseiten Überschrift</label> *@
-                    @*     <input type="text" class="form-control" @bind="settings.SiteTitle"/> *@
-                    @* </div> *@
-                    <div class="mb-3">
-                        <label class="form-label">Anmeldeformular aktivieren</label>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" @bind="settings.RsvpEnabled"
-                                   id="enableRsvp"/>
-                            <label class="form-check-label" for="enableRsvp">Alle gäste können sich anmelden</label>
+    }
+    else
+    {
+        <div class="card page-container">
+            <div class="card-body page-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="mb-0">Settings</h3>
+                        </div>
+                        <div class="card-body">
+                            <form @onsubmit="SaveSettings">
+                                <div class="mb-3">
+                                    <h5>Einstellungen</h5>
+                                    @* <div class="mb-3"> *@
+                                    @*     <label class="form-label">Webseiten Überschrift</label> *@
+                                    @*     <input type="text" class="form-control" @bind="settings.SiteTitle"/> *@
+                                    @* </div> *@
+                                    <div class="mb-3">
+                                        <label class="form-label">Anmeldeformular aktivieren</label>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" @bind="settings.RsvpEnabled"
+                                                   id="enableRsvp"/>
+                                            <label class="form-check-label" for="enableRsvp">Alle gäste können sich
+                                                anmelden</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h5>Email Settings (NOT IMPLEMENTET)</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Notification Email</label>
+                                        <input type="email" class="form-control" @bind="settings.NotificationEmail"
+                                               disabled="disabled"/>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h5>Seiten aktivierung</h5>
+                                    <p class="text-muted">Welche Tabs sind für die Gäste ersichtlich</p>
+
+                                    <div class="list-group">
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-house-heart-fill"></i>
+                                                    <span class="ms-2">Wilkommens</span>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           @bind="settings.HomePageVisible"
+                                                           id="homePageToggle">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-calendar-event-fill"></i>
+                                                    <span class="ms-2">Über</span>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           @bind="settings.AboutPageVisible"
+                                                           id="aboutPageToggle">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                    <span class="ms-2">Wunschliste</span>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           @bind="settings.WishlistPageVisible" id="wishlistPageToggle">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-camera-fill"></i>
+                                                    <span class="ms-2">Fotos</span>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           @bind="settings.PhotosPageVisible"
+                                                           id="photosPageToggle">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-chat-heart-fill"></i>
+                                                    <span class="ms-2">Kontakte</span>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           @bind="settings.ContactPageVisible"
+                                                           id="contactPageToggle">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Einstellungen speichern
+                                </button>
+
+                                @if (saveMessage != null)
+                                {
+                                    <div class="alert @(saveSuccess ? "alert-success" : "alert-danger") mt-3"
+                                         role="alert">
+                                        @saveMessage
+                                    </div>
+                                }
+                            </form>
                         </div>
                     </div>
                 </div>
-
-                <div class="mb-3">
-                    <h5>Email Settings (NOT IMPLEMENTET)</h5>
-                    <div class="mb-3">
-                        <label class="form-label">Notification Email</label>
-                        <input type="email" class="form-control" @bind="settings.NotificationEmail" disabled="disabled"/>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <h5>Seiten aktivierung</h5>
-                    <p class="text-muted">Welche Tabs sind für die Gäste ersichtlich</p>
-
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-house-heart-fill"></i>
-                                    <span class="ms-2">Wilkommens</span>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" @bind="settings.HomePageVisible"
-                                           id="homePageToggle">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-calendar-event-fill"></i>
-                                    <span class="ms-2">Über</span>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" @bind="settings.AboutPageVisible"
-                                           id="aboutPageToggle">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-geo-alt-fill"></i>
-                                    <span class="ms-2">Wunschliste</span>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox"
-                                           @bind="settings.WishlistPageVisible" id="wishlistPageToggle">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-camera-fill"></i>
-                                    <span class="ms-2">Fotos</span>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" @bind="settings.PhotosPageVisible"
-                                           id="photosPageToggle">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-chat-heart-fill"></i>
-                                    <span class="ms-2">Kontakte</span>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" @bind="settings.ContactPageVisible"
-                                           id="contactPageToggle">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Einstellungen speichern
-                </button>
-
-                @if (saveMessage != null)
-                {
-                    <div class="alert @(saveSuccess ? "alert-success" : "alert-danger") mt-3" role="alert">
-                        @saveMessage
-                    </div>
-                }
-            </form>
+            </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     private AppSettings settings = new();

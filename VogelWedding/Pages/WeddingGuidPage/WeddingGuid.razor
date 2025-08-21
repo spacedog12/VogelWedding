@@ -7,24 +7,12 @@
 @inject InformationSectionService InformationSection
 @inject IBlazorCurrentDeviceService CurrentDevice;
 
-<div class="information-wrapper">
-     <div class="background">
-          <img src="images/backgroundImages/Luzern_1_rmb.png"
-               class="background-graphic"
-               alt=""/>
-          <img src="images/backgroundImages/Zweig_gruen.png"
-               id="leftBranch"
-               class="background-graphic-branch"
-               alt=""/>
-          <img src="images/backgroundImages/Zweig_gruen.png"
-               id="rightBranch"
-               class="background-graphic-branch"
-               alt=""/>
-     </div>
+<div class="page-wrapper">
+     <Background/>
 
      <!-- Information Grid section -->
-     <div class="card information-container d-none d-md-block">
-          <div class="card-body information-card">
+     <div class="card page-container d-none d-md-block">
+          <div class="card-body page-card-frosted info-card">
                @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
                {
                     <div class="row">
@@ -181,8 +169,8 @@
 
      @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
      {
-          <div class="card information-container mt-4" id="informationSection">
-               <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+          <div class="card page-container mb-5 m" id="informationSection">
+               <div class="@(IsMobile ? "" : "card-body") page-card-frosted info-card">
                     @* <span>@IsMobile</span> *@
                     @* <div class="row"> *@
 
@@ -240,8 +228,8 @@
      {
           @if (IsAddressesVisible)
           {
-               <div class="card aboutInformation-container mt-4" id="informationSection">
-                    <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+               <div class="card page-container mb-5" id="informationSection">
+                    <div class="@(IsMobile ? "" : "card-body") page-card-frosted info-card">
                          <div id="aboutTheChapelSection">
                               <AboutTheChapel/>
                          </div>
@@ -250,8 +238,8 @@
 
                @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
                {
-                    <div class="card aboutInformation-container mt-4" id="informationSection">
-                         <div class="@(IsMobile ? "information-card" : "card-body information-card")">
+                    <div class="card page-container mb-5" id="informationSection">
+                         <div class="@(IsMobile ? "" : "card-body") page-card-frosted info-card">
                               <div id="aboutTheFactorySection">
                                    <AboutTheFactory/>
                               </div>

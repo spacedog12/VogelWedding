@@ -1,0 +1,18 @@
+@page "/purchases/open-mails"
+
+<div class="page-wrapper">
+    <Background/>
+    <PurchasesList Title="Offene Emails" 
+                   EmptyMessage="Keine E-Mails zu versenden"
+                   ShowEmailCheckbox="true"
+                   ShowMoneyCheckbox="false"
+                   EnableMailToLinks="true"
+                   Filter="@(purchase => !purchase.EmailSent && !purchase.MoneyReceived)"/>
+    
+</div>
+
+@code {
+
+    
+
+}

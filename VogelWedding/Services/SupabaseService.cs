@@ -64,6 +64,24 @@ public class SupabaseService
 		}
 	}
 
+	public async Task<InvoiceModel?> GetInvoiceByIdAsync(int id, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await _client
+				.From<InvoiceModel>()
+				.Where(x => x.ID == id)
+				.Single(cancellationToken);
+			
+			return response;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Failed to fetch entries of Invoice: {ex}");
+			throw;
+		}
+	}
+
 	public async Task<string> UploadPhotoAsync(IBrowserFile file, string? name, string? comment)
 	{
 		using var stream = file.OpenReadStream();
@@ -156,10 +174,23 @@ public class SupabaseService
 		}
 	}
 
+	public async Task<WishlistItem?> GetWishlistItemAsync(Guid id)
+	{
+		return await _client
+			.From<WishlistItem>()
+			.Where(x => x.ID == id)
+			.Single();
+	}
+
 	public async Task SetPurchaseAsync(WishlistPurchase purchase)
 	{
 		try
 		{
+			if (purchase.PurchasedAt == default)
+			{
+				purchase.PurchasedAt = DateTimeOffset.UtcNow;
+			}
+			
 			await _client
 				.From<WishlistPurchase>()
 				.Insert(purchase);
@@ -212,6 +243,40 @@ public class SupabaseService
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Faild to save purchase to database: {ex.Message}");
+		}
+	}
+
+	public async Task UpdatePurchaseAsync(WishlistPurchase purchase)
+	{
+		if (purchase == null ||purchase.ID == Guid.Empty)
+			throw new ArgumentException("Purchase or Purchase.ID is invalid");
+
+		try
+		{
+			if (!purchase.EmailSent && purchase.MoneyReceived)
+			{
+				purchase.MoneyReceived = false;
+				purchase.MoneyReceivedDate = null;
+			}
+			
+			if (purchase.MoneyReceived)
+			{
+				purchase.MoneyReceivedDate ??= DateTimeOffset.Now;
+			}
+			else
+			{
+				purchase.MoneyReceivedDate = null;
+			}
+			
+			await _client
+				.From<WishlistPurchase>()
+				.Where(x => x.ID == purchase.ID)
+				.Update(purchase);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Failed to update WishlistPurchase {purchase.ID}: {ex.Message}");
+			throw;
 		}
 	}
 }

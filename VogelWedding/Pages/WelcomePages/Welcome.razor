@@ -1,6 +1,7 @@
 @page "/"
 @inject AccessService AccessService
 @inject SettingsService SettingsService
+@inject IBlazorCurrentDeviceService CurrentDevice
 
 @*
     Inhalte:
@@ -10,24 +11,12 @@
     ✅ Tagesablauf (all / invited)
 *@
 
-<div class="welcome-wrapper">
-    <div class="background">
-        <img src="images/backgroundImages/Luzern_1_rmb.png"
-             class="background-graphic"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="leftBranch"
-             class="background-graphic-branch"
-             alt=""/>
-        <img src="images/backgroundImages/Zweig_gruen.png"
-             id="rightBranch"
-             class="background-graphic-branch"
-             alt=""/>
-    </div>
+<div class="page-wrapper">
+    <Background/>
 
     <!-- Welcome section -->
-    <div class="card welcome-container">
-        <div class="card-body welcome-card">
+    <div class="card page-container">
+        <div class="card-body page-card-frosted">
             <img src="images/Welcome/Welcome.png"
                  class="welcome-img img-fluid mb-4"
                  alt=""/>
@@ -35,7 +24,8 @@
             <p class="mt-4">
                 Wir freuen uns riesig, diesen besonderen Tag mit euch zu feiern und gemeinsam ein neues Kapitel in
                 unserem Leben aufzuschlagen.
-                Vielleicht wird das eine oder andere ein wenig anders sein – weil es zu uns passt, weil wir es genau so
+                Vielleicht wird das eine oder andere ein wenig anders sein – weil es zu uns passt, weil wir es genau
+                so
                 mögen.
                 Wir hoffen, ihr feiert das genauso wie wir.
                 Auf dieser Seite findet ihr alle wichtigen Informationen rund um unseren großen Tag –
@@ -45,44 +35,48 @@
                 Zeigt euch mit Stil, Charme und dem gewissen Etwas. Fühlt euch wohl in eurem Look
                 – aber gönnt euch (und uns) ein bisschen Glamour!
             </p>
-            <p><strong>Infos für Familien</strong><br/>
-                Kinder sind beim Nachmittagsprogramm herzlich willkommen. Für das Fest am Abend bitten wir jedoch um
-                Verständnis, dass aufgrund der räumlichen Gegebenheiten nur Erwachsene auf der Gästeliste stehen können
-                (mit Ausnahme unserer beiden Hochzeitskinder).
-            </p>
+            @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+            {
+                <p><strong>Infos für Familien</strong><br/>
+
+                    Kinder sind beim Nachmittagsprogramm herzlich willkommen. Für das Fest am Abend bitten wir
+                    jedoch um
+                    Verständnis, dass aufgrund der räumlichen Gegebenheiten nur Erwachsene auf der Gästeliste stehen
+                    können
+                    (mit Ausnahme unserer beiden Hochzeitskinder).
+                </p>
+            }
+            else
+            {
+                <p><strong>Infos für Familien</strong><br/>
+                    Kinder sind beim Nachmittagsprogramm herzlich willkommen.
+                </p>
+            }
             <p>Liebe Grüsse
                 <strong>Romina und Simon</strong>
             </p>
         </div>
     </div>
 
-    <!-- RSVP section -->
-    @* @if (AccessService.CanAccessRsvp(settings.RsvpEnabled)) *@
-    @* { *@
-        <div class="card welcome-container mt-2">
-            <div class="card-body welcome-card">
-                <RSVP/>
-            </div>
+    <div class="card page-container mt-2">
+        <div class="@(IsMobile ? "" : "card-body") page-card-frosted">
+            <RSVP/>
         </div>
-    @* } *@
-
-    @* <!-- Schedule section --> *@
-    @* <div class="card welcome-container mt-2"> *@
-    @*     <div class="card-body welcome-card"> *@
-    @*         <Schedule/> *@
-    @*     </div> *@
-    @* </div> *@
-    @* *@
-    @* <!-- Addresses section --> *@
-    @* <div class="card welcome-container mt-2"> *@
-    @*     <div class="card-body welcome-card"> *@
-    @*         <Addresses/> *@
-    @*     </div> *@
-    @* </div> *@
+    </div>
 </div>
 
 @code {
     private AppSettings settings => SettingsService.CurrentSettings;
+    private bool IsMobile { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
