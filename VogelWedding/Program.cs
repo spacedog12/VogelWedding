@@ -31,7 +31,6 @@ builder.Services.AddScoped(_ =>
 	)
 );
 builder.Services.AddScoped<SupabaseService>();
-builder.Services.AddScoped<SupabaseWishlistService>();
 builder.Services.AddScoped<InformationSectionService>();
 builder.Services.AddRadzenComponents();
 builder.Services.AddMudServices();

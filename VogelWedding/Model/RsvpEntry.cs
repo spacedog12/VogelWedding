@@ -76,6 +76,11 @@ public class RsvpEntry : BaseModel, IValidatableObject
     [Column("message")]
     [Display(Name = "Nachricht")]
     public string Message { get; set; }
+    
+    
+    [Column("created_at")]
+    [Display(Name = "Erstellt am")]
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

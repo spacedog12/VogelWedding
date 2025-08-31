@@ -266,6 +266,8 @@
             }
 
             await Supabase.SubmitRsvpAsync(model);
+            
+            
             ToastService.ShowSuccess("Besten Dank! Deine Anmeldung wurde übermittelt.");
             model = new RsvpEntry
             {

@@ -62,6 +62,8 @@
                     <col style="width: 200px; max-width: 200px"/>
                     /* Registrierung von */
                     <col style="width: 100px"/>
+                    /* Registriert am */
+                    <col style="width: 100px"/>
                 </ColGroup>
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Anmeldungen</MudText>
@@ -106,6 +108,10 @@
                     </MudTh>
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.Invited)">Registrierung von
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<RsvpEntry, object>(x => x.CreatedAt)">Registriert am
                         </MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
@@ -160,6 +166,12 @@
                                   overflow:hidden; 
                                   text-overflow:ellipsis;">
                         @(context.Invited ? "Fest" : "Zeremonie")
+                    </MudTd>
+                    <MudTd DataLabel="Registriert am"
+                           style="white-space:nowrap; 
+                                  overflow:hidden; 
+                           ">
+                        @context.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy | HH:mm:ss")
                     </MudTd>
                 </RowTemplate>
                 @* <PagerContent> *@
