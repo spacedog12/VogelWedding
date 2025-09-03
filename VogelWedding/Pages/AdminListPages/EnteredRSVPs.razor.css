@@ -1,0 +1,38 @@
+.msg-wrap#message-wrap {
+    max-width: 400px;
+    width: 400px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.msg-wrap#invited-wrap {
+    width: 180px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-align: center;
+}
+
+.msg-wrap#address-wrap {
+    width: 250px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-align: start;
+}
+
+@media (max-width: 768px) {
+    .msg-wrap#message-wrap {
+        text-align: end;
+        width: 250px;
+    }
+
+    .msg-wrap#address-wrap {
+        text-align: end;
+    }
+    
+    .msg-wrap#invited-wrap {
+        text-align: end;
+    }
+}

@@ -17,6 +17,7 @@
 .item-card {
     height: 100%;
     display: flex;
+    z-index: 1;
     flex-direction: column;
     justify-content: space-between;
 }
@@ -39,4 +40,34 @@
 
 .modal-content {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}s
+}
+
+.sold-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.sold-svg {
+    transform: rotate(-30deg);
+    width: 900px;
+    height: 600px;
+    z-index: 10;
+}
+
+/*@keyframes fadeIn {*/
+/*    from {*/
+/*        opacity: 0;*/
+/*        transform: scale(0.8);*/
+/*    }*/
+/*    to {*/
+/*        opacity: 1;*/
+/*        transform: scale(1);*/
+/*    }*/
+/*}*/

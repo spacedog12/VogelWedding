@@ -12,8 +12,8 @@
 
      <!-- Information Grid section -->
      <div class="card page-container d-none d-md-block">
-          <div class="card-body page-card-frosted info-card">
-               @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+          <div class="card-body page-card-frosted info-card @(AccessService.CurrentLevel >= AccessLevel.GuestInvited ? "six-items" : "")">
+               @if (AccessService.CurrentLevel >= AccessLevel.GuestAll)
                {
                     <div class="row">
                          <!-- Ceremony -->
@@ -40,50 +40,53 @@
                          </div>
 
                          <!-- Love trail -->
-                         <div class="col-md-4 ">
-                              <div class="card">
-                                   <div class="card-body item-card text-center">
-                                        @if (!string.IsNullOrEmpty(GetImageUrl("LoveTrail")))
-                                        {
-                                             <div class="image-container"
-                                                  @onclick="async () => await ToggleSectionAndScroll(2)">
-                                                  <img src="@GetImageUrl("LoveTrail")"
-                                                       class="information-item-image"/>
-                                             </div>
+                         @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+                         {
+                              <div class="col-md-4 ">
+                                   <div class="card">
+                                        <div class="card-body item-card text-center">
+                                             @if (!string.IsNullOrEmpty(GetImageUrl("LoveTrail")))
+                                             {
+                                                  <div class="image-container"
+                                                       @onclick="async () => await ToggleSectionAndScroll(2)">
+                                                       <img src="@GetImageUrl("LoveTrail")"
+                                                            class="information-item-image"/>
+                                                  </div>
 
-                                        }
-                                        <div class="text-center">
-                                             <button class="btn btn-primary"
-                                                     @onclick="() => ToggleSectionAndScroll(2)">
-                                                  Love-Trail
-                                             </button>
+                                             }
+                                             <div class="text-center">
+                                                  <button class="btn btn-primary"
+                                                          @onclick="() => ToggleSectionAndScroll(2)">
+                                                       Love-Trail
+                                                  </button>
+                                             </div>
                                         </div>
                                    </div>
                               </div>
-                         </div>
 
-                         <!-- Party -->
-                         <div class="col-md-4">
-                              <div class="card">
-                                   <div class="card-body item-card text-center">
-                                        @if (!string.IsNullOrEmpty(GetImageUrl("Party")))
-                                        {
-                                             <div class="image-container"
-                                                  @onclick="async () => await ToggleSectionAndScroll(3)">
-                                                  <img src="@GetImageUrl("Party")"
-                                                       class="information-item-image"/>
+                              <!-- Party -->
+                              <div class="col-md-4">
+                                   <div class="card">
+                                        <div class="card-body item-card text-center">
+                                             @if (!string.IsNullOrEmpty(GetImageUrl("Party")))
+                                             {
+                                                  <div class="image-container"
+                                                       @onclick="async () => await ToggleSectionAndScroll(3)">
+                                                       <img src="@GetImageUrl("Party")"
+                                                            class="information-item-image"/>
+                                                  </div>
+
+                                             }
+                                             <div class="text-center">
+                                                  <button class="btn btn-primary"
+                                                          @onclick="() => ToggleSectionAndScroll(3)">
+                                                       Fest
+                                                  </button>
                                              </div>
-
-                                        }
-                                        <div class="text-center">
-                                             <button class="btn btn-primary"
-                                                     @onclick="() => ToggleSectionAndScroll(3)">
-                                                  Fest
-                                             </button>
                                         </div>
                                    </div>
                               </div>
-                         </div>
+                         }
 
                          <!-- Addresses -->
                          <div class="col-md-4">
@@ -156,18 +159,19 @@
                     </div>
                }
 
-               @if (AccessService.CurrentLevel == AccessLevel.GuestAll)
-               {
-                    <div class="card ">
-                         <div class="card-body item-card">
-                              <Ceremony/>
-                         </div>
-                    </div>
-               }
+               @* @if (AccessService.CurrentLevel == AccessLevel.GuestAll) *@
+               @* { *@
+               @*      <div class="card "> *@
+               @*           <div class="card-body item-card"> *@
+               @*                <Ceremony/> *@
+               @*           </div> *@
+               @*      </div> *@
+               @* } *@
+               @* </div> *@
           </div>
      </div>
 
-     @if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+     @if (AccessService.CurrentLevel >= AccessLevel.GuestAll)
      {
           <div class="card page-container mb-5 m" id="informationSection">
                <div class="@(IsMobile ? "" : "card-body") page-card-frosted info-card">

@@ -42,7 +42,8 @@
                       Height="645px"
                       Loading="@_loading"
                       LoadingProgressColor="Color.Info"
-                      Style="@(IsMobile ? "overflow-x:hidden; white-space: normal; width:100%;" : "overflow-x:auto; white-space: nowrap;")">
+                      Breakpoint="Breakpoint.Sm"
+                      Style="@(IsMobile ? "overflow-x:hidden; width:100%;" : "overflow-x:auto;")">  @* white-space: normal;*@
                 <ColGroup>
                     /* Vorname */
                     <col style="width: 60px"/>
@@ -59,9 +60,9 @@
                     /* Buffet */
                     <col style="width: 60px"/>
                     /* Mitteilung */
-                    <col style="width: 200px; max-width: 200px"/>
+                    <col style="width: 400px; max-width: 400px"/>
                     /* Registrierung von */
-                    <col style="width: 100px"/>
+                    <col style="width: 200px"/>
                     /* Registriert am */
                     <col style="width: 100px"/>
                 </ColGroup>
@@ -81,7 +82,8 @@
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<RsvpEntry, object>(x => x.FamilyName)">Nachname
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                           SortBy="new Func<RsvpEntry, object>(x => x.FamilyName)">Nachname
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
@@ -144,28 +146,27 @@
                                   text-overflow:ellipsis;">
                         @context.EmailAddress
                     </MudTd>
-                    <MudTd DataLabel="Addresse"
-                           style="white-space:nowrap; 
-                                  overflow:hidden; 
-                                  text-overflow:ellipsis;">
-                        @context.Street, @context.ZipCode @context.Place
+                    <MudTd DataLabel="Addresse">
+                        <div class="msg-wrap" id="address-wrap">
+                            @context.Street<br/>
+                            @context.ZipCode @context.Place
+                        </div>
                     </MudTd>
                     <MudTd DataLabel="Buffet">
                         @(context.BuffetContribution ? "Ja" : "Nein")
                     </MudTd>
-                    <MudTd DataLabel="Mitteilung"
-                           style="white-space:nowrap; 
-                                  overflow:hidden; 
-                                  text-overflow:ellipsis;">
-
-                        @context.Message
-
+                    <MudTd DataLabel="Mitteilung">
+                        <div class="msg-wrap" id="message-wrap">
+                            @context.Message
+                        </div>
                     </MudTd>
-                    <MudTd DataLabel="Registrierung von"
-                           style="white-space:nowrap; 
-                                  overflow:hidden; 
-                                  text-overflow:ellipsis;">
-                        @(context.Invited ? "Fest" : "Zeremonie")
+                    <MudTd DataLabel="Registrierung von">
+                        @* style="white-space:nowrap;  *@
+                        @* overflow:hidden;  *@
+                        @* text-overflow:ellipsis;" *@
+                        <div class="msg-wrap" id="invited-wrap">
+                            @(context.Invited ? "Fest" : "Zeremonie")
+                        </div>
                     </MudTd>
                     <MudTd DataLabel="Registriert am"
                            style="white-space:nowrap; 
@@ -177,7 +178,7 @@
                 @* <PagerContent> *@
                 @*     <MudTablePager /> *@
                 @* </PagerContent> *@
-                
+
                 <NoRecordsContent>
                     <MudText>Keine Einträge gefunden.</MudText>
                 </NoRecordsContent>

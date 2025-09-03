@@ -5,13 +5,18 @@
     overflow-x: auto;
     margin: 0 -0.5rem; /* Compensate for card padding */
     width: 100%;
+    justify-content: center;
 }
 
 /* Columns sizing inside the horizontal scroller */
 .page-card-frosted.info-card .col-md-4 {
     flex: 0 0 auto;
-    width: 16.667%; /* Since you have 5 items, each should take up 20% */
+    width: 25%; /* Since you have 5 items, each should take up 20% */
     padding: 0 0.5rem; /* Add some spacing between cards */
+}
+
+.page-card-frosted.info-card.six-items .col-md-4 {
+    width: 16.66%;
 }
 
 /* Make the CTA buttons full width in the tiles */

@@ -52,7 +52,7 @@
                     @foreach (var item in wishlistItems)
                     {
                         <div class="col-md-4 mb-4">
-                            <div class="card">
+                            <div class="card position-relative">
                                 <div class="card-body item-card">
                                     @if (!string.IsNullOrEmpty(item.ImageUrl))
                                     {
@@ -91,6 +91,13 @@
                                         Schenken
                                     </button>
                                 </div>
+
+                                @if (ButtonDisabled(item))
+                                {
+                                    <div class="sold-overlay">
+                                        <img src="images/verschenkt-green.svg" alt="Verkauft" class="sold-svg"/>
+                                    </div>
+                                }
                             </div>
                         </div>
                     }
