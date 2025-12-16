@@ -9,78 +9,93 @@
 @inject ISnackbar Snackbar
 
 <div class="page-wrapper">
-    <div class="container mt-4">
-        @if (AccessService.CanAccessPhotos(true))
-        {
-            <!-- Upload Section -->
-            <div class="card page-container mb-4">
-                <div class="card-body page-card-frosted text-center">
-                    <h1 class="card-title mb-4">Fotos</h1>
-                    
-                    <div class="mb-3">
-                        <p>Lade hier deine Schnappschüsse hoch!</p>
-                        <!-- Custom styled file upload -->
-                         <div class="d-grid gap-2 col-md-6 mx-auto">
-                            <label class="btn btn-primary btn-lg">
-                                <span class="bi bi-cloud-upload-fill me-2"></span> 
-                                Fotos auswählen
-                                <!-- InputFile is hidden but triggered by the label -->
-                                <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*" />
-                            </label>
-                        </div>
-                    </div>
+    <Background/>
 
-                    @if (_isUploading)
-                    {
-                        <div class="progress mt-3" style="height: 20px;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" 
-                                 role="progressbar" 
-                                 style="width: @(CalculateProgress())%">
-                                Uploading... @(_uploadedCount) / @(_totalToUpload)
+    @if (AccessService.CanAccessPhotos(true))
+    {
+        <!-- Upload Section -->
+        <div class="card page-container">
+            <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted text-center")">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title mb-4">Fotos</h1>
+
+                        <div class="mb-3">
+                            <p>Lade hier deine Schnappschüsse hoch!</p>
+                            <!-- Custom styled file upload -->
+                            <div class="d-grid gap-2 col-md-6 mx-auto">
+                                <label class="btn btn-primary btn-lg">
+                                    <span class="bi bi-cloud-upload-fill me-2"></span>
+                                    Fotos auswählen
+                                    <!-- InputFile is hidden but triggered by the label -->
+                                    <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*"/>
+                                </label>
                             </div>
                         </div>
-                    }
-                </div>
-            </div>
 
-            <!-- Gallery Section -->
-            @if (_isLoadingImages)
-            {
-                <div class="d-flex justify-content-center my-5">
-                    <div class="spinner-border text-light" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            }
-            else if (_imageUrls.Any())
-            {
-                <div class="row g-3">
-                    @foreach (var url in _imageUrls)
-                    {
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="ratio ratio-1x1">
-                                    <img src="@url" class="card-img-top object-fit-cover rounded" alt="Wedding photo" style="width:100%; height:100%;" loading="lazy" />
+                        @if (_isUploading)
+                        {
+                            <div class="progress mt-3" style="height: 20px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                                     role="progressbar"
+                                     style="width: @(CalculateProgress())%">
+                                    Uploading... @(_uploadedCount) / @(_totalToUpload)
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            }
-            else
-            {
-                <div class="alert alert-secondary text-center mt-4" role="alert">
-                    Noch keine Fotos hochgeladen. Sei der Erste!
-                </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-danger" role="alert">
-                Du hast keine Berechtigung, diese Seite zu sehen.
             </div>
-        }
-    </div>
+        </div>
+
+        <div class="card page-container mt-2">
+            <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted")">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Gallery Section -->
+                        @if (_isLoadingImages)
+                        {
+                            <div class="d-flex justify-content-center my-5">
+                                <div class="spinner-border text-light" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
+                        else if (_imageUrls.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var url in _imageUrls)
+                                {
+                                    <div class="col-6 col-md-4 col-lg-3">
+                                        <div class="card h-100 shadow-sm border-0">
+                                            <div class="ratio ratio-1x1">
+                                                <img src="@url" class="card-img-top object-fit-cover rounded"
+                                                     alt="Wedding photo"
+                                                     style="width:100%; height:100%;" loading="lazy"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary text-center mt-4" role="alert">
+                                Noch keine Fotos hochgeladen. Sei der Erste!
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            Du hast keine Berechtigung, diese Seite zu sehen.
+        </div>
+    }
+
 </div>
 
 <!-- Preview Modal (Bootstrap) -->
@@ -95,10 +110,10 @@
                 </div>
                 <div class="modal-body">
                     <p>Bitte überprüfe deine Auswahl, bevor du sie hochlädst.</p>
-                    
+
                     @if (_isPreviewLoading)
                     {
-                         <div class="d-flex align-items-center justify-content-center p-4">
+                        <div class="d-flex align-items-center justify-content-center p-4">
                             <div class="spinner-border text-primary me-3" role="status"></div>
                             <span>Lade Vorschau...</span>
                         </div>
@@ -110,7 +125,8 @@
                             {
                                 <div class="col-4 col-sm-3">
                                     <div class="ratio ratio-1x1">
-                                        <img src="@img" class="img-fluid rounded object-fit-cover" style="width:100%; height:100%;" />
+                                        <img src="@img" class="img-fluid rounded object-fit-cover"
+                                             style="width:100%; height:100%;"/>
                                     </div>
                                 </div>
                             }
@@ -119,7 +135,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="ClosePreviewModal">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" @onclick="ConfirmUpload" disabled="@(_isPreviewLoading || _isUploading)">
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmUpload"
+                            disabled="@(_isPreviewLoading || _isUploading)">
                         <span class="bi bi-upload me-1"></span> Jetzt hochladen
                     </button>
                 </div>
@@ -130,6 +147,8 @@
 }
 
 @code {
+    private bool IsMobile { get; set; }
+
     private const string CeremonyFolder = "/Ceremony";
     private const string PartyFolder = "/Party";
 
@@ -169,7 +188,7 @@
         try
         {
             var level = AccessService.CurrentLevel;
-        
+
             // if (level >= AccessLevel.GuestAll)
             // {
             //     var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
@@ -181,7 +200,7 @@
             //     var partyPhotos = await SupabasePhotosService.GetImageUrlsAsync(PartyFolder);
             //     _imageUrls.AddRange(partyPhotos);
             // }
-            
+
             if (level >= AccessLevel.TestUserAll)
             {
                 var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
@@ -208,14 +227,14 @@
     private async Task OnFilesSelected(InputFileChangeEventArgs e)
     {
         // GetMultipleFiles(maxCount) ensures we can handle more than default 10
-        try 
+        try
         {
-            _selectedFiles = e.GetMultipleFiles(100); 
-        } 
-        catch (Exception ex) 
+            _selectedFiles = e.GetMultipleFiles(100);
+        }
+        catch (Exception ex)
         {
-             Snackbar.Add($"Zu viele Dateien ausgewählt: {ex.Message}", Severity.Warning);
-             return;
+            Snackbar.Add($"Zu viele Dateien ausgewählt: {ex.Message}", Severity.Warning);
+            return;
         }
 
         if (_selectedFiles == null || !_selectedFiles.Any()) return;
@@ -276,7 +295,7 @@
             // so the progress bar will likely jump to 100% when done or stay indeterminate 
             // unless we modify the service to report progress. 
             // For now, we just show "Uploading..."
-            
+
             var results = await SupabasePhotosService.UploadFilesAsync(_selectedFiles, _selectedUploadFolder);
 
             if (results.Any())
@@ -285,9 +304,9 @@
             }
             else
             {
-                 Snackbar.Add("Keine Bilder hochgeladen. Siehe Konsole für Details.", Severity.Warning);
+                Snackbar.Add("Keine Bilder hochgeladen. Siehe Konsole für Details.", Severity.Warning);
             }
-    
+
             await LoadImages();
         }
         catch (Exception ex)
