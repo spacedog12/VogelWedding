@@ -1,70 +1,67 @@
 public enum AccessLevel
 {
-    None,
-    GuestAll,
-    GuestInvited,
-    Admin
+	None,
+	GuestAll,
+	GuestInvited,
+	TestUserAll,
+	TestUserInvited,
+	Admin
 }
 
-public class AccessService
+public class AccessService(SupabaseService supabaseService)
 {
-    private readonly ILogger<AccessService> _logger;
-    public event Action? OnChange;
-    // private const string Key = "access_level";
-    private AccessLevel currentLevel = AccessLevel.None;
+	private readonly ILogger<AccessService> _logger;
 
-    public AccessLevel CurrentLevel 
-    { 
-        get => currentLevel;
-        private set
-        {
-            if (currentLevel != value)
-            {
-                // Console.WriteLine($"Access level changing from {currentLevel} to {value}"); // Debug print
-                currentLevel = value;
-                NotifyStateChange();
-            }
-        }
-    }
+	public event Action? OnChange;
 
-    public event Action<AccessLevel>? OnAccessLevelChanged;
+	// private const string Key = "access_level";
+	private AccessLevel currentLevel = AccessLevel.None;
 
-    public bool TryLoginWithCode(string? code)
-    {
-        // Console.WriteLine($"TryLoginWithCode called with code: {code}"); // Debug print
-        
-        switch (code?.ToUpper())
-        {
-            case "FREUDE2026":
-                CurrentLevel = AccessLevel.GuestAll;
-                return true;
-            case "FEST2026":
-                CurrentLevel = AccessLevel.GuestInvited;
-                return true;
-            default:
-                return false;
-        }
-    }
+	public AccessLevel CurrentLevel
+	{
+		get => currentLevel;
+		private set
+		{
+			if (currentLevel != value)
+			{
+				// Console.WriteLine($"Access level changing from {currentLevel} to {value}"); // Debug print
+				currentLevel = value;
+				NotifyStateChange();
+			}
+		}
+	}
 
-    public bool SetAdminAccess()
-    {
-        CurrentLevel = AccessLevel.Admin;
-        return true;
-    }
+	public event Action<AccessLevel>? OnAccessLevelChanged;
 
-    public bool HasRequiredAccess(AccessLevel requiredLevel)
-    {
-        return CurrentLevel >= requiredLevel;
-    }
+	public async Task<bool> TryLoginWithCode(string code)
+	{
+		// Console.WriteLine($"TryLoginWithCode called with code: {code}"); // Debug print
 
-    public void Logout()
-    {
-        CurrentLevel = AccessLevel.None;
-    }
+		CurrentLevel = await supabaseService.LoginUserAsync(code.ToUpper());
 
-    private void NotifyStateChange()
-    {
-        // Console.WriteLine("NotifyStateChanged called"); // Debug print
-        OnChange?.Invoke();
-    }
+		return currentLevel != AccessLevel.None;
+
+	}
+
+	public bool SetAdminAccess()
+	{
+		CurrentLevel = AccessLevel.Admin;
+		return true;
+	}
+
+	public bool HasRequiredAccess(AccessLevel requiredLevel)
+	{
+		return CurrentLevel >= requiredLevel;
+	}
+
+	public async void Logout()
+	{
+		CurrentLevel = await supabaseService.Logout();
+	}
+
+	private void NotifyStateChange()
+	{
+		// Console.WriteLine("NotifyStateChanged called"); // Debug print
+		OnChange?.Invoke();
+	}
 }

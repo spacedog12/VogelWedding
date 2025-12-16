@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Radzen;
 using VogelWedding;
+using VogelWedding.Interfaces;
 using VogelWedding.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -36,5 +37,7 @@ builder.Services.AddRadzenComponents();
 builder.Services.AddMudServices();
 builder.Services.AddBlazorCurrentDevice();
 
+// Register the SupabasePhotosService
+builder.Services.AddScoped<ISupabasePhotosService, SupabasePhotosService>();
 
 await builder.Build().RunAsync();

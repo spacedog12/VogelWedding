@@ -1,14 +1,309 @@
 @page "/bilder"
+@using VogelWedding.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+@using System.IO
+@using VogelWedding.Interfaces
+@inject ISupabasePhotosService SupabasePhotosService
+@inject AccessService AccessService
+@inject ISnackbar Snackbar
 
-@*
-    Inhalt:
-    - Photos
-*@
+<div class="page-wrapper">
+    <div class="container mt-4">
+        @if (AccessService.CanAccessPhotos(true))
+        {
+            <!-- Upload Section -->
+            <div class="card page-container mb-4">
+                <div class="card-body page-card-frosted text-center">
+                    <h1 class="card-title mb-4">Fotos</h1>
+                    
+                    <div class="mb-3">
+                        <p>Lade hier deine Schnappschüsse hoch!</p>
+                        <!-- Custom styled file upload -->
+                         <div class="d-grid gap-2 col-md-6 mx-auto">
+                            <label class="btn btn-primary btn-lg">
+                                <span class="bi bi-cloud-upload-fill me-2"></span> 
+                                Fotos auswählen
+                                <!-- InputFile is hidden but triggered by the label -->
+                                <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*" />
+                            </label>
+                        </div>
+                    </div>
 
-<h3>Photos</h3>
+                    @if (_isUploading)
+                    {
+                        <div class="progress mt-3" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" 
+                                 role="progressbar" 
+                                 style="width: @(CalculateProgress())%">
+                                Uploading... @(_uploadedCount) / @(_totalToUpload)
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Gallery Section -->
+            @if (_isLoadingImages)
+            {
+                <div class="d-flex justify-content-center my-5">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            else if (_imageUrls.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var url in _imageUrls)
+                    {
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="ratio ratio-1x1">
+                                    <img src="@url" class="card-img-top object-fit-cover rounded" alt="Wedding photo" style="width:100%; height:100%;" loading="lazy" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary text-center mt-4" role="alert">
+                    Noch keine Fotos hochgeladen. Sei der Erste!
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-danger" role="alert">
+                Du hast keine Berechtigung, diese Seite zu sehen.
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Preview Modal (Bootstrap) -->
+@if (_showPreviewModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.7);">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Fotos überprüfen (@(_selectedFiles?.Count ?? 0))</h5>
+                    <button type="button" class="btn-close" @onclick="ClosePreviewModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bitte überprüfe deine Auswahl, bevor du sie hochlädst.</p>
+                    
+                    @if (_isPreviewLoading)
+                    {
+                         <div class="d-flex align-items-center justify-content-center p-4">
+                            <div class="spinner-border text-primary me-3" role="status"></div>
+                            <span>Lade Vorschau...</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row g-2">
+                            @foreach (var img in _previewUrls)
+                            {
+                                <div class="col-4 col-sm-3">
+                                    <div class="ratio ratio-1x1">
+                                        <img src="@img" class="img-fluid rounded object-fit-cover" style="width:100%; height:100%;" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePreviewModal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmUpload" disabled="@(_isPreviewLoading || _isUploading)">
+                        <span class="bi bi-upload me-1"></span> Jetzt hochladen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
 
 @code {
+    private const string CeremonyFolder = "/Ceremony";
+    private const string PartyFolder = "/Party";
 
+    private bool _isUploading = false;
+    private bool _isLoadingImages = true;
+    private string _selectedUploadFolder = CeremonyFolder;
+    private List<string> _imageUrls = new();
+
+    // Modal & Upload State
+    private bool _showPreviewModal = false;
+    private bool _isPreviewLoading = false;
+    private IReadOnlyList<IBrowserFile> _selectedFiles;
+    private List<string> _previewUrls = new();
+    private int _uploadedCount = 0;
+    private int _totalToUpload = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
+        if (AccessService.CurrentLevel >= AccessLevel.TestUserInvited)
+        {
+            _selectedUploadFolder = PartyFolder;
+        }
+        else
+        {
+            _selectedUploadFolder = CeremonyFolder;
+        }
+
+        await LoadImages();
+    }
+
+    private async Task LoadImages()
+    {
+        _isLoadingImages = true;
+        _imageUrls.Clear();
+
+        try
+        {
+            var level = AccessService.CurrentLevel;
+        
+            // if (level >= AccessLevel.GuestAll)
+            // {
+            //     var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
+            //     _imageUrls.AddRange(ceremonyPhotos);
+            // }
+            //
+            // if (level >= AccessLevel.GuestInvited)
+            // {
+            //     var partyPhotos = await SupabasePhotosService.GetImageUrlsAsync(PartyFolder);
+            //     _imageUrls.AddRange(partyPhotos);
+            // }
+            
+            if (level >= AccessLevel.TestUserAll)
+            {
+                var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
+                _imageUrls.AddRange(ceremonyPhotos);
+            }
+
+            if (level >= AccessLevel.TestUserInvited)
+            {
+                var partyPhotos = await SupabasePhotosService.GetImageUrlsAsync(PartyFolder);
+                _imageUrls.AddRange(partyPhotos);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Fehler beim Laden: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoadingImages = false;
+        }
+    }
+
+    // Triggered when files are selected from the InputFile component
+    private async Task OnFilesSelected(InputFileChangeEventArgs e)
+    {
+        // GetMultipleFiles(maxCount) ensures we can handle more than default 10
+        try 
+        {
+            _selectedFiles = e.GetMultipleFiles(100); 
+        } 
+        catch (Exception ex) 
+        {
+             Snackbar.Add($"Zu viele Dateien ausgewählt: {ex.Message}", Severity.Warning);
+             return;
+        }
+
+        if (_selectedFiles == null || !_selectedFiles.Any()) return;
+
+        _showPreviewModal = true;
+        _previewUrls.Clear();
+        _isPreviewLoading = true;
+        StateHasChanged();
+
+        // Generate previews (limit to first 12 to be quick)
+        var filesToPreview = _selectedFiles.Take(12).ToList();
+        long maxFileSize = 1024 * 1024 * 20; // 20MB limit for preview reading
+
+        foreach (var file in filesToPreview)
+        {
+            try
+            {
+                if (file.ContentType.StartsWith("image/"))
+                {
+                    // Create 300x300 thumbnail
+                    var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
+                    var buffer = new byte[resizedFile.Size];
+                    await resizedFile.OpenReadStream(maxFileSize).ReadAsync(buffer);
+                    var base64 = Convert.ToBase64String(buffer);
+                    _previewUrls.Add($"data:image/jpeg;base64,{base64}");
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Preview failed: {ex.Message}");
+            }
+        }
+
+        _isPreviewLoading = false;
+    }
+
+    private void ClosePreviewModal()
+    {
+        _showPreviewModal = false;
+        _selectedFiles = null;
+        _previewUrls.Clear();
+    }
+
+    private async Task ConfirmUpload()
+    {
+        if (_selectedFiles == null || !_selectedFiles.Any()) return;
+
+        _showPreviewModal = false; // Close modal
+        _isUploading = true;
+        _totalToUpload = _selectedFiles.Count;
+        _uploadedCount = 0;
+        StateHasChanged();
+
+        try
+        {
+            // Note: We don't have a progress callback per file in the service yet, 
+            // so the progress bar will likely jump to 100% when done or stay indeterminate 
+            // unless we modify the service to report progress. 
+            // For now, we just show "Uploading..."
+            
+            var results = await SupabasePhotosService.UploadFilesAsync(_selectedFiles, _selectedUploadFolder);
+
+            if (results.Any())
+            {
+                Snackbar.Add($"{results.Count} Bilder erfolgreich hochgeladen!", Severity.Success);
+            }
+            else
+            {
+                 Snackbar.Add("Keine Bilder hochgeladen. Siehe Konsole für Details.", Severity.Warning);
+            }
     
+            await LoadImages();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Upload fehlgeschlagen: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isUploading = false;
+            _selectedFiles = null;
+        }
+    }
 
+    private double CalculateProgress()
+    {
+        if (_totalToUpload == 0) return 0;
+        return (double)_uploadedCount / _totalToUpload * 100;
+    }
 }

@@ -18,4 +18,10 @@ public static class AccessServiceExtensions
         return accessService.CurrentLevel == AccessLevel.Admin || 
                (accessService.CurrentLevel >= AccessLevel.GuestInvited && isPhotosEnabled);
     }
+
+    public static bool CanAccessTestPage(this AccessService accessService)
+    {
+        return accessService.CurrentLevel == AccessLevel.Admin ||
+               accessService.CurrentLevel >= AccessLevel.TestUserAll;
+    }
 }

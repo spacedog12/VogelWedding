@@ -52,7 +52,7 @@
 
     private async Task ProcessLogin()
     {
-        showError = !AccessService.TryLoginWithCode(accessCode);
+        showError = ! await AccessService.TryLoginWithCode(accessCode);
         if (!showError)
         {
             accessCode = "";

@@ -1,20 +1,14 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using VogelWedding.Model;
 using Newtonsoft.Json;
-using VogelWedding.Pages.Wishlist;
+using Supabase.Gotrue;
+using VogelWedding.Model;
+using Client = Supabase.Client;
 
-public class SupabaseService
+public class SupabaseService(Client client, NavigationManager navigationManager)
 {
-	private readonly Supabase.Client _client;
-	private readonly AccessService _accessService;
 
-	public SupabaseService(Supabase.Client client, AccessService accessService)
-	{
-		_client = client;
-		_accessService = accessService;
-	}
-
-	public Supabase.Client Client => _client;
+	public Client Client => client;
 
 	public async Task SubmitRsvpAsync(RsvpEntry entry)
 	{
@@ -24,7 +18,7 @@ public class SupabaseService
 			// Console.WriteLine($"Payload: {JsonConvert.SerializeObject(entry)}");
 
 
-			var response = await _client
+			var response = await client
 				.From<RsvpEntry>()
 				.Insert(entry);
 
@@ -54,7 +48,7 @@ public class SupabaseService
 	{
 		try
 		{
-			var res = await _client.From<T>().Get(cancellationToken);
+			var res = await client.From<T>().Get(cancellationToken);
 			return res?.Models ?? new List<T>();
 		}
 		catch (Exception ex)
@@ -68,11 +62,11 @@ public class SupabaseService
 	{
 		try
 		{
-			var response = await _client
+			var response = await client
 				.From<InvoiceModel>()
 				.Where(x => x.ID == id)
 				.Single(cancellationToken);
-			
+
 			return response;
 		}
 		catch (Exception ex)
@@ -92,10 +86,10 @@ public class SupabaseService
 
 		var path = $"photos/{Guid.NewGuid()}_{file.Name}";
 
-		await _client.Storage.From("public").Upload(bytes, path);
-		var url = _client.Storage.From("public").GetPublicUrl(path);
+		await client.Storage.From("public").Upload(bytes, path);
+		var url = client.Storage.From("public").GetPublicUrl(path);
 
-		await _client.From<Photo>().Insert(new Photo
+		await client.From<Photo>().Insert(new Photo
 		{
 			Name = name, Comment = comment, Url = url
 		});
@@ -107,7 +101,7 @@ public class SupabaseService
 	{
 		try
 		{
-			var res = await _client.From<Photo>().Get();
+			var res = await client.From<Photo>().Get();
 			return res?.Models ?? new List<Photo>();
 		}
 		catch (Exception ex)
@@ -117,11 +111,83 @@ public class SupabaseService
 		}
 	}
 
+	public async Task<AccessLevel> LoginUserAsync(string password)
+	{
+		const string guestEmail = "guest@example.com";
+		const string invitedEmail = "invited@example.com";
+		const string testUserAllEmail = "testall@example.com";
+		const string testUserEmail = "test@example.com";
+
+		try
+		{
+			var maybeSessionGuest = await client.Auth.SignIn(email: guestEmail, password: password);
+
+			if (maybeSessionGuest != null) return AccessLevel.GuestAll;
+		}
+		catch(Exception ex)
+		{
+			Console.WriteLine($"Could not log in with guest, trying invited now: {ex.Message}");
+
+		}
+		
+		try
+		{
+			var maybeSessionInvited = await client.Auth.SignIn(email: testUserAllEmail, password: password);
+
+			if (maybeSessionInvited != null) return AccessLevel.TestUserAll;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Could not log in with TestUser, trying invited now: {ex.Message}");
+		}
+
+		try
+		{
+			var maybeSessionInvited = await client.Auth.SignIn(email: testUserEmail, password: password);
+
+			if (maybeSessionInvited != null) return AccessLevel.TestUserInvited;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Could not log in with TestUserInvited, trying invited now: {ex.Message}");
+		}
+
+		try
+		{
+			var maybeSessionInvited = await client.Auth.SignIn(email: invitedEmail, password: password);
+
+			if (maybeSessionInvited != null) return AccessLevel.GuestInvited;
+		}
+		catch
+		{
+			Console.WriteLine($"None of the users were able to log in.");
+			return AccessLevel.None;
+		}
+
+		return AccessLevel.None;
+	}
+	
+	public async Task<AccessLevel> Logout()
+	{
+		try
+		{
+			await client.Auth.SignOut();
+			navigationManager.NavigateTo("/", true);
+		}
+		catch(Exception ex)
+		{
+			await Console.Error.WriteLineAsync($"Logging out failed: {ex.Message}");
+		}
+		
+		return AccessLevel.None;    
+	}
+
+
 	public async Task<bool> LoginAdminAsync(string? email, string? password)
 	{
 		try
 		{
-			await _client.Auth.SignIn(email: email, password: password);
+			await client.Auth.SignIn(email: email, password: password);
 			return true;
 		}
 		catch
@@ -135,7 +201,7 @@ public class SupabaseService
 		try
 		{
 			Console.WriteLine("Fetching settings from Supabase...");
-			var response = await _client
+			var response = await client
 				.From<AppSettings>()
 				.Get();
 
@@ -162,7 +228,7 @@ public class SupabaseService
 				settings.Id = Guid.NewGuid();
 			}
 
-			await _client
+			await client
 				.From<AppSettings>()
 				.Where(x => x.Id == settings.Id)
 				.Update(settings);
@@ -176,7 +242,7 @@ public class SupabaseService
 
 	public async Task<WishlistItem?> GetWishlistItemAsync(Guid id)
 	{
-		return await _client
+		return await client
 			.From<WishlistItem>()
 			.Where(x => x.ID == id)
 			.Single();
@@ -190,12 +256,12 @@ public class SupabaseService
 			{
 				purchase.PurchasedAt = DateTimeOffset.UtcNow;
 			}
-			
-			await _client
+
+			await client
 				.From<WishlistPurchase>()
 				.Insert(purchase);
 
-			var itemResponse = await _client
+			var itemResponse = await client
 				.From<WishlistItem>()
 				.Where(x => x.ID == purchase.WishlistItemId)
 				.Single();
@@ -213,8 +279,8 @@ public class SupabaseService
 					// itemResponse.Price -= purchase.PaidAmount;
 					itemResponse.PaidAmount += purchase.PaidAmount;
 					itemResponse.NumberPaidUsers += 1;
-					
-					await _client
+
+					await client
 						.From<WishlistItem>()
 						.Upsert(itemResponse);
 				}
@@ -223,7 +289,7 @@ public class SupabaseService
 					itemResponse.PaidAmount += purchase.PaidAmount;
 					itemResponse.NumberPaidUsers += 1;
 
-					await _client
+					await client
 						.From<WishlistItem>()
 						.Upsert(itemResponse);
 				}
@@ -235,7 +301,7 @@ public class SupabaseService
 				itemResponse.PaidAmount += purchase.PaidAmount;
 				itemResponse.NumberPaidUsers += 1;
 
-				await _client
+				await client
 					.From<WishlistItem>()
 					.Upsert(itemResponse);
 			}
@@ -248,7 +314,7 @@ public class SupabaseService
 
 	public async Task UpdatePurchaseAsync(WishlistPurchase purchase)
 	{
-		if (purchase == null ||purchase.ID == Guid.Empty)
+		if (purchase == null || purchase.ID == Guid.Empty)
 			throw new ArgumentException("Purchase or Purchase.ID is invalid");
 
 		try
@@ -258,7 +324,7 @@ public class SupabaseService
 				purchase.MoneyReceived = false;
 				purchase.MoneyReceivedDate = null;
 			}
-			
+
 			if (purchase.MoneyReceived)
 			{
 				purchase.MoneyReceivedDate ??= DateTimeOffset.Now;
@@ -267,8 +333,8 @@ public class SupabaseService
 			{
 				purchase.MoneyReceivedDate = null;
 			}
-			
-			await _client
+
+			await client
 				.From<WishlistPurchase>()
 				.Where(x => x.ID == purchase.ID)
 				.Update(purchase);

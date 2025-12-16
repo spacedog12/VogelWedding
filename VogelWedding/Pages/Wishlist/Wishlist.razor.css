@@ -44,20 +44,23 @@
 
 .sold-overlay {
     position: absolute;
-    top: 0;
+    top: 28%;
     left: 0;
     right: 0;
     bottom: 0;
+    height: 40%;
     display: flex;
     justify-content: center;
     align-items: center;
+    pointer-events: none;
     z-index: 10;
 }
 
 .sold-svg {
     transform: rotate(-30deg);
-    width: 900px;
-    height: 600px;
+    width: 850px;
+    height: 550px;
+    pointer-events: none;
     z-index: 10;
 }
 

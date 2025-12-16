@@ -107,7 +107,8 @@
                         </li>
                     }
 
-                    @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible))
+                    @* @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible)) // settings.PhotosPageVisible *@
+                    @if (AccessService.CurrentLevel >= AccessLevel.TestUserAll)
                     {
                         <li class="nav-item">
                             <NavLink class="nav-link" href="bilder">
