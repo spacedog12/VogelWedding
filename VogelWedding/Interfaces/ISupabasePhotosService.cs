@@ -4,6 +4,6 @@ namespace VogelWedding.Interfaces;
 
 public interface ISupabasePhotosService
 {
-	Task<List<string>> UploadFilesAsync(IReadOnlyList<IBrowserFile> files, string folder);
+	Task<List<string>> UploadFilesAsync(IReadOnlyList<IBrowserFile> files, string folder, Action<int>? onProgressUpdate = null);
 	Task<List<string>> GetImageUrlsAsync(string folder);
 }
