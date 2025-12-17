@@ -1,9 +1,11 @@
 @page "/bilder"
+
 @using VogelWedding.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @using System.IO
 @using VogelWedding.Interfaces
+
 @inject ISupabasePhotosService SupabasePhotosService
 @inject AccessService AccessService
 @inject ISnackbar Snackbar
@@ -36,10 +38,10 @@
                         @if (_isUploading)
                         {
                             <div class="progress mt-3" style="height: 20px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                                <div class="progress-bar progress-bar-animated progress-bar-primary"
                                      role="progressbar"
                                      style="width: @(CalculateProgress())%">
-                                    Uploading... @(_uploadedCount) / @(_totalToUpload)
+                                    @* Uploading... @(_uploadedCount) / @(_totalToUpload) *@
                                 </div>
                             </div>
                         }
@@ -81,7 +83,7 @@
                         else
                         {
                             <div class="alert alert-secondary text-center mt-4" role="alert">
-                                Noch keine Fotos hochgeladen. Sei der Erste!
+                                Noch keine Fotos vorhanden.
                             </div>
                         }
                     </div>
@@ -105,10 +107,10 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Fotos überprüfen (@(_selectedFiles?.Count ?? 0))</h5>
+                    <h3 class="modal-title">Ausgewählte Bilder (@(_filesToUpload?.Count ?? 0))</h3>
                     <button type="button" class="btn-close" @onclick="ClosePreviewModal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="overscroll-behavior: contain">
                     <p>Bitte überprüfe deine Auswahl, bevor du sie hochlädst.</p>
 
                     @if (_isPreviewLoading)
@@ -121,12 +123,20 @@
                     else
                     {
                         <div class="row g-2">
-                            @foreach (var img in _previewUrls)
+                            @for (int i = 0; i < _filesToUpload.Count; i++)
                             {
+                                var index = i;
                                 <div class="col-4 col-sm-3">
-                                    <div class="ratio ratio-1x1">
-                                        <img src="@img" class="img-fluid rounded object-fit-cover"
-                                             style="width:100%; height:100%;"/>
+                                    <div class="position-relative">
+                                        <div class="ratio ratio-1x1">
+                                            <img src="@_previewUrls[index]" class="img-fluid rounded object-fit-cover"
+                                                 style="width:100%; height:100%;"/>
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                                @onclick="() => RemoveFileFromSelection(index)"
+                                                style="opacity: 0.9;">
+                                            <span class="bi bi-x-lg"></span>
+                                        </button>
                                     </div>
                                 </div>
                             }
@@ -161,6 +171,7 @@
     private bool _showPreviewModal = false;
     private bool _isPreviewLoading = false;
     private IReadOnlyList<IBrowserFile> _selectedFiles;
+    private List<IBrowserFile> _filesToUpload = new();
     private List<string> _previewUrls = new();
     private int _uploadedCount = 0;
     private int _totalToUpload = 0;
@@ -241,11 +252,12 @@
 
         _showPreviewModal = true;
         _previewUrls.Clear();
+        _filesToUpload.Clear();
         _isPreviewLoading = true;
         StateHasChanged();
 
-        // Generate previews (limit to first 12 to be quick)
-        var filesToPreview = _selectedFiles.Take(12).ToList();
+        // Generate previews for all selected files
+        var filesToPreview = _selectedFiles.ToList();
         long maxFileSize = 1024 * 1024 * 20; // 20MB limit for preview reading
 
         foreach (var file in filesToPreview)
@@ -260,6 +272,7 @@
                     await resizedFile.OpenReadStream(maxFileSize).ReadAsync(buffer);
                     var base64 = Convert.ToBase64String(buffer);
                     _previewUrls.Add($"data:image/jpeg;base64,{base64}");
+                    _filesToUpload.Add(file);
                     StateHasChanged();
                 }
             }
@@ -272,31 +285,41 @@
         _isPreviewLoading = false;
     }
 
+    private void RemoveFileFromSelection(int index)
+    {
+        if (index >= 0 && index < _filesToUpload.Count)
+        {
+            _filesToUpload.RemoveAt(index);
+            _previewUrls.RemoveAt(index);
+            StateHasChanged();
+        }
+    }
+
     private void ClosePreviewModal()
     {
         _showPreviewModal = false;
         _selectedFiles = null;
+        _filesToUpload.Clear();
         _previewUrls.Clear();
     }
 
     private async Task ConfirmUpload()
     {
-        if (_selectedFiles == null || !_selectedFiles.Any()) return;
+        if (_filesToUpload == null || !_filesToUpload.Any()) return;
 
         _showPreviewModal = false; // Close modal
         _isUploading = true;
-        _totalToUpload = _selectedFiles.Count;
+        _totalToUpload = _filesToUpload.Count;
         _uploadedCount = 0;
         StateHasChanged();
 
         try
         {
-            // Note: We don't have a progress callback per file in the service yet, 
-            // so the progress bar will likely jump to 100% when done or stay indeterminate 
-            // unless we modify the service to report progress. 
-            // For now, we just show "Uploading..."
-
-            var results = await SupabasePhotosService.UploadFilesAsync(_selectedFiles, _selectedUploadFolder);
+            var results = await SupabasePhotosService.UploadFilesAsync(_filesToUpload, _selectedUploadFolder, count =>
+            {
+                _uploadedCount = count;
+                StateHasChanged();
+            });
 
             if (results.Any())
             {
@@ -317,6 +340,7 @@
         {
             _isUploading = false;
             _selectedFiles = null;
+            _filesToUpload.Clear();
         }
     }
 

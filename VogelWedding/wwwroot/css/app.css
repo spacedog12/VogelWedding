@@ -131,6 +131,10 @@ a, .btn-link {
     background-color: var(--primary-color);
 }
 
+.progress-bar-primary{
+    background-color: var(--primary-color);
+}
+
 .btn.btn-secondary {
     background-color: var(--text-color);
     color: var(--primary-color);
