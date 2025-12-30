@@ -17,7 +17,7 @@
     {
         <!-- Upload Section -->
         <div class="card page-container">
-            <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted text-center")">
+            <div class="@(IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
                 <div class="card">
                     <div class="card-body">
                         <h1 class="card-title mb-4">Fotos</h1>
@@ -200,6 +200,7 @@
         {
             var level = AccessService.CurrentLevel;
 
+            // TODO: Change User Access Level to guests
             // if (level >= AccessLevel.GuestAll)
             // {
             //     var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);

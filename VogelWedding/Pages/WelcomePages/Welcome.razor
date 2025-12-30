@@ -14,8 +14,29 @@
 <div class="page-wrapper">
     <Background/>
 
+    @if (IsMobile)
+    {
+        <div class="card page-container">
+            <div class="page-card-frosted">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-primary" href="/geschenke">
+                                Geschenke
+                            </a>
+                            <a type="button" class="btn btn-primary"
+                                    href="/bilder">
+                                Foto-Gallerie
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- Welcome section -->
-    <div class="card page-container">
+    <div class="card page-container" style="@(IsMobile ? "margin-top: 0rem;" : "")">
         <div class="card-body page-card-frosted">
             <img src="images/Welcome/Welcome.png"
                  class="welcome-img img-fluid mb-4"

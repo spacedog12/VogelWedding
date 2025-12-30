@@ -3,183 +3,209 @@ using VogelWedding.Interfaces;
 using FileOptions = Supabase.Storage.FileOptions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using Supabase.Storage;
 using System.Globalization;
 
 namespace VogelWedding.Services;
 
 public class SupabasePhotosService : ISupabasePhotosService
 {
-    private readonly Supabase.Client _supabase;
-    private readonly ILogger<SupabasePhotosService> _logger;
-    
-    private const string BucketName = "wedding-photos"; 
-    // Increase max file size limit to 20MB to be safe
-    private const long MaxFileSize = 1024 * 1024 * 20; 
+	private readonly Supabase.Client _supabase;
+	private readonly ILogger<SupabasePhotosService> _logger;
 
-    public SupabasePhotosService(Supabase.Client supabase)
-    {
-        _supabase = supabase;
-    }
+	private const string BucketName = "wedding-photos";
 
-    public async Task<List<string>> UploadFilesAsync(IReadOnlyList<IBrowserFile> files, string folder, Action<int>? onProgressUpdate = null)
-    {
-        var uploadedUrls = new List<string>();
-        var uploadedCount = 0;
+	// Increase max file size limit to 20MB to be safe
+	private const long MaxFileSize = 1024 * 1024 * 20;
 
-        // CHANGE: Upload sequentially instead of Task.WhenAll.
-        // Blazor WASM struggles with parallel stream reading from IBrowserFile.
-        foreach (var file in files)
-        {
-            var result = await UploadSingleFileAsync(file, folder);
-            if (result != null)
-            {
-                uploadedUrls.Add(result);
-            }
+	public SupabasePhotosService(Supabase.Client supabase)
+	{
+		_supabase = supabase;
+	}
 
-            uploadedCount++;
-            onProgressUpdate?.Invoke(uploadedCount);
-        }
+	public async Task<List<string>> UploadFilesAsync(IReadOnlyList<IBrowserFile> files, string folder, Action<int>? onProgressUpdate = null)
+	{
+		var uploadedUrls = new List<string>();
+		var uploadedCount = 0;
 
-        return uploadedUrls;
-    }
+		// CHANGE: Upload sequentially instead of Task.WhenAll.
+		// Blazor WASM struggles with parallel stream reading from IBrowserFile.
+		foreach (var file in files)
+		{
+			var result = await UploadSingleFileAsync(file, folder);
+			if (result != null)
+			{
+				uploadedUrls.Add(result);
+			}
 
-    private async Task<string?> UploadSingleFileAsync(IBrowserFile file, string folder)
-    {
-        try
-        {
-            using var stream = file.OpenReadStream(MaxFileSize);
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            var bytes = memoryStream.ToArray();
+			uploadedCount++;
+			onProgressUpdate?.Invoke(uploadedCount);
+		}
 
-            var cleanFolder = folder.Trim('/');
-            // Sanitize filename to remove special characters that might break URLs
-            var safeFileName = Path.GetFileNameWithoutExtension(file.Name)
-                .Replace(" ", "-")
-                .Replace("ä", "ae")
-                .Replace("ö", "oe")
-                .Replace("ü", "ue");
-            var ext = Path.GetExtension(file.Name);
+		return uploadedUrls;
+	}
 
-            var captureTimeUtc = TryGetCaptureTimeUtc(bytes) ?? file.LastModified.UtcDateTime;
-            
-            // Prefix that sorts lexicographically by time (UTC)
-            var captureTimePrefix = captureTimeUtc.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
+	private async Task<string?> UploadSingleFileAsync(IBrowserFile file, string folder)
+	{
+		try
+		{
+			using var stream = file.OpenReadStream(MaxFileSize);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var bytes = memoryStream.ToArray();
 
-            var uniqueName = $"{captureTimePrefix}_{Guid.NewGuid()}_{safeFileName}{ext}";
-            var fullPath = string.IsNullOrEmpty(cleanFolder) ? uniqueName : $"{cleanFolder}/{uniqueName}";
+			var cleanFolder = folder.Trim('/');
+			// Sanitize filename to remove special characters that might break URLs
+			var safeFileName = Path.GetFileNameWithoutExtension(file.Name)
+				.Replace(" ", "-")
+				.Replace("ä", "ae")
+				.Replace("ö", "oe")
+				.Replace("ü", "ue");
+			var ext = Path.GetExtension(file.Name);
 
-            var storage = _supabase.Storage.From(BucketName);
+			var captureTimeUtc = TryGetCaptureTimeUtc(bytes) ?? file.LastModified.UtcDateTime;
 
-            await storage.Upload(bytes, fullPath, new FileOptions
-            {
-                Upsert = false
-            });
+			// Prefix that sorts lexicographically by time (UTC)
+			var captureTimePrefix = captureTimeUtc.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
 
-            // CHANGE: Use CreateSignedUrl instead of GetPublicUrl
-            // This generates a link valid for 1 hour (3600 seconds)
-            return await storage.CreateSignedUrl(fullPath, 3600);
-        }
-        catch (ArgumentNullException ane)
-        {
-            _logger.LogError(ane, "Upload failed for {file.Name}: {ane.Message}", file.Name, ane.Message);
-        }
-        catch (ObjectDisposedException ode)
-        {
-            _logger.LogError(ode, "Upload failed for {file.Name}: {ode.Message}", file.Name, ode.Message);
-        }
-        catch (ArgumentException ae)
-        {
-            _logger.LogError(ae, "Upload failed for {file.Name}: {ae.Message}", file.Name, ae.Message);
-        }
-        catch (NullReferenceException nre)
-        {
-            _logger.LogError(nre, "Upload failed for {file.Name}: {nre.Message}", file.Name, nre.Message);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "[Supabase] Upload failed for {file.Name}: {e.Message}", file.Name, e.Message);
-        }
-        
-        return null;
-    }
+			var uniqueName = $"{captureTimePrefix}_{Guid.NewGuid()}_{safeFileName}{ext}";
+			var fullPath = string.IsNullOrEmpty(cleanFolder) ? uniqueName : $"{cleanFolder}/{uniqueName}";
 
-    public async Task<List<string>> GetImageUrlsAsync(string folder)
-    {
-        var imageUrls = new List<string>();
-        try
-        {
-            var cleanFolder = folder.Trim('/');
-            var storage = _supabase.Storage.From(BucketName);
+			var storage = _supabase.Storage.From(BucketName);
 
-            var result = await storage.List(cleanFolder);
+			await storage.Upload(bytes, fullPath, new FileOptions
+			{
+				Upsert = false
+			});
 
-            if (result != null)
-            {
-                // Sorting by CreatedAt (if available) or Name ensures consistent order
-                // Using a standard loop is safer here than parallel tasks for consistency, 
-                // though parallel is okay for generating signed URLs.
-                var sortedResult = result
-                    .Where(item => !string.IsNullOrEmpty(item.Name) && IsImageFile(item.Name))
-                    // .OrderByDescending(item => item.CreatedAt) // Show newest first
-                    .OrderByDescending(item => item.Name)
-                    .ToList();
+			// CHANGE: Use CreateSignedUrl instead of GetPublicUrl
+			// This generates a link valid for 1 hour (3600 seconds)
+			var options = new TransformOptions
+			{
+				Width = 300, Height = 300, Resize = TransformOptions.ResizeType.Cover
+			};
+			return await storage.CreateSignedUrl(fullPath, 3600, options);
+		}
+		catch (ArgumentNullException ane)
+		{
+			_logger.LogError(ane, "Upload failed for {file.Name}: {ane.Message}", file.Name, ane.Message);
+		}
+		catch (ObjectDisposedException ode)
+		{
+			_logger.LogError(ode, "Upload failed for {file.Name}: {ode.Message}", file.Name, ode.Message);
+		}
+		catch (ArgumentException ae)
+		{
+			_logger.LogError(ae, "Upload failed for {file.Name}: {ae.Message}", file.Name, ae.Message);
+		}
+		catch (NullReferenceException nre)
+		{
+			_logger.LogError(nre, "Upload failed for {file.Name}: {nre.Message}", file.Name, nre.Message);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError(e, "[Supabase] Upload failed for {file.Name}: {e.Message}", file.Name, e.Message);
+		}
 
-                var urlTasks = new List<Task<string>>();
+		return null;
+	}
 
-                foreach (var item in sortedResult)
-                {
-                     var fullPath = string.IsNullOrEmpty(cleanFolder) 
-                            ? item.Name 
-                            : $"{cleanFolder}/{item.Name}";
-                        
-                     urlTasks.Add(storage.CreateSignedUrl(fullPath, 3600));
-                }
+	public async Task<List<string>> GetImageUrlsAsync(string folder)
+	{
+		var imageUrls = new List<string>();
+		try
+		{
+			var cleanFolder = folder.Trim('/');
+			var storage = _supabase.Storage.From(BucketName);
 
-                var urls = await Task.WhenAll(urlTasks);
-                imageUrls.AddRange(urls);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Supabase] GetImageUrls failed: {ex.Message}");
-        }
+			var result = await storage.List(cleanFolder);
 
-        return imageUrls;
-    }
+			if (result != null)
+			{
+				// Sorting by CreatedAt (if available) or Name ensures consistent order
+				// Using a standard loop is safer here than parallel tasks for consistency, 
+				// though parallel is okay for generating signed URLs.
+				var sortedResult = result
+					.Where(item => !string.IsNullOrEmpty(item.Name) && IsImageFile(item.Name))
+					// .OrderByDescending(item => item.CreatedAt) // Show newest first
+					.OrderByDescending(item => item.Name)
+					.Select(item => string.IsNullOrEmpty(cleanFolder)
+						? item.Name
+						: $"{cleanFolder}/{item.Name}")
+					.ToList();
 
-    private bool IsImageFile(string fileName)
-    {
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
-        return ext is ".jpg" or ".jpeg" or ".png" or ".heic" or ".webp";
-    }
+				if (sortedResult.Any())
+				{
+					var options = new Supabase.Storage.TransformOptions
+					{
+						Width = 300
+					};
 
-    private DateTime? TryGetCaptureTimeUtc(byte[] bytes)
-    {
-        try
-        {
-            using var ms = new MemoryStream(bytes);
-            var directories = ImageMetadataReader.ReadMetadata(ms);
-            
-            var exifSubIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-            var dateTime = exifSubIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal)
-                 ?? exifSubIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeDigitized);
-            
-            // converts EXIF DateTime to UTC
-            if (dateTime is null) return null;
-            
-            var local = DateTime.SpecifyKind(dateTime.Value, DateTimeKind.Local);
-            return local.ToUniversalTime();
-        }
-        catch (ImageProcessingException ipe)
-        {
-            _logger.LogError(ipe, "Could not read the Image metadata {bytes.Length}: {ipe.Message}", bytes.Length, ipe.Message);
-        }
-        catch (IOException ioe)
-        {
-            _logger.LogError(ioe, "Error in ");
-        }
+					var signedResponse = await storage.CreateSignedUrls(sortedResult!, 3600);
 
-        return null;
-    }
+					if (signedResponse != null)
+					{
+						imageUrls.AddRange(signedResponse.Select(item => item.SignedUrl)!);
+					}
+				}
+
+				// var urlTasks = new List<Task<string>>();
+				//
+				// foreach (var item in sortedResult)
+				// {
+				//      var fullPath = string.IsNullOrEmpty(cleanFolder) 
+				//             ? item.Name 
+				//             : $"{cleanFolder}/{item.Name}";
+				//         
+				//      urlTasks.Add(storage.CreateSignedUrl(fullPath, 3600));
+				// }
+				//
+				// var urls = await Task.WhenAll(urlTasks);
+				// imageUrls.AddRange(urls);
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"[Supabase] GetImageUrls failed: {ex.Message}");
+		}
+
+		return imageUrls;
+	}
+	
+	// ===================== Private Methods =========================
+
+	private bool IsImageFile(string fileName)
+	{
+		var ext = Path.GetExtension(fileName).ToLowerInvariant();
+		return ext is ".jpg" or ".jpeg" or ".png" or ".heic" or ".webp";
+	}
+
+	private DateTime? TryGetCaptureTimeUtc(byte[] bytes)
+	{
+		try
+		{
+			using var ms = new MemoryStream(bytes);
+			var directories = ImageMetadataReader.ReadMetadata(ms);
+
+			var exifSubIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+			var dateTime = exifSubIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal)
+			               ?? exifSubIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeDigitized);
+
+			// converts EXIF DateTime to UTC
+			if (dateTime is null) return null;
+
+			var local = DateTime.SpecifyKind(dateTime.Value, DateTimeKind.Local);
+			return local.ToUniversalTime();
+		}
+		catch (ImageProcessingException ipe)
+		{
+			_logger.LogError(ipe, "Could not read the Image metadata {bytes.Length}: {ipe.Message}", bytes.Length, ipe.Message);
+		}
+		catch (IOException ioe)
+		{
+			_logger.LogError(ioe, "Error in ");
+		}
+
+		return null;
+	}
 }
