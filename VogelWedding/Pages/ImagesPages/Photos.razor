@@ -9,95 +9,86 @@
 @inject ISupabasePhotosService SupabasePhotosService
 @inject AccessService AccessService
 @inject ISnackbar Snackbar
+@inject IBlazorCurrentDeviceService CurrentDevice
 
 <div class="page-wrapper">
     <Background/>
 
-    @if (AccessService.CanAccessPhotos(true))
-    {
-        <!-- Upload Section -->
-        <div class="card page-container">
-            <div class="@(IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="card-title mb-4">Fotos</h1>
+    <!-- Upload Section -->
+    <div class="card page-container">
+        <div class="@(IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title mb-4">Fotos</h1>
 
-                        <div class="mb-3">
-                            <p>Lade hier deine Schnappschüsse hoch!</p>
-                            <!-- Custom styled file upload -->
-                            <div class="d-grid gap-2 col-md-6 mx-auto">
-                                <label class="btn btn-primary btn-lg">
-                                    <span class="bi bi-cloud-upload-fill me-2"></span>
-                                    Fotos auswählen
-                                    <!-- InputFile is hidden but triggered by the label -->
-                                    <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*"/>
-                                </label>
+                    <div class="mb-3">
+                        <p>Lade hier deine Schnappschüsse hoch!</p>
+                        <!-- Custom styled file upload -->
+                        <div class="d-grid gap-2 col-md-6 mx-auto">
+                            <label class="btn btn-primary btn-lg">
+                                <span class="bi bi-cloud-upload-fill me-2"></span>
+                                Fotos auswählen
+                                <!-- InputFile is hidden but triggered by the label -->
+                                <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (_isUploading)
+                    {
+                        <div class="progress mt-3" style="height: 20px;">
+                            <div class="progress-bar progress-bar-animated progress-bar-primary"
+                                 role="progressbar"
+                                 style="width: @(CalculateProgress())%">
+                                @* Uploading... @(_uploadedCount) / @(_totalToUpload) *@
                             </div>
                         </div>
-
-                        @if (_isUploading)
-                        {
-                            <div class="progress mt-3" style="height: 20px;">
-                                <div class="progress-bar progress-bar-animated progress-bar-primary"
-                                     role="progressbar"
-                                     style="width: @(CalculateProgress())%">
-                                    @* Uploading... @(_uploadedCount) / @(_totalToUpload) *@
-                                </div>
-                            </div>
-                        }
-                    </div>
+                    }
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card page-container mt-2">
-            <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted")">
-                <div class="card">
-                    <div class="card-body">
-                        <!-- Gallery Section -->
-                        @if (_isLoadingImages)
-                        {
-                            <div class="d-flex justify-content-center my-5">
-                                <div class="spinner-border text-light" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
+    <div class="card page-container mt-2">
+        <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted")">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Gallery Section -->
+                    @if (_isLoadingImages)
+                    {
+                        <div class="d-flex justify-content-center my-5">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                        }
-                        else if (_imageUrls.Any())
-                        {
-                            <div class="row g-3">
-                                @foreach (var url in _imageUrls)
-                                {
-                                    <div class="col-6 col-md-4 col-lg-3">
-                                        <div class="card h-100 shadow-sm border-0">
-                                            <div class="ratio ratio-1x1">
-                                                <img src="@url" class="card-img-top object-fit-cover rounded"
-                                                     alt="Wedding photo"
-                                                     style="width:100%; height:100%;" loading="lazy"/>
-                                            </div>
+                        </div>
+                    }
+                    else if (_imageUrls.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var url in _imageUrls)
+                            {
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <div class="ratio ratio-1x1">
+                                            <img src="@url" class="card-img-top object-fit-cover rounded"
+                                                 alt="Wedding photo"
+                                                 style="width:100%; height:100%;" loading="lazy"/>
                                         </div>
                                     </div>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-secondary text-center mt-4" role="alert">
-                                Noch keine Fotos vorhanden.
-                            </div>
-                        }
-                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary text-center mt-4" role="alert">
+                            Noch keine Fotos vorhanden.
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">
-            Du hast keine Berechtigung, diese Seite zu sehen.
-        </div>
-    }
-
+    </div>
 </div>
 
 <!-- Preview Modal (Bootstrap) -->
@@ -132,7 +123,8 @@
                                             <img src="@_previewUrls[index]" class="img-fluid rounded object-fit-cover"
                                                  style="width:100%; height:100%;"/>
                                         </div>
-                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
                                                 @onclick="() => RemoveFileFromSelection(index)"
                                                 style="opacity: 0.9;">
                                             <span class="bi bi-x-lg"></span>
@@ -175,6 +167,15 @@
     private List<string> _previewUrls = new();
     private int _uploadedCount = 0;
     private int _totalToUpload = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsMobile = await CurrentDevice.Mobile();
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
