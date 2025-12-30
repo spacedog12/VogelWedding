@@ -1,0 +1,21 @@
+<div class="modal show d-block" tabindex="-1" @onclick="OnClose" style="background-color: rgba(0,0,0,0.9);">
+    <div class="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center m-0">
+        <div class="position-relative w-100 h-100 d-flex align-items-center justify-content-center p-3">
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-4" style="z-index: 1051;" @onclick="OnClose"></button>
+            <img src="@ImageUrl" 
+                 class="img-fluid" 
+                 style="max-height: 95vh; max-width: 95vw; object-fit: contain;" 
+                 @onclick:stopPropagation />
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+
+}

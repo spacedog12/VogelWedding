@@ -5,6 +5,7 @@
 @using MudBlazor
 @using System.IO
 @using VogelWedding.Interfaces
+@using VogelWedding.Modals
 
 @inject ISupabasePhotosService SupabasePhotosService
 @inject AccessService AccessService
@@ -68,7 +69,7 @@
                             @foreach (var url in _imageUrls)
                             {
                                 <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card h-100 shadow-sm border-0">
+                                    <div class="card h-100 shadow-sm border-0" @onclick="() => OpenFullscreen(url)" style="cursor: pointer;">
                                         <div class="ratio ratio-1x1">
                                             <img src="@url" class="card-img-top object-fit-cover rounded"
                                                  alt="Wedding photo"
@@ -94,58 +95,20 @@
 <!-- Preview Modal (Bootstrap) -->
 @if (_showPreviewModal)
 {
-    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.7);">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Ausgewählte Bilder (@(_filesToUpload?.Count ?? 0))</h3>
-                    <button type="button" class="btn-close" @onclick="ClosePreviewModal"></button>
-                </div>
-                <div class="modal-body" style="overscroll-behavior: contain">
-                    <p>Bitte überprüfe deine Auswahl, bevor du sie hochlädst.</p>
+    <PhotoUploadPreviewModal FilesToUpload="_filesToUpload"
+                             PreviewUrls="_previewUrls"
+                             IsLoading="_isPreviewLoading"
+                             IsUploading="_isUploading"
+                             OnClose="ClosePreviewModal"
+                             OnConfirm="ConfirmUpload"
+                             OnRemoveFile="RemoveFileFromSelection"/>
+}
 
-                    @if (_isPreviewLoading)
-                    {
-                        <div class="d-flex align-items-center justify-content-center p-4">
-                            <div class="spinner-border text-primary me-3" role="status"></div>
-                            <span>Lade Vorschau...</span>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="row g-2">
-                            @for (int i = 0; i < _filesToUpload.Count; i++)
-                            {
-                                var index = i;
-                                <div class="col-4 col-sm-3">
-                                    <div class="position-relative">
-                                        <div class="ratio ratio-1x1">
-                                            <img src="@_previewUrls[index]" class="img-fluid rounded object-fit-cover"
-                                                 style="width:100%; height:100%;"/>
-                                        </div>
-                                        <button type="button"
-                                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                                                @onclick="() => RemoveFileFromSelection(index)"
-                                                style="opacity: 0.9;">
-                                            <span class="bi bi-x-lg"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="ClosePreviewModal">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" @onclick="ConfirmUpload"
-                            disabled="@(_isPreviewLoading || _isUploading)">
-                        <span class="bi bi-upload me-1"></span> Jetzt hochladen
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal-backdrop fade show"></div>
+<!-- Fullscreen Modal for Image -->
+@if (_showFullscreenModal)
+{
+    <PhotoFullscreenModal ImageUrl="@_selectedFullsizeUrl"
+                          OnClose="CloseFullscreen"/>
 }
 
 @code {
@@ -167,6 +130,10 @@
     private List<string> _previewUrls = new();
     private int _uploadedCount = 0;
     private int _totalToUpload = 0;
+    
+    // Fullscreen state of Image modal
+    private bool _showFullscreenModal = false;
+    private string _selectedFullsizeUrl = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -350,5 +317,17 @@
     {
         if (_totalToUpload == 0) return 0;
         return (double)_uploadedCount / _totalToUpload * 100;
+    }
+
+    private void OpenFullscreen(string url)
+    {
+        _selectedFullsizeUrl = url;
+        _showFullscreenModal = true;
+    }
+
+    private void CloseFullscreen()
+    {
+        _showFullscreenModal = false;
+        _selectedFullsizeUrl = "";
     }
 }

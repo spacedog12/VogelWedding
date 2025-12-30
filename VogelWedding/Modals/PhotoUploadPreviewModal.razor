@@ -1,0 +1,78 @@
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.7);">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Ausgewählte Bilder (@(FilesToUpload?.Count ?? 0))</h3>
+                <button type="button" class="btn-close" @onclick="OnClose"></button>
+            </div>
+            <div class="modal-body" style="overscroll-behavior: contain">
+                <p>Bitte überprüfe deine Auswahl, bevor du sie hochlädst.</p>
+
+                @if (IsLoading)
+                {
+                    <div class="d-flex align-items-center justify-content-center p-4">
+                        <div class="spinner-border text-primary me-3" role="status"></div>
+                        <span>Lade Vorschau...</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-2">
+                        @for (int i = 0; i < FilesToUpload.Count; i++)
+                        {
+                            var index = i;
+                            <div class="col-4 col-sm-3">
+                                <div class="position-relative">
+                                    <div class="ratio ratio-1x1">
+                                        <img src="@PreviewUrls[index]" class="img-fluid rounded object-fit-cover"
+                                             style="width:100%; height:100%;"/>
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                            @onclick="() => OnRemoveFile.InvokeAsync(index)"
+                                            style="opacity: 0.9;">
+                                        <span class="bi bi-x-lg"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="OnClose">Abbrechen</button>
+                <button type="button" class="btn btn-primary" @onclick="OnConfirm"
+                        disabled="@(IsLoading || IsUploading)">
+                    <span class="bi bi-upload me-1"></span> Jetzt hochladen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show"></div>
+
+@code {
+
+    [Parameter]
+    public List<IBrowserFile> FilesToUpload { get; set; } = new();
+
+    [Parameter]
+    public List<string> PreviewUrls { get; set; } = new();
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public bool IsUploading { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnRemoveFile { get; set; }
+
+
+}
