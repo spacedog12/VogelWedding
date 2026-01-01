@@ -26,208 +26,210 @@
             freuen uns auf einen unvergesslichen Tag mit euch. Bei Fragen oder Änderungen meldet euch bitte direkt bei
             uns.</p>
 
+        @if (false)
+        {
+            <EditForm EditContext="@editContext"
+                      OnValidSubmit="HandleSubmit"
+                      OnInvalidSubmit="HandleInvalidSubmit"
+                      class="mt-4">
+                <DataAnnotationsValidator/>
 
-        <EditForm EditContext="@editContext"
-                  OnValidSubmit="HandleSubmit"
-                  OnInvalidSubmit="HandleInvalidSubmit"
-                  class="mt-4">
-            <DataAnnotationsValidator/>
-        
-            <!-- First Name -->
-            <div class="mb-3 form-floating">
-                <InputText id="floatingInput"
-                           @bind-Value="model.FirstName"
-                           class="@GetValidationClass(() => model.FirstName)"
-                           @attributes="@(new Dictionary<string, object>
-                                        {
-                                            ["placeholder"] = " ", ["type"] = "text"
-                                        })"/>
-                <label for="floatingInput">@GetDisplayName(() => model.FirstName)</label>
-                <ValidationMessage For="@(() => model.FirstName)"/>
-            </div>
-        
-            <!-- Family Name -->
-            <div class="mb-3 form-floating">
-                <InputText id="floatingInput"
-                           @bind-Value="model.FamilyName"
-                           class="@GetValidationClass(() => model.FamilyName)"
-                           @attributes="@(new Dictionary<string, object>
-                                        {
-                                            ["placeholder"] = " ", ["type"] = "text"
-                                        })"/>
-                <label for="floatingInput">@GetDisplayName(() => model.FamilyName)</label>
-                <ValidationMessage For="@(() => model.FamilyName)"/>
-            </div>
-        
-            <!-- Email -->
-            <div class="mb-3 form-floating">
-                <InputText id="floatingInput"
-                           @bind-Value="model.EmailAddress"
-                           class="@GetValidationClass(() => model.EmailAddress)"
-                           @attributes="@(new Dictionary<string, object>
-                                        {
-                                            ["placeholder"] = " ", ["type"] = "email"
-                                        })"/>
-                <label for="floatingInput">@GetDisplayName(() => model.EmailAddress)</label>
-                <ValidationMessage For="@(() => model.EmailAddress)"/>
-            </div>
-            <hr class="my-4 d-none d-md-block"/>
-        
-            <!-- Address -->
-            <div class="mb-3">
-                @* <h5 class="from-label">Addresse</h5> *@
-        
-                <!-- Street -->
-                <div class="mb-2 form-floating">
+                <!-- First Name -->
+                <div class="mb-3 form-floating">
                     <InputText id="floatingInput"
-                               @bind-Value="model.Street"
-                               class="@GetValidationClass(() => model.Street)"
+                               @bind-Value="model.FirstName"
+                               class="@GetValidationClass(() => model.FirstName)"
                                @attributes="@(new Dictionary<string, object>
                                             {
                                                 ["placeholder"] = " ", ["type"] = "text"
                                             })"/>
-                    <label for="floatingInput">@GetDisplayName(() => model.Street)</label>
-                    <ValidationMessage For="@(() => model.Street)"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.FirstName)</label>
+                    <ValidationMessage For="@(() => model.FirstName)"/>
                 </div>
-        
-                <!-- ZipCode -->
-                <div class="mb-2 form-floating">
+
+                <!-- Family Name -->
+                <div class="mb-3 form-floating">
                     <InputText id="floatingInput"
-                               @bind-Value="model.ZipCode"
-                               class="@GetValidationClass(() => model.ZipCode)"
-                               @attributes="@(new Dictionary<string, object>
-                                            {
-                                                ["placeholder"] = " ", ["type"] = "number"
-                                            })"/>
-                    <label for="floatingInput">@GetDisplayName(() => model.ZipCode)</label>
-                    <ValidationMessage For="@(() => model.ZipCode)"/>
-                </div>
-        
-                <!-- Place -->
-                <div class="mb-2 form-floating">
-                    <InputText id="floatingInput"
-                               @bind-Value="model.Place"
-                               class="@GetValidationClass(() => model.Place)"
+                               @bind-Value="model.FamilyName"
+                               class="@GetValidationClass(() => model.FamilyName)"
                                @attributes="@(new Dictionary<string, object>
                                             {
                                                 ["placeholder"] = " ", ["type"] = "text"
                                             })"/>
-                    <label for="floatingInput">@GetDisplayName(() => model.Place)</label>
-                    <ValidationMessage For="@(() => model.Place)"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.FamilyName)</label>
+                    <ValidationMessage For="@(() => model.FamilyName)"/>
                 </div>
-            </div>
-        
-            <!-- Attending information, from when on will I attend -->
-            <div class="mb-3">
-                <InputRadioGroup @bind-Value="model.Attending">
-                    @if (AccessService.CurrentLevel == AccessLevel.GuestInvited)
-                    {
+
+                <!-- Email -->
+                <div class="mb-3 form-floating">
+                    <InputText id="floatingInput"
+                               @bind-Value="model.EmailAddress"
+                               class="@GetValidationClass(() => model.EmailAddress)"
+                               @attributes="@(new Dictionary<string, object>
+                                            {
+                                                ["placeholder"] = " ", ["type"] = "email"
+                                            })"/>
+                    <label for="floatingInput">@GetDisplayName(() => model.EmailAddress)</label>
+                    <ValidationMessage For="@(() => model.EmailAddress)"/>
+                </div>
+                <hr class="my-4 d-none d-md-block"/>
+
+                <!-- Address -->
+                <div class="mb-3">
+                    @* <h5 class="from-label">Addresse</h5> *@
+
+                    <!-- Street -->
+                    <div class="mb-2 form-floating">
+                        <InputText id="floatingInput"
+                                   @bind-Value="model.Street"
+                                   class="@GetValidationClass(() => model.Street)"
+                                   @attributes="@(new Dictionary<string, object>
+                                                {
+                                                    ["placeholder"] = " ", ["type"] = "text"
+                                                })"/>
+                        <label for="floatingInput">@GetDisplayName(() => model.Street)</label>
+                        <ValidationMessage For="@(() => model.Street)"/>
+                    </div>
+
+                    <!-- ZipCode -->
+                    <div class="mb-2 form-floating">
+                        <InputText id="floatingInput"
+                                   @bind-Value="model.ZipCode"
+                                   class="@GetValidationClass(() => model.ZipCode)"
+                                   @attributes="@(new Dictionary<string, object>
+                                                {
+                                                    ["placeholder"] = " ", ["type"] = "number"
+                                                })"/>
+                        <label for="floatingInput">@GetDisplayName(() => model.ZipCode)</label>
+                        <ValidationMessage For="@(() => model.ZipCode)"/>
+                    </div>
+
+                    <!-- Place -->
+                    <div class="mb-2 form-floating">
+                        <InputText id="floatingInput"
+                                   @bind-Value="model.Place"
+                                   class="@GetValidationClass(() => model.Place)"
+                                   @attributes="@(new Dictionary<string, object>
+                                                {
+                                                    ["placeholder"] = " ", ["type"] = "text"
+                                                })"/>
+                        <label for="floatingInput">@GetDisplayName(() => model.Place)</label>
+                        <ValidationMessage For="@(() => model.Place)"/>
+                    </div>
+                </div>
+
+                <!-- Attending information, from when on will I attend -->
+                <div class="mb-3">
+                    <InputRadioGroup @bind-Value="model.Attending">
+                        @if (AccessService.CurrentLevel == AccessLevel.GuestInvited)
+                        {
+                            <div class="form-check">
+                                <InputRadio Value="@("ReceptionCeremonyAndParty")" class="form-check-input"
+                                            id="attending-receptionAndCeremony"/>
+                                <label class="form-check-label" for="attending-yes">Ich nehme an Empfang, Zeremonie und
+                                    Fest
+                                    teil.</label>
+                            </div>
+                        }
+
                         <div class="form-check">
-                            <InputRadio Value="@("ReceptionCeremonyAndParty")" class="form-check-input"
+                            <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
                                         id="attending-receptionAndCeremony"/>
-                            <label class="form-check-label" for="attending-yes">Ich nehme an Empfang, Zeremonie und Fest
-                                teil.</label>
+                            <label class="form-check-label" for="attending-yes">Ich nehme an der Zeremonie, inklusive
+                                Empfang teil</label>
                         </div>
-                    }
-        
-                    <div class="form-check">
-                        <InputRadio Value="@("ReceptionAndCeremony")" class="form-check-input"
-                                    id="attending-receptionAndCeremony"/>
-                        <label class="form-check-label" for="attending-yes">Ich nehme an der Zeremonie, inklusive
-                            Empfang teil</label>
-                    </div>
-        
-        
-                    <div class="form-check">
-                        <InputRadio Value="@("CanNotAttend")" class="form-check-input" id="attending-no"/>
-                        <label class="form-check-label" for="attending-no">Ich kann nicht teil nehmen</label>
-                    </div>
-                </InputRadioGroup>
-                <ValidationMessage For="@(() => model.Attending)"/>
-            </div>
-        
-            @if (model.Attending != null)
-            {
-                @if (model.Attending != "CanNotAttend")
+
+
+                        <div class="form-check">
+                            <InputRadio Value="@("CanNotAttend")" class="form-check-input" id="attending-no"/>
+                            <label class="form-check-label" for="attending-no">Ich kann nicht teil nehmen</label>
+                        </div>
+                    </InputRadioGroup>
+                    <ValidationMessage For="@(() => model.Attending)"/>
+                </div>
+
+                @if (model.Attending != null)
                 {
-                    <!-- Number of Atendees -->
-                    <div class="mb-3">
-                        <label class="from-label">@GetDisplayName(() => model.NumberOfAttendees)</label>
-                        <div style="width: 35%">
-                            <InputNumber @bind-Value="model.NumberOfAttendees"
-                                         DisplayName="Anzahl Teilnehmer"
-                                         min="1"
-                                         max="10"
-                                         class="@GetValidationClassForNumber(() => model.NumberOfAttendees)"
-                            />
-                        </div>
-                        <ValidationMessage For="@(() => model.NumberOfAttendees)"/>
-                    </div>
-        
-        
-                    <!-- Buffet contribution -->
-                    @if (model.Attending != "CeremonyOnly")
+                    @if (model.Attending != "CanNotAttend")
                     {
-                        <div class="mb-5 mt-5">
-                            <InputCheckbox @bind-Value="model.BuffetContribution" class="form-check-input mr-3"/>
-                            <label class="form-check-label">Ich bringe gerne etwas fürs Kuchenbuﬀet am Nachmittag beim
-                                Empfang mit!</label>
-        
-                            @if (model.BuffetContribution)
-                            {
-                                <h2 class="mt-5"><strong style="color: red">Wichtige Information:</strong></h2>
-                                <label>
-                                    <strong>
-                                        Es wird eine Person mit lebensbedrohlicher Nussallergie anwesend sein.
-                                        Bitte verzichte daher - wenn möglich- auf Nüsse oder kennzeichne klar,
-                                        wenn dein Beitrag Nüsse enthält.<br/>
-                                        <u>Achtung:</u> Alles mit <span style="color: red">ERDNUSS</span> ist ganz
-                                        verboten -
-                                        darf auch keine Spuren im Raum/Luft enthalten!<br/>
-                                        Vielen Dank für dein Verständnis und deine Rücksichtnahme!
-                                    </strong>
-                                </label>
-                                @if (!infoAccepted)
+                        <!-- Number of Atendees -->
+                        <div class="mb-3">
+                            <label class="from-label">@GetDisplayName(() => model.NumberOfAttendees)</label>
+                            <div style="width: 35%">
+                                <InputNumber @bind-Value="model.NumberOfAttendees"
+                                             DisplayName="Anzahl Teilnehmer"
+                                             min="1"
+                                             max="10"
+                                             class="@GetValidationClassForNumber(() => model.NumberOfAttendees)"/>
+                            </div>
+                            <ValidationMessage For="@(() => model.NumberOfAttendees)"/>
+                        </div>
+
+
+                        <!-- Buffet contribution -->
+                        @if (model.Attending != "CeremonyOnly")
+                        {
+                            <div class="mb-5 mt-5">
+                                <InputCheckbox @bind-Value="model.BuffetContribution" class="form-check-input mr-3"/>
+                                <label class="form-check-label">Ich bringe gerne etwas fürs Kuchenbuﬀet am Nachmittag
+                                    beim
+                                    Empfang mit!</label>
+
+                                @if (model.BuffetContribution)
                                 {
-                                    <div class="text-center mt-5">
-                                        <button type="button"
-                                                class="btn btn-primary"
-                                                style=""
-                                                @onclick="AcceptInfo">
-                                            Ich verzichte auf ERDNÜSSE
-                                        </button>
-                                    </div>
+                                    <h2 class="mt-5"><strong style="color: red">Wichtige Information:</strong></h2>
+                                    <label>
+                                        <strong>
+                                            Es wird eine Person mit lebensbedrohlicher Nussallergie anwesend sein.
+                                            Bitte verzichte daher - wenn möglich- auf Nüsse oder kennzeichne klar,
+                                            wenn dein Beitrag Nüsse enthält.<br/>
+                                            <u>Achtung:</u> Alles mit <span style="color: red">ERDNUSS</span> ist ganz
+                                            verboten -
+                                            darf auch keine Spuren im Raum/Luft enthalten!<br/>
+                                            Vielen Dank für dein Verständnis und deine Rücksichtnahme!
+                                        </strong>
+                                    </label>
+                                    @if (!infoAccepted)
+                                    {
+                                        <div class="text-center mt-5">
+                                            <button type="button"
+                                                    class="btn btn-primary"
+                                                    style=""
+                                                    @onclick="AcceptInfo">
+                                                Ich verzichte auf ERDNÜSSE
+                                            </button>
+                                        </div>
+                                    }
                                 }
-                            }
+                            </div>
+                        }
+
+
+                        <!-- Message -->
+                        <div class="mb-3">
+                            <label class="from-label">Möchtest du dem Brautpaar noch etwas wichtiges mitteilen?</label>
+                            <InputTextArea @bind-Value="model.Message" class="form-control"/>
                         </div>
                     }
-        
-        
-                    <!-- Message -->
-                    <div class="mb-3">
-                        <label class="from-label">Möchtest du dem Brautpaar noch etwas wichtiges mitteilen?</label>
-                        <InputTextArea @bind-Value="model.Message" class="form-control"/>
-                    </div>
+                    else
+                    {
+                        model.NumberOfAttendees = 0;
+                    }
                 }
                 else
                 {
-                    model.NumberOfAttendees = 0;
+                    model.NumberOfAttendees = 1;
                 }
-            }
-            else
-            {
-                model.NumberOfAttendees = 1;
-            }
-        
-            <div class="text-center">
-                <button type="submit"
-                        class="btn btn-primary"
-                        disabled="@(model.BuffetContribution && !infoAccepted)"
-                >
-                    Anmelden
-                </button>
-            </div>
-        </EditForm>
+
+                <div class="text-center">
+                    <button type="submit"
+                            class="btn btn-primary"
+                            disabled="@(model.BuffetContribution && !infoAccepted)">
+                        Anmelden
+                    </button>
+                </div>
+            </EditForm>
+        }
     </div>
 </div>
 

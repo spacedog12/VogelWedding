@@ -24,10 +24,13 @@
                             <a class="btn btn-primary" href="/geschenke">
                                 Geschenke
                             </a>
-                            <a type="button" class="btn btn-primary"
-                                    href="/bilder">
-                                Foto-Gallerie
-                            </a>
+                            @if (AccessService.CurrentLevel >= AccessLevel.TestUserAll)
+                            {
+                                <a type="button" class="btn btn-primary"
+                                   href="/bilder">
+                                    Foto-Gallerie
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>
