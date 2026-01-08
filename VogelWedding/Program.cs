@@ -6,6 +6,7 @@ using Radzen;
 using VogelWedding;
 using VogelWedding.Interfaces;
 using VogelWedding.Services;
+using VogelWedding.ViewModels;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -39,5 +40,6 @@ builder.Services.AddBlazorCurrentDevice();
 
 // Register the SupabasePhotosService
 builder.Services.AddScoped<ISupabasePhotosService, SupabasePhotosService>();
+builder.Services.AddTransient<PhotosViewModel>();
 
 await builder.Build().RunAsync();

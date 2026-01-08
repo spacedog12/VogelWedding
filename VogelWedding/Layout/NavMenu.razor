@@ -108,8 +108,8 @@
                     }
 
                     // TODO: Change access from test to Guests
-                    @* @if (AccessService.CanAccessPhotos(settings.PhotosPageVisible)) // settings.PhotosPageVisible *@
-                    @if (AccessService.CurrentLevel >= AccessLevel.TestUserAll)
+                    @* @if (AccessService.CurrentLevel >= AccessLevel.TestUserAll) *@
+                    @if (AccessService.CanAccessPage(settings.PhotosPageVisible))
                     {
                         <li class="nav-item">
                             <NavLink class="nav-link" href="bilder">

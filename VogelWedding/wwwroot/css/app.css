@@ -19,6 +19,23 @@
     --line-height-base: 1.5;
 }
 
+.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important; /* Dark text for yellow background */
+}
+
 html, body {
     /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
     font-family: var(--font-primary), sans-serif;

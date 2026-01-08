@@ -6,7 +6,13 @@
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div class="toast show" role="alert">
             <div class="toast-header bg-@_type text-white">
-                <strong class="me-auto">@(_type == "success" ? "Success" : "Error")</strong>
+                <strong class="me-auto"> @(_type switch {
+                                             "success" => "Erfolg",
+                                             "danger" => "Fehler",
+                                             "warning" => "Warnung",
+                                             "info" => "Info",
+                                             _ => _type.ToUpper()
+                                         })</strong>
                 <button type="button" class="btn-close" @onclick="HideToast"></button>
             </div>
             <div class="toast-body">

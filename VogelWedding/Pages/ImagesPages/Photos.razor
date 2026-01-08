@@ -6,18 +6,20 @@
 @using System.IO
 @using VogelWedding.Interfaces
 @using VogelWedding.Modals
+@using VogelWedding.ViewModels
 
 @inject ISupabasePhotosService SupabasePhotosService
 @inject AccessService AccessService
 @inject ISnackbar Snackbar
 @inject IBlazorCurrentDeviceService CurrentDevice
+@inject PhotosViewModel ViewModel
 
 <div class="page-wrapper">
     <Background/>
 
     <!-- Upload Section -->
     <div class="card page-container">
-        <div class="@(IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
+        <div class="@(ViewModel.IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title mb-4">Fotos</h1>
@@ -30,17 +32,17 @@
                                 <span class="bi bi-cloud-upload-fill me-2"></span>
                                 Fotos auswählen
                                 <!-- InputFile is hidden but triggered by the label -->
-                                <InputFile OnChange="OnFilesSelected" multiple hidden accept="image/*"/>
+                                <InputFile OnChange="ViewModel.OnFilesSelected" multiple hidden accept="image/*"/>
                             </label>
                         </div>
                     </div>
 
-                    @if (_isUploading)
+                    @if (ViewModel.IsUploading)
                     {
                         <div class="progress mt-3" style="height: 20px;">
                             <div class="progress-bar progress-bar-animated progress-bar-primary"
                                  role="progressbar"
-                                 style="width: @(CalculateProgress())%">
+                                 style="width: @(ViewModel.CalculateProgress())%">
                                 @* Uploading... @(_uploadedCount) / @(_totalToUpload) *@
                             </div>
                         </div>
@@ -51,11 +53,11 @@
     </div>
 
     <div class="card page-container mt-2">
-        <div class="@(IsMobile ? "page-card-frosted" : "card-body page-card-frosted")">
+        <div class="@(ViewModel.IsMobile ? "page-card-frosted" : "card-body page-card-frosted")">
             <div class="card">
                 <div class="card-body">
                     <!-- Gallery Section -->
-                    @if (_isLoadingImages)
+                    @if (ViewModel.IsLoadingImages)
                     {
                         <div class="d-flex justify-content-center my-5">
                             <div class="spinner-border text-light" role="status">
@@ -63,13 +65,13 @@
                             </div>
                         </div>
                     }
-                    else if (_imageUrls.Any())
+                    else if (ViewModel.ImageUrls.Any())
                     {
                         <div class="row g-3">
-                            @foreach (var url in _imageUrls)
+                            @foreach (var url in ViewModel.ImageUrls)
                             {
                                 <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card h-100 shadow-sm border-0" @onclick="() => OpenFullscreen(url)" style="cursor: pointer;">
+                                    <div class="card h-100 shadow-sm border-0" @onclick="() => ViewModel.OpenFullscreen(url)" style="cursor: pointer;">
                                         <div class="ratio ratio-1x1">
                                             <img src="@url" class="card-img-top object-fit-cover rounded"
                                                  alt="Wedding photo"
@@ -93,241 +95,34 @@
 </div>
 
 <!-- Preview Modal (Bootstrap) -->
-@if (_showPreviewModal)
+@if (ViewModel.ShowPreviewModal)
 {
-    <PhotoUploadPreviewModal FilesToUpload="_filesToUpload"
-                             PreviewUrls="_previewUrls"
-                             IsLoading="_isPreviewLoading"
-                             IsUploading="_isUploading"
-                             OnClose="ClosePreviewModal"
-                             OnConfirm="ConfirmUpload"
-                             OnRemoveFile="RemoveFileFromSelection"/>
+    <PhotoUploadPreviewModal FilesToUpload="ViewModel.FilesToUpload"
+                             PreviewUrls="ViewModel.PreviewUrls"
+                             IsLoading="ViewModel.IsPreviewLoading"
+                             IsUploading="ViewModel.IsUploading"
+                             OnClose="ViewModel.ClosePreviewModal"
+                             OnConfirm="ViewModel.ConfirmUpload"
+                             OnRemoveFile="ViewModel.RemoveFileFromSelection"/>
 }
 
 <!-- Fullscreen Modal for Image -->
-@if (_showFullscreenModal)
+@if (ViewModel.ShowFullscreenModal)
 {
-    <PhotoFullscreenModal ImageUrl="@_selectedFullsizeUrl"
-                          OnClose="CloseFullscreen"/>
+    <PhotoFullscreenModal ImageUrl="@ViewModel.SelectedFullsizeUrl"
+                          OnClose="ViewModel.CloseFullscreen"/>
 }
 
 @code {
-    private bool IsMobile { get; set; }
-
-    private const string CeremonyFolder = "/Ceremony";
-    private const string PartyFolder = "/Party";
-
-    private bool _isUploading = false;
-    private bool _isLoadingImages = true;
-    private string _selectedUploadFolder = CeremonyFolder;
-    private List<string> _imageUrls = new();
-
-    // Modal & Upload State
-    private bool _showPreviewModal = false;
-    private bool _isPreviewLoading = false;
-    private IReadOnlyList<IBrowserFile> _selectedFiles;
-    private List<IBrowserFile> _filesToUpload = new();
-    private List<string> _previewUrls = new();
-    private int _uploadedCount = 0;
-    private int _totalToUpload = 0;
-    
-    // Fullscreen state of Image modal
-    private bool _showFullscreenModal = false;
-    private string _selectedFullsizeUrl = "";
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            IsMobile = await CurrentDevice.Mobile();
-            StateHasChanged();
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        // if (AccessService.CurrentLevel >= AccessLevel.GuestInvited)
-        if (AccessService.CurrentLevel >= AccessLevel.TestUserInvited)
-        {
-            _selectedUploadFolder = PartyFolder;
-        }
-        else
-        {
-            _selectedUploadFolder = CeremonyFolder;
-        }
-
-        await LoadImages();
+        ViewModel.OnStateChanged += StateHasChanged;
+        await ViewModel.InitializeAsync();
     }
 
-    private async Task LoadImages()
+    // It's good practice to unsubscribe when the component is disposed
+    public void Dispose()
     {
-        _isLoadingImages = true;
-        _imageUrls.Clear();
-
-        try
-        {
-            var level = AccessService.CurrentLevel;
-
-            // TODO: Change User Access Level to guests
-            // if (level >= AccessLevel.GuestAll)
-            // {
-            //     var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
-            //     _imageUrls.AddRange(ceremonyPhotos);
-            // }
-            //
-            // if (level >= AccessLevel.GuestInvited)
-            // {
-            //     var partyPhotos = await SupabasePhotosService.GetImageUrlsAsync(PartyFolder);
-            //     _imageUrls.AddRange(partyPhotos);
-            // }
-
-            if (level >= AccessLevel.TestUserAll)
-            {
-                var ceremonyPhotos = await SupabasePhotosService.GetImageUrlsAsync(CeremonyFolder);
-                _imageUrls.AddRange(ceremonyPhotos);
-            }
-
-            if (level >= AccessLevel.TestUserInvited)
-            {
-                var partyPhotos = await SupabasePhotosService.GetImageUrlsAsync(PartyFolder);
-                _imageUrls.AddRange(partyPhotos);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Fehler beim Laden: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            _isLoadingImages = false;
-        }
-    }
-
-    // Triggered when files are selected from the InputFile component
-    private async Task OnFilesSelected(InputFileChangeEventArgs e)
-    {
-        // GetMultipleFiles(maxCount) ensures we can handle more than default 10
-        try
-        {
-            _selectedFiles = e.GetMultipleFiles(100);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Zu viele Dateien ausgewählt: {ex.Message}", Severity.Warning);
-            return;
-        }
-
-        if (_selectedFiles == null || !_selectedFiles.Any()) return;
-
-        _showPreviewModal = true;
-        _previewUrls.Clear();
-        _filesToUpload.Clear();
-        _isPreviewLoading = true;
-        StateHasChanged();
-
-        // Generate previews for all selected files
-        var filesToPreview = _selectedFiles.ToList();
-        long maxFileSize = 1024 * 1024 * 20; // 20MB limit for preview reading
-
-        foreach (var file in filesToPreview)
-        {
-            try
-            {
-                if (file.ContentType.StartsWith("image/"))
-                {
-                    // Create 300x300 thumbnail
-                    var resizedFile = await file.RequestImageFileAsync("image/jpeg", 300, 300);
-                    var buffer = new byte[resizedFile.Size];
-                    await resizedFile.OpenReadStream(maxFileSize).ReadAsync(buffer);
-                    var base64 = Convert.ToBase64String(buffer);
-                    _previewUrls.Add($"data:image/jpeg;base64,{base64}");
-                    _filesToUpload.Add(file);
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Preview failed: {ex.Message}");
-            }
-        }
-
-        _isPreviewLoading = false;
-    }
-
-    private void RemoveFileFromSelection(int index)
-    {
-        if (index >= 0 && index < _filesToUpload.Count)
-        {
-            _filesToUpload.RemoveAt(index);
-            _previewUrls.RemoveAt(index);
-            StateHasChanged();
-        }
-    }
-
-    private void ClosePreviewModal()
-    {
-        _showPreviewModal = false;
-        _selectedFiles = null;
-        _filesToUpload.Clear();
-        _previewUrls.Clear();
-    }
-
-    private async Task ConfirmUpload()
-    {
-        if (_filesToUpload == null || !_filesToUpload.Any()) return;
-
-        _showPreviewModal = false; // Close modal
-        _isUploading = true;
-        _totalToUpload = _filesToUpload.Count;
-        _uploadedCount = 0;
-        StateHasChanged();
-
-        try
-        {
-            var results = await SupabasePhotosService.UploadFilesAsync(_filesToUpload, _selectedUploadFolder, count =>
-            {
-                _uploadedCount = count;
-                StateHasChanged();
-            });
-
-            if (results.Any())
-            {
-                Snackbar.Add($"{results.Count} Bilder erfolgreich hochgeladen!", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Keine Bilder hochgeladen. Siehe Konsole für Details.", Severity.Warning);
-            }
-
-            await LoadImages();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Upload fehlgeschlagen: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            _isUploading = false;
-            _selectedFiles = null;
-            _filesToUpload.Clear();
-        }
-    }
-
-    private double CalculateProgress()
-    {
-        if (_totalToUpload == 0) return 0;
-        return (double)_uploadedCount / _totalToUpload * 100;
-    }
-
-    private void OpenFullscreen(string url)
-    {
-        _selectedFullsizeUrl = url;
-        _showFullscreenModal = true;
-    }
-
-    private void CloseFullscreen()
-    {
-        _showFullscreenModal = false;
-        _selectedFullsizeUrl = "";
+        ViewModel.OnStateChanged -= StateHasChanged;
     }
 }
