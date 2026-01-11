@@ -20,8 +20,8 @@
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title">Übersicht</h1>
-                    <h3 class="card-subtitle">Total Teilnehmer:</h3>
-                    <p>@GetTotalAttendees(true) Fest / @GetTotalAttendees(false) Zeremonie</p>
+                    <h3 class="card-subtitle">Total Teilnehmer: @(GetTotalAttendees(true) + GetTotalAttendees(false))</h3>
+                    <p>(Anmeldung über: @GetTotalAttendees(true) Fest / @GetTotalAttendees(false) Zeremonie)</p>
                     <hr class="mt-4"/>
                     <h3 class="card-subtitle">Total Kuchen:</h3>
                     <p>@GetTotalCakes()</p>

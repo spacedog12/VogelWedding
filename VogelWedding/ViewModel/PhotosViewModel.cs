@@ -85,7 +85,7 @@ public class PhotosViewModel
 
 		long maxFileSize = 1024 * 1024 * 20;
 		var invalidFilesFound = false;
-		var allowedExtensions = new[] { "jpg", "jpeg", "png", "heif" };
+		var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".heif", ".heic" };
 
 		foreach (var file in selectedFiles)
 		{
