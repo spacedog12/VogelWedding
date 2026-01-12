@@ -19,7 +19,8 @@
 
     <!-- Upload Section -->
     <div class="card page-container">
-        <div class="@(ViewModel.IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
+        <div
+            class="@(ViewModel.IsMobile ? "page-card-frosted text-center" : "card-body page-card-frosted text-center")">
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title mb-4">Fotos</h1>
@@ -68,16 +69,37 @@
                     else if (ViewModel.ImageUrls.Any())
                     {
                         <div class="row g-3">
-                            @foreach (var url in ViewModel.ImageUrls)
-                            {
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card h-100 shadow-sm border-0" @onclick="() => ViewModel.OpenFullscreen(url)" style="cursor: pointer;">
-                                        <div class="ratio ratio-1x1">
-                                            <img src="@url" class="card-img-top object-fit-cover rounded"
-                                                 alt="Wedding photo"
-                                                 style="width:100%; height:100%;" loading="lazy"/>
+                                @foreach (var url in ViewModel.ImageUrls)
+                                {
+                                    <div class="col-6 col-md-4 col-lg-3">
+                                        <div class="card h-100 shadow-sm border-0" @onclick="() => ViewModel.OpenFullscreen(url)" style="cursor: pointer;">
+                                            <div class="ratio ratio-1x1">
+                                                <img src="@url" class="card-img-top object-fit-cover rounded"
+                                                     alt="Wedding photo"
+                                                     style="width:100%; height:100%;" loading="lazy"/>
+                                            </div>
                                         </div>
                                     </div>
+                                }
+                            </div>
+
+                            <div class="text-center mt-4">
+                            <p class="text-muted small">
+                                Zeige @ViewModel.ImageUrls.Count Bilder
+                            </p>
+                            
+                            @if (ViewModel.HasMoreImages)
+                            {
+                                <div class="d-flex justify-content-center mt-4">
+                                    <button class="btn btn-outline-primary"
+                                            @onclick="ViewModel.LoadMoreImages"
+                                            disabled="@ViewModel.IsLoadingMore">
+                                        @if (ViewModel.IsLoadingMore)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                        }
+                                        Mehr Bilder laden
+                                    </button>
                                 </div>
                             }
                         </div>

@@ -66,17 +66,20 @@ public class SupabasePhotosService : ISupabasePhotosService
 
 			var captureTimeUtc = TryGetCaptureTimeUtc(bytes) ?? file.LastModified.UtcDateTime;
 
-			// Prefix that sorts lexicographically by time (UTC)
+			// Prefix das nach Zeit sortiert
 			var captureTimePrefix = captureTimeUtc.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
 
-			var uniqueName = $"{captureTimePrefix}_{Guid.NewGuid()}_{safeFileName}{ext}";
+			// OHNE GUID: So bleibt der Name für dieselbe Datei (am selben Tag) gleich
+			var uniqueName = $"{captureTimePrefix}_{safeFileName}{ext}";
 			var fullPath = string.IsNullOrEmpty(cleanFolder) ? uniqueName : $"{cleanFolder}/{uniqueName}";
 
 			var storage = _supabase.Storage.From(BucketName);
 
+			// Wir versuchen es ohne Upsert. Wenn es existiert, wirft Supabase einen Fehler
+			// oder wir nutzen Upsert = true, um es einfach zu aktualisieren statt zu duplizieren.
 			await storage.Upload(bytes, fullPath, new FileOptions
 			{
-				Upsert = false
+				Upsert = true 
 			});
 
 			// CHANGE: Use CreateSignedUrl instead of GetPublicUrl
@@ -111,17 +114,22 @@ public class SupabasePhotosService : ISupabasePhotosService
 		return null;
 	}
 
-	public async Task<List<string>> GetImageUrlsAsync(string folder)
-	{
-		var imageUrls = new List<string>();
-		try
-		{
-			var cleanFolder = folder.Trim('/');
-			var storage = _supabase.Storage.From(BucketName);
+	public async Task<List<string>> GetImageUrlsAsync(string folder, int limit = 50, int offset = 0)
+    	{
+    		var imageUrls = new List<string>();
+    		try
+    		{
+    			var cleanFolder = folder.Trim('/');
+    			var storage = _supabase.Storage.From(BucketName);
 
-			var result = await storage.List(cleanFolder);
+    			var result = await storage.List(cleanFolder, new SearchOptions
+    			{
+    				Limit = limit,
+    				Offset = offset,
+    				SortBy = new SortBy { Column = "name", Order = "desc" }
+    			});
 
-			if (result != null)
+    			if (result != null)
 			{
 				// Sorting by CreatedAt (if available) or Name ensures consistent order
 				// Using a standard loop is safer here than parallel tasks for consistency, 

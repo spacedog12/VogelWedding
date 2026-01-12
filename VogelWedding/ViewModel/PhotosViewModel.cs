@@ -20,7 +20,12 @@ public class PhotosViewModel
 	public bool IsMobile { get; private set; }
 	public bool IsUploading { get; private set; }
 	public bool IsLoadingImages { get; private set; } = true;
+	public bool IsLoadingMore { get; private set; }
+	public bool HasMoreImages { get; private set; } = true;
 	public List<string> ImageUrls { get; } = new();
+	private int _currentOffset = 0;
+	private const int PageSize = 24;
+
 	public string SelectedUploadFolder { get; private set; } = CeremonyFolder;
 
 	// Modal & Selection State
@@ -59,7 +64,13 @@ public class PhotosViewModel
 			? PartyFolder
 			: CeremonyFolder;
 
-		await LoadImages();
+		await LoadImages(reset: true);
+	}
+
+	public async Task LoadMoreImages()
+	{
+		if (IsLoadingMore || !HasMoreImages) return;
+		await LoadImages(reset: false);
 	}
 
 	public async Task OnFilesSelected(InputFileChangeEventArgs e)
@@ -163,7 +174,7 @@ public class PhotosViewModel
 			else
 				_toastService.ShowInfo("Keine Bilder hochgeladen.");
 
-			await LoadImages();
+			await LoadImages(reset: true);
 		}
 		catch (Exception ex)
 		{
@@ -193,25 +204,42 @@ public class PhotosViewModel
 
 	// ================= Private Methods ===================
 
-	async Task LoadImages()
+	async Task LoadImages(bool reset = false)
 	{
-		IsLoadingImages = true;
-		ImageUrls.Clear();
+		if (reset)
+		{
+			IsLoadingImages = true;
+			ImageUrls.Clear();
+			_currentOffset = 0;
+			HasMoreImages = true;
+		}
+		else
+		{
+			IsLoadingMore = true;
+		}
+
+		NotifyStateChanged();
 
 		try
 		{
 			var level = _accessService.CurrentLevel;
+			var newUrls = new List<string>();
 
-			if (level >= AccessLevel.GuestAll)
+			// Wir laden hier der Einfachheit halber aus dem aktuell primären Ordner
+			// Wenn du beide Ordner mischen willst, wäre eine API-Logik auf dem Server/Edge Function besser.
+			var folder = (level >= AccessLevel.GuestInvited) ? PartyFolder : CeremonyFolder;
+			
+			var results = await _photosService.GetImageUrlsAsync(folder, PageSize, _currentOffset);
+			
+			if (results.Any())
 			{
-				var ceremonyPhotos = await _photosService.GetImageUrlsAsync(CeremonyFolder);
-				ImageUrls.AddRange(ceremonyPhotos);
+				ImageUrls.AddRange(results);
+				_currentOffset += results.Count;
+				HasMoreImages = results.Count == PageSize;
 			}
-
-			if (level >= AccessLevel.GuestInvited)
+			else
 			{
-				var partyPhotos = await _photosService.GetImageUrlsAsync(PartyFolder);
-				ImageUrls.AddRange(partyPhotos);
+				HasMoreImages = false;
 			}
 		}
 		catch (Exception ex)
@@ -221,6 +249,8 @@ public class PhotosViewModel
 		finally
 		{
 			IsLoadingImages = false;
+			IsLoadingMore = false;
+			NotifyStateChanged();
 		}
 	}
 }
