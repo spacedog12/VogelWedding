@@ -155,6 +155,38 @@ public class PhotosViewModel
 	{
 		if (!FilesToUpload.Any()) return;
 
+		// Dubletten-Check: Wir prüfen, ob Bilder mit ähnlichem Namen bereits geladen sind
+		var existingFileNames = ImageUrls
+			.Select(url => Path.GetFileName(new Uri(url).LocalPath))
+			.ToList();
+
+		var filesToRemove = new List<IBrowserFile>();
+		foreach (var file in FilesToUpload)
+		{
+			// Wir säubern den Namen so, wie es der Service tun würde
+			var safeName = file.Name.Replace(" ", "-"); 
+			// Einfache Prüfung: Ist dieser Name (oder Teile davon) schon in den URLs?
+			if (existingFileNames.Any(existing => existing.Contains(safeName)))
+			{
+				filesToRemove.Add(file);
+			}
+		}
+
+		if (filesToRemove.Any())
+		{
+			_toastService.ShowInfo($"{filesToRemove.Count} Bilder wurden übersprungen, da sie bereits existieren.");
+			filesToRemove.ForEach(f => {
+				var index = FilesToUpload.IndexOf(f);
+				if(index != -1) RemoveFileFromSelection(index);
+			});
+		}
+
+		if (!FilesToUpload.Any())
+		{
+			ShowPreviewModal = false;
+			return;
+		}
+
 		ShowPreviewModal = false;
 		IsUploading = true;
 		TotalToUpload = FilesToUpload.Count;

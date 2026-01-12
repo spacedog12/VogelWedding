@@ -85,13 +85,13 @@
 
                             <div class="text-center mt-4">
                             <p class="text-muted small">
-                                Zeige @ViewModel.ImageUrls.Count Bilder
+                                @ViewModel.ImageUrls.Count Bilder
                             </p>
                             
                             @if (ViewModel.HasMoreImages)
                             {
                                 <div class="d-flex justify-content-center mt-4">
-                                    <button class="btn btn-outline-primary"
+                                    <button class="btn btn-primary"
                                             @onclick="ViewModel.LoadMoreImages"
                                             disabled="@ViewModel.IsLoadingMore">
                                         @if (ViewModel.IsLoadingMore)
