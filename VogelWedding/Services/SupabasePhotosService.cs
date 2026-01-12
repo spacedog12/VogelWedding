@@ -18,9 +18,10 @@ public class SupabasePhotosService : ISupabasePhotosService
 	// Increase max file size limit to 20MB to be safe
 	private const long MaxFileSize = 1024 * 1024 * 20;
 
-	public SupabasePhotosService(Supabase.Client supabase)
+	public SupabasePhotosService(Supabase.Client supabase, ILogger<SupabasePhotosService> logger)
 	{
 		_supabase = supabase;
+		_logger = logger;
 	}
 
 	public async Task<List<string>> UploadFilesAsync(IReadOnlyList<IBrowserFile> files, string folder, Action<int>? onProgressUpdate = null)
@@ -177,7 +178,7 @@ public class SupabasePhotosService : ISupabasePhotosService
 	private bool IsImageFile(string fileName)
 	{
 		var ext = Path.GetExtension(fileName).ToLowerInvariant();
-		return ext is ".jpg" or ".jpeg" or ".png" or ".heic" or ".webp";
+		return ext is ".jpg" or ".jpeg" or ".png" or ".heic" or ".webp" or ".heif";
 	}
 
 	private DateTime? TryGetCaptureTimeUtc(byte[] bytes)
